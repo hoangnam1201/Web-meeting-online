@@ -15,7 +15,7 @@ Các chức năng chính:
   - ...
 
 
-Thành viên:
+Thành viên (hệ CLC Tieng Viet):
 
   Lê Hoàng Nam 18110160
   
