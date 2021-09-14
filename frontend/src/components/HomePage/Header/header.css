@@ -1,0 +1,37 @@
+#header {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+}
+
+.navbar {
+    padding: 15px 50px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: #ccc !important
+}
+
+.navbar-item {
+    font-weight: 600;
+    text-transform: uppercase;
+    padding-left: 50px;
+}
+
+.nav-link {
+    color: rgb(10, 10, 10) !important;
+    letter-spacing: 2px;
+    font-size: 1em;
+    font-weight: 700;
+    margin: 0 10px;
+}
+
+.nav-link:hover {
+    background: #dcdde1 !important;
+    color: #262626;
+    border-radius: 5px;
+    transition: all 0.6s ease 0s;
+}

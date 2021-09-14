@@ -1,10 +1,11 @@
 import React from "react";
 import { Route } from "react-router";
-
+import Header from "./Header";
 
 const LayoutHome = (props) => {
   return (
     <>
+      <Header />
       {props.children}
     </>
   );

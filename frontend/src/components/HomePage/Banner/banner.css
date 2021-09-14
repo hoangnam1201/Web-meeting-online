@@ -1,0 +1,23 @@
+.main {
+    position: relative;
+    background: rgb(247, 210, 209);
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    padding: 150px 0 200px;
+}
+
+.main h2 {
+    font-size: 2.6rem;
+    color: rgb(34, 26, 32);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.main p {
+    margin-top: 1em;
+    padding: 0;
+    font-size: 16px;
+    color: rgb(77, 59, 72);
+    padding-bottom: 25px;
+}
