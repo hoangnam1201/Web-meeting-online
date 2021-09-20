@@ -1,8 +1,13 @@
 import User from '../models/user.model.js';
 import CryptoJS from 'crypto-js';
+import { validationResult } from 'express-validator';
 
 
 export const register = async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors: errors});
+    }
     const user = {
         username: req.body.username,
         name: req.body.fullname,

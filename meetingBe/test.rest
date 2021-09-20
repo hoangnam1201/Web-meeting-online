@@ -2,12 +2,13 @@ POST http://localhost:3000/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lamtvu",
+    "username": "username",
     "password": "123123",
+    "passwordConfirmation": "123123",
     "name": "thanh lam",
     "phone":"0123123123",
-    "dob": "2012-04-23T18:25:43.511Z",
-    "email": "lamtvu@gmail.com"
+    "dob": "2012-04-23",
+    "email": "lamtvu2@gmail.com"
 }
 
 ###
