@@ -2,8 +2,9 @@ import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { routeAuth, routeHome, routeAdmin } from "./routes";
 import { useDispatch } from "react-redux";
-import Error from "./components/Error"
-import Home from "./components/HomePage/index"
+import Error from "./components/Error";
+import Home from "./components/HomePage/index";
+import Auth from "./components/Auth/index";
 const showLayoutHome = (routes) => {
   if (routes && routes.length > 0) {
     return routes.map((item, index) => {
@@ -23,13 +24,12 @@ const showLayoutAuth = (routes) => {
   if (routes && routes.length > 0) {
     return routes.map((item, index) => {
       return (
-        // <Auth
-        //   key={index}
-        //   exact={item.exact}
-        //   path={item.path}
-        //   component={item.component}
-        // />
-        <h2>Chua lam</h2>
+        <Auth
+          key={index}
+          exact={item.exact}
+          path={item.path}
+          component={item.component}
+        />
       );
     });
   }

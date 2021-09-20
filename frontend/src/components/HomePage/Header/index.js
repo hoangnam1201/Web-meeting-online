@@ -42,12 +42,12 @@ const Header = () => {
               <div className="collapse navbar-collapse">
                 <ul className="navbar-nav ml-auto flex justify-center">
                   <li className="nav-item active">
-                    <Link className="nav-link" to="/">
+                    <Link className="nav-link" to="/login">
                       Login
                     </Link>
                   </li>
                   <li className="nav-item ">
-                    <Link className="nav-link" to="/">
+                    <Link className="nav-link" to="/register">
                       SignUp
                     </Link>
                   </li>
