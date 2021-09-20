@@ -151,21 +151,21 @@ const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const schema = yup.object().shape({
-  userName: yup
+  username: yup
     .string()
     .required("Tên tài khoản đang trống !")
     .min(5, "Tên tài khoản phải từ 5 đến 16 kí tự")
     .max(16, "Tên tài khoản phải từ 5 đến 16 kí tự"),
-  userPassword: yup
+  password: yup
     .string()
     .required("Mật khẩu đang trống !")
     .min(8, "Mật khẩu phải có ít nhất 8 kí tự")
     .max(16, "Mật khẩu chỉ tối đa 18 kí tự"),
-  confirmPassword: yup
+  passwordConfirmation: yup
     .string()
     .required("Xác nhận mật khẩu đang trống !")
     .min(8, "Mật khẩu phải có ít nhất 8 kí tự")
-    .oneOf([yup.ref("userPassword")], "Mật khẩu không khớp !"),
+    .oneOf([yup.ref("password")], "Mật khẩu không khớp !"),
   name: yup.string().required("Họ và tên đang trống !"),
   email: yup
     .string()
@@ -189,17 +189,17 @@ function Register(props) {
   const matches = useMediaQuery("(min-height:1350px)");
 
   const [loading, setLoading] = useState(false);
-  const [loginError, setLoginError] = useState(null);
+  const [registerError, setregisterError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [confirmShowPassword, setConfirmShowPassword] = useState(false);
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = useState(new Date("2000-08-29"));
 
-  const [valueRadio, setValueRadio] = useState("nam");
+  // const [valueRadio, setValueRadio] = useState("nam");
 
-  const handleRadioChange = (event) => {
-    setValueRadio(event.target.value);
-  };
+  // const handleRadioChange = (event) => {
+  //   setValueRadio(event.target.value);
+  // };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -220,32 +220,31 @@ function Register(props) {
   };
 
   const onSubmit = (data) => {
-    data["ngaySinh"] = moment(selectedDate).format("yyyy-MM-DD");
-    data["gioiTinh"] = valueRadio;
+    data["dob"] = moment(selectedDate).format("yyyy-MM-DD");
+    // data["gioiTinh"] = valueRadio;
     setLoading(true);
     axios({
-      url: `http://localhost:5000/api/Register`,
+      url: `http://localhost:3002/api/user/register`,
       method: "POST",
       data,
     })
       .then((result) => {
         console.log(result.data);
         setLoading(false);
-        setLoginError(null);
+        setregisterError(null);
 
         Swal.fire({
           icon: "success",
           title: "Đăng ký thành công",
-          text: "Vui lòng xác nhận email của bạn để hoàn tất thủ tục đăng ký",
+          // text: "Vui lòng xác nhận email của bạn để hoàn tất thủ tục đăng ký",
           // timer: 1500,
         });
         history.replace("/login");
       })
       .catch((error) => {
         console.log(error.response);
-
         setLoading(false);
-        setLoginError(error.response.data);
+        setregisterError(error.response.data);
       });
   };
 
@@ -290,24 +289,24 @@ function Register(props) {
                 margin="dense"
                 required
                 fullWidth
-                id="userName"
+                id="username"
                 label="Tên tài khoản"
-                name="userName"
-                autoComplete="userName"
+                name="username"
+                autoComplete="username"
                 inputRef={register}
-                error={!!errors.userName}
-                helperText={errors?.userName?.message}
+                error={!!errors.username}
+                helperText={errors?.username?.message}
               />
               <TextField
                 variant="outlined"
                 margin="dense"
                 required
                 fullWidth
-                name="userPassword"
+                name="password"
                 label="Mật Khẩu"
                 type={showPassword ? "text" : "password"}
-                id="userPassword"
-                autoComplete="userPassword"
+                id="password"
+                autoComplete="password"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -323,19 +322,19 @@ function Register(props) {
                   ),
                 }}
                 inputRef={register}
-                error={!!errors.userPassword}
-                helperText={errors?.userPassword?.message}
+                error={!!errors.password}
+                helperText={errors?.password?.message}
               />
               <TextField
                 variant="outlined"
                 margin="dense"
                 required
                 fullWidth
-                name="confirmPassword"
+                name="passwordConfirmation"
                 label="Xác nhận mật khẩu"
                 type={confirmShowPassword ? "text" : "password"}
-                id="confirmPassword"
-                autoComplete="confirmPassword"
+                id="passwordConfirmation"
+                autoComplete="passwordConfirmation"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -355,8 +354,8 @@ function Register(props) {
                   ),
                 }}
                 inputRef={register}
-                error={!!errors.confirmPassword}
-                helperText={errors?.confirmPassword?.message}
+                error={!!errors.passwordConfirmation}
+                helperText={errors?.passwordConfirmation?.message}
               />
               <TextField
                 variant="outlined"
@@ -405,39 +404,17 @@ function Register(props) {
                   id="date-picker-dialog-register"
                   label="Ngày tháng năm sinh"
                   format="MM/dd/yyyy"
-                  name="ngaySinh"
+                  name="dob"
                   value={selectedDate}
                   onChange={handleDateChange}
                   className={classes.datePicker}
                 />
               </MuiPickersUtilsProvider>
 
-              <FormControl component="fieldset" margin="dense">
-                <FormLabel component="legend">Giới tính</FormLabel>
-                <RadioGroup
-                  name="gioiTinh"
-                  value={valueRadio}
-                  onChange={handleRadioChange}
-                  className={classes.radioGroup}
-                >
-                  <FormControlLabel
-                    value="nam"
-                    control={<Radio />}
-                    label="Nam"
-                  />
-                  <FormControlLabel value="nu" control={<Radio />} label="Nữ" />
-                  <FormControlLabel
-                    value="khac"
-                    control={<Radio />}
-                    label="Khác"
-                  />
-                </RadioGroup>
-              </FormControl>
-
               {/* In ra loi neu dang nhap that bai */}
-              {loginError ? (
+              {registerError ? (
                 <Alert style={{ marginTop: "15px" }} severity="error">
-                  {loginError}
+                  {registerError}
                 </Alert>
               ) : null}
 

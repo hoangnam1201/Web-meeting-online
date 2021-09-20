@@ -5,6 +5,8 @@ import { useDispatch } from "react-redux";
 import Error from "./components/Error";
 import Home from "./components/HomePage/index";
 import Auth from "./components/Auth/index";
+import axios from "axios";
+import { useEffect } from "react";
 const showLayoutHome = (routes) => {
   if (routes && routes.length > 0) {
     return routes.map((item, index) => {
@@ -61,7 +63,29 @@ function App() {
   //     payload: JSON.parse(localStorage.getItem("user")),
   //   });
   // }
-
+  const accessToken = localStorage
+    ? JSON.parse(localStorage.getItem("user"))
+    : "";
+  const getInfoUser = async () => {
+    try {
+      const fetch = {
+        url: "http://localhost:3002/api/user/get-detail",
+        method: "GET",
+        headers: {
+          Authorization: `token ${accessToken.accessToken}`,
+        },
+      };
+      const res = await axios(fetch);
+      localStorage.setItem("loginInfo", JSON.stringify(res.data));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      getInfoUser();
+    }
+  }, []);
   return (
     <div className="App">
       <BrowserRouter>

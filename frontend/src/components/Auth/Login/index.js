@@ -127,29 +127,107 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const schema = yup.object().shape({
-//   userName: yup
-//     .string()
-//     .required("Vui lòng nhập tài khoản !")
-//     .min(5, "Tên tài khoản phải từ 5 đến 16 kí tự")
-//     .max(16, "Tên tài khoản phải từ 5 đến 16 kí tự"),
-//   password: yup
-//     .string()
-//     .required("Vui lòng nhập mật khẩu !")
-//     .min(8, "Mật khẩu phải có ít nhất 8 kí tự")
-//     .max(16, "Mật khẩu chỉ tối đa 18 kí tự"),
-// });
+const schema = yup.object().shape({
+  username: yup
+    .string()
+    .required("Vui lòng nhập tài khoản !")
+    .min(5, "Tên tài khoản phải từ 5 đến 16 kí tự")
+    .max(16, "Tên tài khoản phải từ 5 đến 16 kí tự"),
+  password: yup
+    .string()
+    .required("Vui lòng nhập mật khẩu !")
+    .min(8, "Mật khẩu phải có ít nhất 8 kí tự")
+    .max(16, "Mật khẩu chỉ tối đa 18 kí tự"),
+});
 
 function Login(props) {
   const classes = useStyles();
+  const history = useHistory();
+  const dispatch = useDispatch();
   const matches = useMediaQuery("(min-height:650px)");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(false);
+  const [loginError, setLoginError] = useState(null);
+  const [user, setUser] = useState({
+    username: "",
+    password: "",
+  });
+  const { register, handleSubmit, errors } = useForm({
+    mode: "onBlur",
+    resolver: yupResolver(schema),
+  });
+  const handleChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    setUser({
+      ...user,
+      [name]: value,
+    });
+  };
+  useEffect(() => {
+    if (localStorage.getItem("remember")) {
+      setRemember(true);
+      setUser(JSON.parse(localStorage.getItem("remember")));
+    }
+  }, []);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  const onSubmit = (data) => {
+    setLoading(true);
+
+    axios({
+      url: `http://localhost:3002/api/auth/login`,
+      method: "POST",
+      data,
+    })
+      .then((result) => {
+        setLoading(false);
+        setLoginError(null);
+        if (remember) {
+          localStorage.setItem("remember", JSON.stringify(data));
+        } else {
+          localStorage.removeItem("remember");
+        }
+        localStorage.setItem("user", JSON.stringify(result.data));
+        // dispatch lên redux
+        // dispatch({
+        //   type: "LOGGED_IN",
+        //   payload: JSON.parse(localStorage.getItem("user")),
+        // });
+        Swal.fire({
+          icon: "success",
+          title: "Đăng nhập thành công",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then(() => {
+          history.push("/");
+        });
+      })
+      .catch((error) => {
+        setLoading(false);
+        if (error.response.data.message) {
+          setLoginError(error.response.data.message);
+        } else {
+          setLoginError(error.response.data);
+        }
+      });
+  };
+
   return (
     <>
       <Helmet>
         <title>Đăng nhập</title>
         <meta charSet="utf-8" name="description" content="Trang chủ" />
       </Helmet>
-      {/* <Box className={classes.loaderBox}>
+      <Box className={classes.loaderBox}>
         <ScaleLoader
           color="#f50057"
           loading={loading}
@@ -158,7 +236,7 @@ function Login(props) {
           radius={10}
           margin={4}
         />
-      </Box> */}
+      </Box>
       <div className={classes.root}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
@@ -177,22 +255,22 @@ function Login(props) {
             <form
               className={classes.form}
               noValidate
-              //   onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(onSubmit)}
             >
               <TextField
                 variant="outlined"
                 margin="dense"
                 required
                 fullWidth
-                id="userName"
+                id="username"
                 label="Tài khoản"
-                name="userName"
-                autoComplete="userName"
-                // inputRef={register}
-                // error={!!errors.userName}
-                // helperText={errors?.userName?.message}
-                // value={user.userName}
-                // onChange={handleChange}
+                name="username"
+                autoComplete="username"
+                inputRef={register}
+                error={!!errors.username}
+                helperText={errors?.username?.message}
+                value={user.username}
+                onChange={handleChange}
               />
               <TextField
                 variant="outlined"
@@ -201,44 +279,42 @@ function Login(props) {
                 fullWidth
                 name="password"
                 label="Mật Khẩu"
-                // type={showPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="password"
-                // inputRef={register}
-                // error={!!errors.password}
-                // helperText={errors?.password?.message}
-                // value={user.password}
-                // onChange={handleChange}
-                // InputProps={{
-                //   endAdornment: (
-                //     <InputAdornment position="end">
-                //       <IconButton
-                //         onClick={handleClickShowPassword}
-                //         onMouseDown={handleMouseDownPassword}
-                //         edge="end"
-                //         color="secondary"
-                //       >
-                //         {showPassword ? <Visibility /> : <VisibilityOff />}
-                //       </IconButton>
-                //     </InputAdornment>
-                //   ),
-                // }}
+                inputRef={register}
+                error={!!errors.password}
+                helperText={errors?.password?.message}
+                value={user.password}
+                onChange={handleChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        color="secondary"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <FormControlLabel
                 control={
                   <Checkbox
                     value="remember"
                     color="primary"
-                    // checked={remember}
+                    checked={remember}
                   />
                 }
                 label="Nhớ mật khẩu"
-                // onChange={() => setRemember(!remember)}
+                onChange={() => setRemember(!remember)}
               />
-
-              {/* In ra loi neu dang nhap that bai
-              {loginError ? <Alert severity="error">{loginError}</Alert> : null} */}
-
+              {/* // In ra loi neu dang nhap that bai */}
+              {loginError ? <Alert severity="error">{loginError}</Alert> : null}
               <Button
                 type="submit"
                 fullWidth
