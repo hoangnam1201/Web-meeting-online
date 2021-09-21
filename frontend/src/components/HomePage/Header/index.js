@@ -54,7 +54,6 @@ const Header = () => {
     : "";
   const handleLogout = () => {
     localStorage.removeItem("user");
-    localStorage.removeItem("loginInfo");
     Swal.fire({
       icon: "success",
       title: "Đăng xuất thành công",

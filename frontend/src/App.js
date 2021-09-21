@@ -76,15 +76,13 @@ function App() {
         },
       };
       const res = await axios(fetch);
-      localStorage.setItem("loginInfo", JSON.stringify(res.data));
+      localStorage.setItem("loginInfo", JSON.stringify(res.data.data));
     } catch (err) {
       console.log(err);
     }
   };
   useEffect(() => {
-    if (localStorage.getItem("user")) {
-      getInfoUser();
-    }
+    getInfoUser();
   }, []);
   return (
     <div className="App">
