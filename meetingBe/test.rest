@@ -1,27 +1,188 @@
-POST http://localhost:3002/api/user/register HTTP/1.1
+
+//Register
+POST http://localhost:3001/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lhnam1202",
+    "username": "lamtvu05",
     "password": "123123",
     "passwordConfirmation": "123123",
-    "name": "hoang nam",
+    "name": "than lam",
     "phone":"0123123123",
-    "dob": "2000-04-23",
-    "email": "lamtvu2@gmail.com"
+    "dob": "2012-04-23",
+    "email": "latu45@gmail.com"
 }
 
+//Login
 ###
-POST http://localhost:3002/api/auth/login HTTP/1.1
+POST http://localhost:3001/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lhnam1201",
+    "username": "lamtvu01",
     "password": "123123"
 }
 
-
+//get person imformation
 ###
-GET http://localhost:3002/api/user/get-detail  HTTP/1.1
+GET http://localhost:3001/api/user/get-detail  HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTQ4NzY5NGM4Y2VlZjYxOThlNWFiMDYiLCJpYXQiOjE2MzIxNDMzMjksImV4cCI6MTYzMjIyOTcyOX0.4reC_Sie5VPL6_8KxPYtZpTLsdmvBLGiJNK3s6Rx8MY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+//change infor (name, dob, phone)
+###
+PUT http://localhost:3001/api/user/change-infor HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "name": "naaame",
+    "phone":"123111111111"
+}
+
+//change password
+###
+PUT http://localhost:3001/api/user/change-password HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "oldPassword": "123123",
+    "password":"1231234",
+    "passwordConfirmation":"1231234"
+}
+
+//------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------Room-----------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------//
+//---------------------create room
+###
+POST http://localhost:3001/api/room HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "name":"room 01",
+    "description": "ta",
+    "roomType": 1,
+    "startDate": 123123123123,
+    "endDate": 193213123123,
+}
+
+//---------------------delete room
+###
+DELETE  http://localhost:3001/api/room/61505c117b185a9a47f27145 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+//--------------------change room infor
+###
+PUT  http://localhost:3001/api/room/61505ebd67f9eb8d83106ff0 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "name":"room 02",
+    "description": "ta",
+    "roomType": 1,
+    "startDate": 123123123123,
+    "endDate": 141241231231
+}
+
+//-------------------get room by id
+###
+GET http://localhost:3001/api/room/614ff45687aa8816aaf86bfb HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+//------------------get owed room
+###
+GET http://localhost:3001/api/room/owned-room?pageSize=2&pageIndex=0 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+//------------------them member
+###
+POST http://localhost:3001/api/room/members/add-member/615020e29adb831d90569942 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "userId":"614ff4bf87aa8816aaf86c07"
+}
+
+//------------------xoa member
+###
+DELETE  http://localhost:3001/api/room/members/remove-member/61502169dae138b5a0c04d8e HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "userId":"614ff4bf87aa8816aaf86c07"
+}
+
+//------------------them array members
+###
+POST http://localhost:3001/api/room/members/add-members/6151d43bc93ac0467e79395d HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "userIds":[
+        "6151d31fc93ac0467e793956",
+        "6151d313c93ac0467e793952",
+        "6151d30ac93ac0467e79394e"
+    ]
+}
+
+//------------------xoa arraymember
+###
+DELETE  http://localhost:3001/api/room/members/remove-members/61505cf767f9eb8d83106fee HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "userId":"614ff4bf87aa8816aaf86c07"
+}
+
+//-----------------get invitedRoom
+###
+GET http://localhost:3001/api/room/invited-room?pageSize=2&pageIndex=1 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+
+//------------------------------------------------------------------------------------------------------------------------//
+//--------------------------------------------------------------Table-----------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------//
+
+
+//-----------------create table 
+###
+POST http://localhost:3001/api/table HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+{
+    "room": "6151d435c93ac0467e79395b",
+    "name": "string",
+    "numberOfSeat": "a"
+}
+
+//-----------------delete table 
+###
+DELETE  http://localhost:3001/api/table/6151e6b2848a47879b5a3b88 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+//----------------get table by Id
+###
+GET   http://localhost:3001/api/table/6151e8089a545e4ee4d2e221 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+
+//----------------get tables in class
+###
+GET   http://localhost:3001/api/table/get-by-room/6151d435c93ac0467e79395b HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
