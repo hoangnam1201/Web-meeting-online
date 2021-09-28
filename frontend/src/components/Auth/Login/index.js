@@ -208,7 +208,7 @@ function Login(props) {
           showConfirmButton: false,
           timer: 1500,
         }).then(() => {
-          history.push("/");
+          history.push("/my-event");
         });
       })
       .catch((error) => {

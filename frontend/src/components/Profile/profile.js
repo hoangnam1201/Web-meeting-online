@@ -96,11 +96,11 @@ export default function Profiles() {
     ? JSON.parse(localStorage.getItem("loginInfo"))
     : "";
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date(loginInfo.dob));
+  const [selectedDate, setSelectedDate] = useState(new Date(loginInfo?.dob));
   const [info, setInfo] = useState({
-    username: loginInfo.username,
-    phone: loginInfo.phone,
-    email: loginInfo.email,
+    username: loginInfo?.username,
+    phone: loginInfo?.phone,
+    email: loginInfo?.email,
   });
   const [errorNotify, setErrorNotify] = useState(null);
 
