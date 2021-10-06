@@ -4,6 +4,7 @@ import Register from "../components/Auth/Register";
 import Profile from "../components/Profile/index";
 import MyEvent from "../components/MyEvent";
 import RoomDetail from "../components/RoomDetail";
+import CheckMedia from "../components/CheckMedia";
 export const routeHome = [
   {
     exact: true,
@@ -22,8 +23,13 @@ export const routeHome = [
   },
   {
     exact: false,
-    path: "/room-detail",
+    path: "/room/id/:id",
     component: RoomDetail,
+  },
+  {
+    exact: false,
+    path: "/check-media",
+    component: CheckMedia,
   },
 ];
 export const routeAdmin = [];

@@ -211,12 +211,12 @@ function Login(props) {
           history.push("/my-event");
         });
       })
-      .catch((error) => {
+      .catch((errors) => {
         setLoading(false);
-        if (error.response.data.message) {
-          setLoginError(error.response.data.message);
+        if (errors.msg) {
+          setLoginError(errors.msg);
         } else {
-          setLoginError(error.response.data);
+          setLoginError(errors.response.msg);
         }
       });
   };
@@ -314,7 +314,7 @@ function Login(props) {
                 onChange={() => setRemember(!remember)}
               />
               {/* // In ra loi neu dang nhap that bai */}
-              {loginError ? <Alert severity="error">{loginError}</Alert> : null}
+              {loginError ? <h5>{loginError}</h5> : null}
               <Button
                 type="submit"
                 fullWidth

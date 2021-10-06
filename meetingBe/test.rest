@@ -1,6 +1,6 @@
 
 //Register
-POST http://localhost:3001/api/user/register HTTP/1.1
+POST http://localhost:3002/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {
@@ -15,28 +15,28 @@ Content-Type: application/json
 
 //Login
 ###
-POST http://localhost:3001/api/auth/login HTTP/1.1
+POST http://localhost:3002/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lamtvu01",
-    "password": "123123"
+    "username": "namlh1201",
+    "password": "namhoang"
 }
 
 //get person imformation
 ###
-GET http://localhost:3001/api/user/get-detail  HTTP/1.1
+GET http://localhost:3002/api/user/get-detail  HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTRkYzk2N2ZlMjI2Y2VmNWMwYzY4YzAiLCJpYXQiOjE2MzMyNjE4ODIsImV4cCI6MTYzMzM0ODI4Mn0.h2QfpWiAyNsE5Fs3XjrQa3Q8XAqKii24tmc7pFk3Tb8
 
 //change infor (name, dob, phone)
 ###
-PUT http://localhost:3001/api/user/change-infor HTTP/1.1
+PUT http://localhost:3002/api/user/change-infor HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTRkYzk2N2ZlMjI2Y2VmNWMwYzY4YzAiLCJpYXQiOjE2MzMxODE1ODUsImV4cCI6MTYzMzI2Nzk4NX0.hNng7Z11TrksOjtTBcv1imYYxkA4f7xm1O6S5FlQfB8
 
 {
-    "name": "naaame",
+    "name": "naaaame",
     "phone":"123111111111"
 }
 
@@ -57,16 +57,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 //------------------------------------------------------------------------------------------------------------------------//
 //---------------------create room
 ###
-POST http://localhost:3001/api/room HTTP/1.1
+POST http://localhost:3002/api/room HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTQ4NzlkNmM4Y2VlZjYxOThlNWFiMGIiLCJpYXQiOjE2MzMwOTM2MTYsImV4cCI6MTYzMzE4MDAxNn0.ZrmOgxIwdgASgVR_TR7SgoDljjhzTyhVnDSVFZURRy8
 
 {
     "name":"room 01",
     "description": "ta",
     "roomType": 1,
     "startDate": 123123123123,
-    "endDate": 193213123123,
+    "endDate": 193213123123
 }
 
 //---------------------delete room
@@ -91,19 +91,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 
 //-------------------get room by id
 ###
-GET http://localhost:3001/api/room/614ff45687aa8816aaf86bfb HTTP/1.1
+GET http://localhost:3002/api/room/614ff45687aa8816aaf86bfb HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
 
 //------------------get owed room
 ###
-GET http://localhost:3001/api/room/owned-room?pageSize=2&pageIndex=0 HTTP/1.1
+GET http://localhost:3002/api/room/owned-room?pageSize=2&pageIndex=0 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTRkYzk2N2ZlMjI2Y2VmNWMwYzY4YzAiLCJpYXQiOjE2MzMxMDczOTcsImV4cCI6MTYzMzE5Mzc5N30.eftoPhb4qACj5TKP7eAiYq0isVe1HYyaNvFY9Fgopw4
 
 //------------------them member
 ###
-POST http://localhost:3001/api/room/members/add-member/615020e29adb831d90569942 HTTP/1.1
+POST http://localhost:3002/api/room/members/add-member/615020e29adb831d90569942 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
 

@@ -76,28 +76,38 @@ const Header = () => {
                 className="collapse navbar-collapse mr-10"
                 id="navbarSuportedContent"
               >
-                <ul className="navbar-nav ml-auto flex justify-center">
-                  <li className="nav-item active">
-                    <Link className="nav-link" to="/">
-                      Home
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link className="nav-link" to="/">
-                      Service
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link className="nav-link" to="/">
-                      About
-                    </Link>
-                  </li>
-                  <li className="nav-item ">
-                    <Link className="nav-link" to="/">
-                      Contact
-                    </Link>
-                  </li>
-                </ul>
+                {!loginInfo ? (
+                  <ul className="navbar-nav ml-auto flex justify-center">
+                    <li className="nav-item active">
+                      <Link className="nav-link" to="/">
+                        Home
+                      </Link>
+                    </li>
+                    <li className="nav-item ">
+                      <Link className="nav-link" to="/">
+                        Service
+                      </Link>
+                    </li>
+                    <li className="nav-item ">
+                      <Link className="nav-link" to="/">
+                        About
+                      </Link>
+                    </li>
+                    <li className="nav-item ">
+                      <Link className="nav-link" to="/">
+                        Contact
+                      </Link>
+                    </li>
+                  </ul>
+                ) : (
+                  <ul>
+                    <li className="nav-item active">
+                      <Link className="nav-link" to="/my-event">
+                        My Event
+                      </Link>
+                    </li>
+                  </ul>
+                )}
               </div>
               {loginInfo ? (
                 <div className="collapse navbar-collapse mr-10">

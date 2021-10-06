@@ -95,6 +95,7 @@ export default function Profiles() {
   const loginInfo = localStorage
     ? JSON.parse(localStorage.getItem("loginInfo"))
     : "";
+  console.log(loginInfo);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date(loginInfo?.dob));
   const [info, setInfo] = useState({
