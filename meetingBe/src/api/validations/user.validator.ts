@@ -1,5 +1,5 @@
 import { body } from "express-validator"
-import userModel, { User } from "../models/user.model"
+import userModel, { User } from "../../models/user.model"
 import mongoose, { Error } from 'mongoose';
 import cryptoJS from 'crypto-js';
 

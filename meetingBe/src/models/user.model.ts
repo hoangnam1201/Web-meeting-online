@@ -10,10 +10,11 @@ export class User {
     phone: string;
     dob: Date;
     email: string;
-    socketId: string;
-    isOnline: boolean;
+    peerId: string;
     isLook: boolean;
     invitedRooms: ObjectId[] | Room[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const userSchema = new Schema({
@@ -28,6 +29,6 @@ const userSchema = new Schema({
     dob: { type: Date, required: true },
     email: { type: String, required: true },
     invitedRooms: [{ type: SchemaTypes.ObjectId, ref: 'room' }]
-})
+}, { timestamps: {} })
 
 export default model<User>('user', userSchema);

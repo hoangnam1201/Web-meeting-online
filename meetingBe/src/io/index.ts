@@ -1,20 +1,25 @@
 import { Server as HttpServer } from 'http';
+import { RedisClient } from 'redis';
 import { Server, Socket } from 'socket.io';
-import roomHandler from './roomHandler';
+import userHandler from './handlers/user.handler';
+import AuthMiddlesware from './middlewares/auth.middleware';
+import roomNamespace from './namespaces/room.namespace';
 
 export const initIOServer = (httpServer: HttpServer) => {
     const io = new Server(httpServer, {
         cors: {
             origin: 'http://localhost:3000',
-            methods: ['GET', 'POST']
+            methods: ['GET', 'POST'],
         }
     });
-    const _roomHandler = roomHandler(io);
+    io.use(AuthMiddlesware.verifyToken);
 
-    const connection = (socket: Socket) => {
-        socket.on('room:create', _roomHandler.createRoom);
-        socket.on('room:join', _roomHandler.joinRoom);
-    }
+    const _userHandler = userHandler(io);
 
-    io.on('connection', connection);
+    roomNamespace(io);
+
+    io.on('connection', (socket) => {
+        _userHandler.connect(socket);
+        socket.on('disconnect', _userHandler.disconnect);
+    })
 }

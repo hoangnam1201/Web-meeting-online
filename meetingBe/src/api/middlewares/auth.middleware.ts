@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { NextFunction, Request, Response } from 'express';
-import roomModel, { Room } from '../models/room.model';
-import * as jwtService from '../services/jwt.service'
+import roomModel, { Room } from '../../models/room.model';
+import * as jwtService from '../../services/jwt.service'
 dotenv.config();
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;

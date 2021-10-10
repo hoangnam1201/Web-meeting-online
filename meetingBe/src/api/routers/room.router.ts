@@ -14,7 +14,7 @@ roomRoute.delete('/:roomId',
     [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],
     roomController.deleteRoom);
 roomRoute.put('/:roomId',
-    [AuthMiddlesware.verifyToken, ...RoomValidator.changeRoomValidator()],
+    [AuthMiddlesware.verifyToken,AuthMiddlesware.checkClassOwnership, ...RoomValidator.changeRoomValidator()],
     roomController.changeRoom);
 roomRoute.get('/owned-room',
     AuthMiddlesware.verifyToken,

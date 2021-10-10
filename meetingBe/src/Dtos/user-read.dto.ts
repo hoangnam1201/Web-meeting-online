@@ -7,7 +7,9 @@ export class UserReadDto {
     role: number;
     phone: string;
     dob: Date;
-    email: string
+    email: string;
+    peerId: string;
+    createdAt: Date;
 
     static fromUser(user: User): UserReadDto {
         const userRead = new UserReadDto();
@@ -18,6 +20,7 @@ export class UserReadDto {
         userRead.phone = user.phone;
         userRead.dob = user.dob;
         userRead.email = user.email;
+        userRead.createdAt = user.createdAt;
         return userRead;
     }
 }

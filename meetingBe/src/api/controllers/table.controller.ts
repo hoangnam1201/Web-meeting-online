@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import mongoose from "mongoose";
-import { TableCreateDto } from "../Dtos/TableCreateDto";
-import tableModel, { Table } from "../models/table.model";
+import { TableCreateDto } from "../../Dtos/table-create.dto";
+import tableModel, { Table } from "../../models/table.model";
 
 const getTableById = (id: string, res: Response) => {
     tableModel.findById(id).populate('users').then((table: Table) => {
@@ -68,11 +68,11 @@ export default class TablerController {
 
     getTablesInRoom(req: Request, res: Response) {
         const roomId = req.params.roomId;
-        tableModel.find({ room: new mongoose.Types.ObjectId(roomId) as any}, (err: any, tables: Table) => {
+        tableModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }, (err: any, tables: Table) => {
             if (err) {
                 return res.status(400).json({ status: 400, errors: [{ msg: err }] })
             }
-            return res.status(200).json({status: 200, data: tables});
+            return res.status(200).json({ status: 200, data: tables });
         })
     }
 }

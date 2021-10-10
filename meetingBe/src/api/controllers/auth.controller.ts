@@ -1,5 +1,5 @@
-import UserModel, { User } from '../models/user.model'
-import * as jwtService from '../services/jwt.service'
+import UserModel, { User } from '../../models/user.model'
+import * as jwtService from '../../services/jwt.service'
 import crypto from 'crypto-js';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';

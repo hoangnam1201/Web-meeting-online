@@ -11,6 +11,7 @@ export class Room {
     owner: ObjectId | User;
     requests: ObjectId[] | User[];
     members: ObjectId[] | User[];
+    joiners: ObjectId[] | User[];
 }
 
 const RoomSchema = new Schema<Room>({
@@ -21,7 +22,8 @@ const RoomSchema = new Schema<Room>({
     endDate: Number,
     owner: { type: SchemaTypes.ObjectId, ref: 'user' },
     requests: [{ type: SchemaTypes.ObjectId, ref: 'user' }],
-    members: [{ type: SchemaTypes.ObjectId, ref: 'user' }]
+    members: [{ type: SchemaTypes.ObjectId, ref: 'user' }],
+    joiners: [{ type: SchemaTypes.ObjectId, ref: 'user' }]
 })
 
 export default model('room', RoomSchema);

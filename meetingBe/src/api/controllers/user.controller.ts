@@ -1,10 +1,11 @@
-import UserModel, { User } from '../models/user.model';
+import UserModel, { User } from '../../models/user.model';
 import cryptoJS from 'crypto-js';
 import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
 import { Error } from 'mongoose';
-import { UserReadDto } from '../Dtos/UserReadDto';
-import { UserCreateDto } from '../Dtos/UserCreateDto';
+import { UserReadDto } from '../../Dtos/user-read.dto';
+import { UserCreateDto } from '../../Dtos/user-create.dto';
+import UserChangeDto from '../../Dtos/user-change.dto';
 
 export default class UserController {
     register = (req: Request, res: Response) => {
@@ -37,8 +38,11 @@ export default class UserController {
         if (!errors.isEmpty()) {
             return res.status(400).json({ status: 400, ...errors });
         }
+
         const userId = req.userData.userId;
-        UserModel.findByIdAndUpdate(userId, { ...req.body }, (err: Error, user: User) => {
+        const userChange = UserChangeDto.fromUser(req.body);
+        console.log(userChange);
+        UserModel.findByIdAndUpdate(userId, { ...userChange }, (err: Error, user: User) => {
             if (err) {
                 return res.status(400).json({ status: 400, data: null, errors: [{ msg: err }] });
             }
@@ -51,6 +55,7 @@ export default class UserController {
         if (!errors.isEmpty()) {
             return res.status(400).json({ status: 400, ...errors });
         }
+
         const userId = req.userData.userId;
         const password = req.body.password;
         UserModel.findByIdAndUpdate(userId, { password: cryptoJS.SHA256(password).toString() }, (err, _) => {
