@@ -219,14 +219,14 @@ const MyEvent = (props) => {
                         variant="body2"
                         color="text.secondary"
                       >
-                        {Date(room?.startDate)}
+                        {new Date(room?.startDate).toDateString()}
                       </Typography>
                       <Typography
                         className={classes.date}
                         variant="body2"
                         color="text.secondary"
                       >
-                        {Date(room?.endDate)}
+                        {new Date(room?.endDate).toDateString()}
                       </Typography>
                       <div className={classes.groupButton}>
                         <IconButton

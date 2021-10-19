@@ -15,6 +15,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import Swal from "sweetalert2";
 import InviteDialog from "./InviteDialog";
+import CheckMedia from "../CheckMedia";
+import { ScaleLoader } from "react-spinners";
 
 const useStyles = makeStyles({
   root: {
@@ -71,6 +73,15 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "space-between",
   },
+  loaderBox: {
+    display: "inline-block",
+    zIndex: "100",
+
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%,-50%)",
+  },
 });
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -89,6 +100,8 @@ const RoomDetail = (props) => {
   const listTableRoom = useSelector(
     (state) => state.listTableReducer?.data?.data
   );
+  const [loading, setLoading] = useState(false);
+  const [checkMedia, setCheckMedia] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog2, setOpenDialog2] = useState(false);
   const [tableRoom, setTableRoom] = useState({});
@@ -121,7 +134,9 @@ const RoomDetail = (props) => {
     setOpenDialog2(false);
   };
   useEffect(() => {
+    setLoading(true);
     dispatch(actGetTable(roomID));
+    return setLoading(false);
   }, [roomID]);
 
   const deleteTable = (tableID) => {
@@ -134,6 +149,7 @@ const RoomDetail = (props) => {
       cancelButtonText: "Hủy",
     }).then((swalRes) => {
       if (swalRes.isConfirmed) {
+        setLoading(true);
         axios({
           url: `http://localhost:3002/api/table/${tableID}`,
           method: "DELETE",
@@ -148,6 +164,7 @@ const RoomDetail = (props) => {
               showConfirmButton: false,
               timer: 1500,
             }).then(() => {
+              setLoading(false);
               dispatch(actGetTable(roomID));
             });
           })
@@ -164,102 +181,122 @@ const RoomDetail = (props) => {
   };
   return (
     <>
-      <ManageDialog
-        openDialog={openDialog}
-        setOpenDialog={setOpenDialog}
-        handleCloseDialog={handleCloseDialog}
-        modal={modal}
-        roomID={roomID}
-      />
-      <InviteDialog
-        openDialog2={openDialog2}
-        setOpenDialog2={setOpenDialog2}
-        handleCloseDialog2={handleCloseDialog2}
-        modal={modal}
-        roomID={roomID}
-      />
-      <div className={classes.btnCreate}>
-        <Button variant="contained" color="primary" onClick={handleAdd}>
-          New Tables
-        </Button>
-        <Button variant="contained" color="success" onClick={handleAddMember}>
-          Invite Peoples
-        </Button>
-      </div>
-      <div className={classes.container}>
-        <Box className={classes.root} sx={{ width: "100%" }}>
-          <Grid
-            container
-            rowSpacing={1}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-          >
-            {listTableRoom?.map((table, index) => (
-              <Grid item xs={6} key={index}>
-                <Item className={classes.table}>
-                  <div>
-                    <IconButton
-                      className={classes.btnDelete}
-                      onClick={() => deleteTable(table._id)}
-                    >
-                      <DeleteIcon fontSize="large" />
-                    </IconButton>
-                    <Grid
-                      container
-                      rowSpacing={1}
-                      columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-                    >
-                      <Grid item xs={6}>
+      {!checkMedia ? (
+        <CheckMedia checkMedia={checkMedia} setCheckMedia={setCheckMedia} />
+      ) : (
+        <>
+          <Box className={classes.loaderBox}>
+            <ScaleLoader
+              color="#f50057"
+              loading={loading}
+              height={45}
+              width={5}
+              radius={10}
+              margin={4}
+            />
+          </Box>
+          <ManageDialog
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            handleCloseDialog={handleCloseDialog}
+            modal={modal}
+            roomID={roomID}
+          />
+          <InviteDialog
+            openDialog2={openDialog2}
+            setOpenDialog2={setOpenDialog2}
+            handleCloseDialog2={handleCloseDialog2}
+            modal={modal}
+            roomID={roomID}
+          />
+          <div className={classes.btnCreate}>
+            <Button variant="contained" color="primary" onClick={handleAdd}>
+              New Tables
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleAddMember}
+            >
+              Invite Peoples
+            </Button>
+          </div>
+          <div className={classes.container}>
+            <Box className={classes.root} sx={{ width: "100%" }}>
+              <Grid
+                container
+                rowSpacing={1}
+                columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+              >
+                {listTableRoom?.map((table, index) => (
+                  <Grid item xs={6} key={index}>
+                    <Item className={classes.table}>
+                      <div>
                         <IconButton
-                          color="primary"
-                          aria-label="upload picture"
-                          component="span"
-                          className={classes.chair}
+                          className={classes.btnDelete}
+                          onClick={() => deleteTable(table._id)}
                         >
-                          <ChairTwoToneIcon fontSize="large" />
+                          <DeleteIcon fontSize="large" />
                         </IconButton>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <IconButton
-                          color="primary"
-                          aria-label="upload picture"
-                          component="span"
-                          className={classes.chair}
+                        <Grid
+                          container
+                          rowSpacing={1}
+                          columnSpacing={{ xs: 1, sm: 2, md: 3 }}
                         >
-                          <ChairTwoToneIcon fontSize="large" />
-                        </IconButton>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <IconButton
-                          color="primary"
-                          aria-label="upload picture"
-                          component="span"
-                          className={classes.chair}
-                        >
-                          <ChairTwoToneIcon fontSize="large" />
-                        </IconButton>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <IconButton
-                          color="primary"
-                          aria-label="upload picture"
-                          component="span"
-                          className={classes.chair}
-                        >
-                          <ChairTwoToneIcon fontSize="large" />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
-                    <h5>{table?.name}</h5>
-                  </div>
-                </Item>
+                          <Grid item xs={6}>
+                            <IconButton
+                              color="primary"
+                              aria-label="upload picture"
+                              component="span"
+                              className={classes.chair}
+                            >
+                              <ChairTwoToneIcon fontSize="large" />
+                            </IconButton>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <IconButton
+                              color="primary"
+                              aria-label="upload picture"
+                              component="span"
+                              className={classes.chair}
+                            >
+                              <ChairTwoToneIcon fontSize="large" />
+                            </IconButton>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <IconButton
+                              color="primary"
+                              aria-label="upload picture"
+                              component="span"
+                              className={classes.chair}
+                            >
+                              <ChairTwoToneIcon fontSize="large" />
+                            </IconButton>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <IconButton
+                              color="primary"
+                              aria-label="upload picture"
+                              component="span"
+                              className={classes.chair}
+                            >
+                              <ChairTwoToneIcon fontSize="large" />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                        <h5>{table?.name}</h5>
+                      </div>
+                    </Item>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Box>
-        <div className={classes.toolBar}>
-          <ToolBar />
-        </div>
-      </div>
+            </Box>
+            <div className={classes.toolBar}>
+              <ToolBar />
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };

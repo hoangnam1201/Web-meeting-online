@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import { IconButton } from "@mui/material";
@@ -16,6 +16,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
+import TextField from "@material-ui/core/TextField";
+import SendIcon from "@mui/icons-material/Send";
 
 const useStyles = makeStyles({
   root: {
@@ -33,6 +35,50 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "center",
   },
+  rootChat: {
+    bottom: "80px",
+    left: "450px",
+    position: "absolute",
+    background: "white",
+    width: "400px",
+    height: "400px",
+    border: "2px solid black",
+  },
+  titleChat: {
+    marginTop: "10px",
+    fontWeight: "bold",
+    justifyContent: "center",
+  },
+  contentChat: {
+    display: "flex",
+    justifyContent: "center",
+    width: "398px",
+    height: "300px",
+    border: "1px solid gray",
+  },
+  actionChat: {
+    display: "flex",
+  },
+  textChat: {
+    marginTop: "10px",
+    display: "flex",
+    alignItems: "center",
+    marginRight: "300px",
+    height: "30px",
+    width: "100%",
+    backgroundColor: "blue",
+    color: "white",
+    borderRadius: "10px",
+  },
+  screenShare: {
+    position: "absolute",
+    width: "700px",
+    height: "400px",
+    border: "1px solid black",
+    background: "white",
+    bottom: "100px",
+    zIndex: "999",
+  },
 });
 const ToolBar = () => {
   const classes = useStyles();
@@ -40,7 +86,9 @@ const ToolBar = () => {
   const [mic, setMic] = useState(true);
   const [camera, setCamera] = useState(true);
   const [openLobby, setOpenLobby] = useState(false);
+  const [openChat, setOpenChat] = useState(false);
 
+  const screenRef = useRef();
   const handleClickOpenDialog = () => {
     setOpen(true);
   };
@@ -58,8 +106,57 @@ const ToolBar = () => {
 
     setOpenLobby(open);
   };
+
+  const popupChat = () => {
+    return (
+      <div className={classes.rootChat}>
+        <div className={classes.titleChat}>
+          <h5>Tin nhắn</h5>
+        </div>
+        <div className={classes.contentChat}>
+          <h6 className={classes.textChat}>abczda</h6>
+        </div>
+        <div className={classes.actionChat}>
+          <TextField
+            variant="outlined"
+            margin="dense"
+            fullWidth
+            label="Nhập tin nhắn..."
+          />
+          <IconButton variant="contained" color="primary">
+            <SendIcon fontSize="large" />
+          </IconButton>
+        </div>
+      </div>
+    );
+  };
+  const startShareScreen = () => {
+    navigator.mediaDevices.getDisplayMedia(
+      { video: { cursor: "always" }, audio: { restrictOwnAudio: false } },
+      function (stream) {
+        //Video
+        // setStreamMedia(stream);
+        const video = document.querySelector("video");
+        video.srcObject = stream.getVideoTracks()[0];
+        video.play();
+        // video.onloadedmetadata = function (e) {
+        //   video.play();
+        // };
+      },
+      function (err) {
+        console.log("The following error occurred: " + err.name);
+      }
+    );
+  };
   return (
     <>
+      {openChat ? popupChat() : null}
+      {/* <video
+        playsinline
+        muted
+        className={`video ${classes.screenShare}`}
+        autoPlay
+      ></video> */}
       <div className={classes.root}>
         <IconButton onClick={handleClickOpenDialog}>
           <RecordVoiceOverIcon fontSize="large" />
@@ -82,10 +179,20 @@ const ToolBar = () => {
             <VideocamOffIcon fontSize="large" />
           </IconButton>
         )}
-        <IconButton>
-          <ChatIcon fontSize="large" />
-        </IconButton>
-        <IconButton>
+        {openChat ? (
+          <IconButton
+            variant="contained"
+            color="primary"
+            onClick={() => setOpenChat(false)}
+          >
+            <ChatIcon fontSize="large" />
+          </IconButton>
+        ) : (
+          <IconButton onClick={() => setOpenChat(true)}>
+            <ChatIcon fontSize="large" />
+          </IconButton>
+        )}
+        <IconButton onClick={startShareScreen}>
           <ScreenShareIcon fontSize="large" />
         </IconButton>
         <IconButton onClick={toggleDrawer(true)}>

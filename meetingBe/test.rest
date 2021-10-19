@@ -19,15 +19,15 @@ POST http://localhost:3002/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "namlh1201",
-    "password": "namhoang"
+    "username": "lamtvu258",
+    "password": "Namhoang123"
 }
 
 //get person imformation
 ###
 GET http://localhost:3002/api/user/get-detail  HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTRkYzk2N2ZlMjI2Y2VmNWMwYzY4YzAiLCJpYXQiOjE2MzMyNjE4ODIsImV4cCI6MTYzMzM0ODI4Mn0.h2QfpWiAyNsE5Fs3XjrQa3Q8XAqKii24tmc7pFk3Tb8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTQ4NzlkNmM4Y2VlZjYxOThlNWFiMGIiLCJpYXQiOjE2MzM3NTc5NjcsImV4cCI6MTYzMzg0NDM2N30.e5zJt9jk9fib02cFaDqieWmdSivtPchDLzl0cXUAqNE
 
 //change infor (name, dob, phone)
 ###
@@ -99,7 +99,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 ###
 GET http://localhost:3002/api/room/owned-room?pageSize=2&pageIndex=0 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTRkYzk2N2ZlMjI2Y2VmNWMwYzY4YzAiLCJpYXQiOjE2MzMxMDczOTcsImV4cCI6MTYzMzE5Mzc5N30.eftoPhb4qACj5TKP7eAiYq0isVe1HYyaNvFY9Fgopw4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTYxMmJmMTNhMTMxMTBiOWVjMzRkZjQiLCJpYXQiOjE2MzM3NTgzOTIsImV4cCI6MTYzMzg0NDc5Mn0.kgC0X9PFK7ONKysNu3GE_6e7aCl0YXmIa_76gJ9Uu5k
 
 //------------------them member
 ###
@@ -156,7 +156,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 //--------------------------------------------------------------Table-----------------------------------------------------//
 //------------------------------------------------------------------------------------------------------------------------//
 
-
+    
 //-----------------create table 
 ###
 POST http://localhost:3001/api/table HTTP/1.1
