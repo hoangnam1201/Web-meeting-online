@@ -23,4 +23,12 @@ export class UserReadDto {
         userRead.createdAt = user.createdAt;
         return userRead;
     }
+
+    static fromArrayUser(users: User[]): UserReadDto[] {
+        let usersReads: UserReadDto[] = [];
+        users.forEach(user=>{
+            usersReads = [...usersReads, this.fromUser(user)];
+        });
+        return usersReads;
+    }
 }

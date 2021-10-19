@@ -1,9 +1,11 @@
 import mongoose, { Schema, model, ObjectId, SchemaTypes } from 'mongoose';
+import { User } from './user.model';
 
 export class Table {
+    _id: any;
     room: ObjectId;
     name: string;
-    users: [ObjectId]
+    users: [ObjectId] | User[];
     numberOfSeat: number
 }
 

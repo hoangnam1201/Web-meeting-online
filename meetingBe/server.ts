@@ -5,17 +5,12 @@ import dotenv from 'dotenv';
 import initRouter from './src/api/routers/index.router'
 import { initIOServer } from './src/io/index';
 import { ExpressPeerServer } from 'peer';
+import { databaseConfig } from './src/config/database.config';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
 const httpServer: Server = createServer(app);
-
-// const credentials = {
-//     key: fs.readFileSync('cert/key.pem'),
-//     cert: fs.readFileSync('cert/cert.pem')
-// }
-// const httpServer: Server = createServer(credentials, app);
 
 app.use((req: Request, res: Response, next: any) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -27,7 +22,7 @@ app.use((req: Request, res: Response, next: any) => {
 app.use(json());
 app.use(urlencoded({ extended: false }));
 
-const uri = 'mongodb://localhost:27017/meetingdb';
+const uri = databaseConfig.connectionString;
 mongoose.connect(uri);
 
 // peerjs

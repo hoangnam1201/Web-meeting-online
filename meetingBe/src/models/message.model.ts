@@ -5,7 +5,7 @@ export class Message {
     sender: ObjectId;
     message: string;
     like: { option: number, user: ObjectId };
-    createDate: Date
+    createAt: Date
 }
 
 const messageSchema = new Schema<Message>({
@@ -16,7 +16,6 @@ const messageSchema = new Schema<Message>({
         option: Number,
         user: { type: SchemaTypes.ObjectId, ref: 'user' }
     }],
-    createDate: { type: SchemaTypes.Date, default: new Date(Date.now()) }
-})
+}, { timestamps: {} })
 
 export default model('message', messageSchema);
