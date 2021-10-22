@@ -6,6 +6,12 @@ import { Avatar, Typography } from "@material-ui/core";
 import Swal from "sweetalert2";
 import { makeStyles } from "@material-ui/core/styles";
 
+const randomColor = () => {
+  let hex = Math.floor(Math.random() * 0xffffff);
+  let color = "#" + hex.toString(16);
+
+  return color;
+};
 const useStyles = makeStyles((theme) => ({
   avatarMenu: {
     display: "flex",
@@ -23,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     marginLeft: "50px",
     textTransform: "uppercase",
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: randomColor(),
     cursor: "pointer",
   },
   avatarMenuContainer: {
@@ -45,12 +51,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 const Header = () => {
   const classes = useStyles();
-  const [showMenu, setShowMenu] = useState(false);
+  // const [showMenu, setShowMenu] = useState(false);
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
-  const classMenuResult = showMenu ? classes.show : "";
+  // const classMenuResult = showMenu ? classes.show : "";
   const classAvatarMenuResult = showAvatarMenu ? classes.isShowAvatarMenu : "";
   const loginInfo = localStorage
     ? JSON.parse(localStorage.getItem("user"))
+    : "";
+  const infoUser = localStorage
+    ? JSON.parse(localStorage.getItem("loginInfo"))
     : "";
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -115,7 +124,7 @@ const Header = () => {
                     className={classes.avatar}
                     onClick={() => setShowAvatarMenu(!showAvatarMenu)}
                   >
-                    N
+                    {infoUser?.username.charAt(0)}
                   </Avatar>
                   <div
                     className={

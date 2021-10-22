@@ -99,7 +99,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 ###
 GET http://localhost:3002/api/room/owned-room?pageSize=2&pageIndex=0 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTYxMmJmMTNhMTMxMTBiOWVjMzRkZjQiLCJpYXQiOjE2MzM3NTgzOTIsImV4cCI6MTYzMzg0NDc5Mn0.kgC0X9PFK7ONKysNu3GE_6e7aCl0YXmIa_76gJ9Uu5k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTYxMmJmMTNhMTMxMTBiOWVjMzRkZjQiLCJpYXQiOjE2MzQ2NDI3NDQsImV4cCI6MTYzNDcyOTE0NH0.EDteISU05_9CjdY4S0PAV61u97J8pS8mm5I6Hn3GMP4
 
 //------------------them member
 ###

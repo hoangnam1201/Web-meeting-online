@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  TextField,
-  Box,
-  Button,
-  Container,
-  IconButton,
-} from "@material-ui/core";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { TextField, Box, Button, Container } from "@material-ui/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -20,13 +12,6 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@material-ui/core";
 import moment from "moment";
 import { Helmet } from "react-helmet";
 
@@ -78,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 const schema = yup.object().shape({
-  username: yup.string().required("Username đang trống !"),
+  name: yup.string().required("Name đang trống !"),
   phone: yup
     .string()
     .required("Số điện thoại đang trống !")
@@ -95,11 +80,14 @@ export default function Profiles() {
   const loginInfo = localStorage
     ? JSON.parse(localStorage.getItem("loginInfo"))
     : "";
-  console.log(loginInfo);
+  const accessToken = localStorage
+    ? JSON.parse(localStorage.getItem("user"))
+    : "";
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date(loginInfo?.dob));
   const [info, setInfo] = useState({
     username: loginInfo?.username,
+    name: loginInfo?.name,
     phone: loginInfo?.phone,
     email: loginInfo?.email,
   });
@@ -119,18 +107,23 @@ export default function Profiles() {
     });
   };
 
-  const onInfoSubmit = (e) => {
-    e.preventDefault();
+  const onInfoSubmit = () => {
     const date = moment(selectedDate).format("yyyy-MM-DD");
     let data = {
-      username: info.username,
+      name: info.name,
       dob: date,
       phone: info.phone,
-      email: info.email,
+      // email: info.email,
     };
     setLoading(true);
     axios
-      .put(`API`, data)
+      .put({
+        url: "http://localhost:3002/api/user/change-infor",
+        data,
+        headers: {
+          Authorization: `token ${accessToken.accessToken}`,
+        },
+      })
       .then((res) => {
         setLoading(false);
         setErrorNotify(null);
@@ -141,7 +134,7 @@ export default function Profiles() {
           showConfirmButton: false,
         });
         loginInfo.name = res.data.data.name;
-        loginInfo.dob = res.data.data.namSinh;
+        loginInfo.dob = res.data.data.dob;
         loginInfo.phone = res.data.data.phone;
         localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
       })
@@ -176,7 +169,7 @@ export default function Profiles() {
         <form
           className={classes.form}
           noValidate
-          onSubmit={(e) => onInfoSubmit(e)}
+          onSubmit={handleSubmit(onInfoSubmit)}
         >
           <TextField
             className={classes.input}
@@ -192,6 +185,22 @@ export default function Profiles() {
             error={!!errors.username}
             helperText={errors?.username?.message}
             value={info.username}
+            onChange={handleInfoChange}
+          />
+          <TextField
+            className={classes.input}
+            variant="outlined"
+            margin="dense"
+            required
+            fullWidth
+            id="name"
+            label="Họ Tên"
+            name="name"
+            autoComplete="name"
+            inputRef={register}
+            error={!!errors.name}
+            helperText={errors?.name?.message}
+            value={info.name}
             onChange={handleInfoChange}
           />
           <TextField

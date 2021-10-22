@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import { IconButton } from "@mui/material";
@@ -18,7 +18,8 @@ import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import TextField from "@material-ui/core/TextField";
 import SendIcon from "@mui/icons-material/Send";
-
+import { useSelector } from "react-redux";
+import { Avatar } from "@material-ui/core";
 const useStyles = makeStyles({
   root: {
     background: "white",
@@ -33,7 +34,20 @@ const useStyles = makeStyles({
   lobbyBox: {
     width: "300px",
     display: "flex",
+    height: "30px",
+    alignItems: "center",
+    fontSize: "20px",
     justifyContent: "center",
+    background: "#000044",
+    color: "white",
+  },
+  lobbyUser: {
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    marginTop: "10px",
+    marginLeft: "10px",
+    fontSize: "15px",
   },
   rootChat: {
     bottom: "80px",
@@ -41,34 +55,50 @@ const useStyles = makeStyles({
     position: "absolute",
     background: "white",
     width: "400px",
-    height: "400px",
-    border: "2px solid black",
+    height: "500px",
+    border: "2px solid #ddd",
+    overflow: "hidden",
   },
   titleChat: {
     marginTop: "10px",
     fontWeight: "bold",
     justifyContent: "center",
+    flex: "10%",
   },
   contentChat: {
-    display: "flex",
-    justifyContent: "center",
-    width: "398px",
-    height: "300px",
-    border: "1px solid gray",
+    border: "1px solid #ddd",
+    width: "400px",
+    height: "410px",
+    borderRadius: "4px",
+    overflow: "hidden",
   },
   actionChat: {
     display: "flex",
   },
-  textChat: {
-    marginTop: "10px",
-    display: "flex",
-    alignItems: "center",
-    marginRight: "300px",
-    height: "30px",
-    width: "100%",
-    backgroundColor: "blue",
-    color: "white",
-    borderRadius: "10px",
+  messages: {
+    height: "400px",
+    padding: "15px 10px",
+    overflowY: "auto",
+  },
+  msg: {
+    border: "1px solid #ddd",
+    padding: "7px 15px",
+    borderRadius: "20px",
+    fontSize: "13px",
+    background: "#dfe6e9",
+    marginBottom: "20px",
+    width: "80%",
+    float: "left",
+  },
+  msgSender: {
+    border: "1px solid #ddd",
+    padding: "7px 15px",
+    borderRadius: "20px",
+    fontSize: "13px",
+    background: "#00cec9",
+    marginBottom: "20px",
+    width: "80%",
+    float: "right",
   },
   screenShare: {
     position: "absolute",
@@ -80,15 +110,31 @@ const useStyles = makeStyles({
     zIndex: "999",
   },
 });
-const ToolBar = () => {
+const ToolBar = (props) => {
+  const { member } = props;
   const classes = useStyles();
+  const loginInfo = localStorage
+    ? JSON.parse(localStorage.getItem("loginInfo"))
+    : "";
   const [open, setOpen] = useState(false);
   const [mic, setMic] = useState(true);
   const [camera, setCamera] = useState(true);
   const [openLobby, setOpenLobby] = useState(false);
   const [openChat, setOpenChat] = useState(false);
-
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
   const screenRef = useRef();
+  console.log(member);
+  const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
+  const messageEl = useRef(null);
+  useEffect(() => {
+    if (messageEl) {
+      messageEl?.current?.addEventListener("DOMNodeInserted", (event) => {
+        const { currentTarget: target } = event;
+        target.scrollTo({ top: target.scrollHeight, behavior: "smooth" });
+      });
+    }
+  }, []);
   const handleClickOpenDialog = () => {
     setOpen(true);
   };
@@ -103,10 +149,35 @@ const ToolBar = () => {
     ) {
       return;
     }
-
     setOpenLobby(open);
   };
-
+  useEffect(() => {
+    if (socketRoomReducer.isConnect) {
+      const socket = socketRoomReducer.socket;
+      socket.on("room:message", (data) => {
+        setMessages((perMessage) => {
+          const newMessage = [...perMessage, ...data];
+          return newMessage;
+        });
+      });
+    }
+    return () => {
+      if (socketRoomReducer.isConnect) {
+        const socketRoom = socketRoomReducer.socket;
+        socketRoom.off("room:message");
+      }
+    };
+  }, [socketRoomReducer]);
+  const sendMessage = () => {
+    if (socketRoomReducer.isConnect) {
+      const socket = socketRoomReducer.socket;
+      socket.emit("room:send-message", message);
+    }
+    setMessage("");
+  };
+  const handleEnterKey = (e) => {
+    if (e.key === "Enter") sendMessage(e);
+  };
   const popupChat = () => {
     return (
       <div className={classes.rootChat}>
@@ -114,16 +185,37 @@ const ToolBar = () => {
           <h5>Tin nhắn</h5>
         </div>
         <div className={classes.contentChat}>
-          <h6 className={classes.textChat}>abczda</h6>
+          <div className={classes.messages} ref={messageEl}>
+            {messages?.map((message, index) => (
+              <div
+                key={index}
+                className={
+                  message?.sender === loginInfo?._id
+                    ? `${classes.msgSender}`
+                    : `${classes.msg}`
+                }
+              >
+                {message?.message}
+              </div>
+            ))}
+          </div>
         </div>
         <div className={classes.actionChat}>
           <TextField
+            onKeyDown={handleEnterKey}
             variant="outlined"
             margin="dense"
+            value={message}
             fullWidth
             label="Nhập tin nhắn..."
+            onChange={(e) => setMessage(e.target.value)}
           />
-          <IconButton variant="contained" color="primary">
+          <IconButton
+            onKeyDown={handleEnterKey}
+            onClick={sendMessage}
+            variant="contained"
+            color="primary"
+          >
             <SendIcon fontSize="large" />
           </IconButton>
         </div>
@@ -215,6 +307,18 @@ const ToolBar = () => {
         <Drawer anchor="right" open={openLobby} onClose={toggleDrawer(false)}>
           <div className={classes.lobbyBox}>
             <h5>Lobby</h5>
+          </div>
+          <div>
+            {member ? (
+              member.map((member, index) => (
+                <div className={classes.lobbyUser} key={index}>
+                  <Avatar>{member.username.charAt(0)}</Avatar>
+                  <div className="ml-5">{member.username}</div>
+                </div>
+              ))
+            ) : (
+              <h4>Không có user</h4>
+            )}
           </div>
         </Drawer>
       </div>

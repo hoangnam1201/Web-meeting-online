@@ -44,36 +44,6 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginRight: "5px",
   },
-  ["@media (max-width: 1023px)"]: {
-    linkList: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  },
-  ["@media (max-width: 767px)"]: {
-    grid: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    linkList: {
-      alignItems: "center",
-    },
-    infoList: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    info: {
-      marginTop: "10px",
-      marginBottom: 0,
-    },
-    desc: {
-      textAlign: "center",
-    },
-  },
 }));
 export default function Footer() {
   const classes = useStyles();

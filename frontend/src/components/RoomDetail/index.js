@@ -100,11 +100,13 @@ const RoomDetail = (props) => {
   const listTableRoom = useSelector(
     (state) => state.listTableReducer?.data?.data
   );
+  const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
   const [loading, setLoading] = useState(false);
   const [checkMedia, setCheckMedia] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog2, setOpenDialog2] = useState(false);
   const [tableRoom, setTableRoom] = useState({});
+  const [member, setMember] = useState([]);
   const [modal, setModal] = useState({
     title: "",
     button: "",
@@ -138,6 +140,26 @@ const RoomDetail = (props) => {
     dispatch(actGetTable(roomID));
     return setLoading(false);
   }, [roomID]);
+
+  useEffect(() => {
+    if (socketRoomReducer.isConnect) {
+      const socket = socketRoomReducer.socket;
+      socket.on("room:user-joined", (data) => {
+        // console.log(data);
+        setMember(data);
+      });
+      socket.on("room:joined", (room) => {
+        console.log(room);
+      });
+    }
+    return () => {
+      if (socketRoomReducer.isConnect) {
+        const socketRoom = socketRoomReducer.socket;
+        socketRoom.off("room:user-joined");
+        socketRoom.off("room:joined");
+      }
+    };
+  }, [socketRoomReducer]);
 
   const deleteTable = (tableID) => {
     Swal.fire({
@@ -182,7 +204,11 @@ const RoomDetail = (props) => {
   return (
     <>
       {!checkMedia ? (
-        <CheckMedia checkMedia={checkMedia} setCheckMedia={setCheckMedia} />
+        <CheckMedia
+          checkMedia={checkMedia}
+          roomId={roomID}
+          setCheckMedia={setCheckMedia}
+        />
       ) : (
         <>
           <Box className={classes.loaderBox}>
@@ -292,7 +318,7 @@ const RoomDetail = (props) => {
               </Grid>
             </Box>
             <div className={classes.toolBar}>
-              <ToolBar />
+              <ToolBar member={member} />
             </div>
           </div>
         </>

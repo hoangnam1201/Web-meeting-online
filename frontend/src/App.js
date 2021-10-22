@@ -5,8 +5,6 @@ import { useDispatch } from "react-redux";
 import Error from "./components/Error";
 import Home from "./components/HomePage/index";
 import Auth from "./components/Auth/index";
-import axios from "axios";
-import { useEffect } from "react";
 const showLayoutHome = (routes) => {
   if (routes && routes.length > 0) {
     return routes.map((item, index) => {
@@ -54,8 +52,6 @@ const showLayoutAdmin = (routes) => {
 };
 
 function App() {
-  const dispatch = useDispatch();
-
   // // dispatch lên redux
   // if (localStorage.getItem("user")) {
   //   dispatch({
@@ -63,7 +59,7 @@ function App() {
   //     payload: JSON.parse(localStorage.getItem("user")),
   //   });
   // }
-  
+
   return (
     <div className="App">
       <BrowserRouter>

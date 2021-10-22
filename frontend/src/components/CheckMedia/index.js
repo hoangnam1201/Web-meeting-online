@@ -1,12 +1,15 @@
 import { Button } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
-
+import { useDispatch, useSelector } from "react-redux";
+import io from "socket.io-client";
+import Peer from "peerjs";
+import { actSocketConnectRoom } from "./modules/action";
 const useStyles = makeStyles({
   root: {
     display: "flex",
@@ -56,15 +59,73 @@ const useStyles = makeStyles({
 });
 const CheckMedia = (props) => {
   const classes = useStyles();
+  const accessToken = localStorage
+    ? JSON.parse(localStorage.getItem("user"))
+    : "";
+  const [peerId, setPeerId] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [playAudio, setPlayAudio] = useState(false);
   const videoRef = useRef(null);
   const [audioVolume, setAudioVolume] = useState(0);
   const [streamMedia, setStreamMedia] = useState(null);
   const [streamMediaAudio, setStreamMediaAudio] = useState(null);
-  const { setCheckMedia } = props;
+  const { setCheckMedia, roomId } = props;
   const WIDTH = 400;
   const HEIGHT = 400;
+  const dispatch = useDispatch();
+  const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
+  let peer;
+  useEffect(() => {
+    peer = new Peer(undefined, {
+      host: "localhost",
+      path: "/peerjs/meeting",
+      port: 3002,
+      debug: 3,
+    });
+
+    peer.on("open", (id) => {
+      setPeerId(id);
+    });
+
+    connectHandler();
+  }, []);
+
+  useEffect(() => {
+    if (socketRoomReducer.isConnect) {
+      const socketRoom = socketRoomReducer.socket;
+      socketRoom.on("room:join-err", (data) => {
+        console.log(data);
+      });
+    }
+    return () => {
+      if (socketRoomReducer.isConnect) {
+        const socketRoom = socketRoomReducer.socket;
+        socketRoom.off("room:join-err");
+      }
+    };
+  }, [socketRoomReducer]);
+
+  const connectHandler = () => {
+    console.log("connect");
+    const tokenValue = "Beaner " + accessToken.accessToken;
+    dispatch(
+      actSocketConnectRoom(
+        io("http://localhost:3002/socket/rooms", {
+          forceNew: true,
+          auth: {
+            token: tokenValue,
+          },
+        })
+      )
+    );
+  };
+
+  const joinRoom = () => {
+    socketRoomReducer.socket.emit("room:join", roomId, peerId);
+    setCheckMedia(true);
+    console.log("join room");
+  };
+
   const startVideo = () => {
     setPlaying(true);
     navigator.getUserMedia =
@@ -244,7 +305,9 @@ const CheckMedia = (props) => {
         </div>
         <div className={classes.btnJoin}>
           <Button
-            onClick={() => setCheckMedia(true)}
+            onClick={() => {
+              joinRoom();
+            }}
             variant="contained"
             color="success"
           >

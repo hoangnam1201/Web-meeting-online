@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  TextField,
-  Box,
-  Button,
-  Container,
-  IconButton,
-} from "@material-ui/core";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { TextField, Box, Button, Container } from "@material-ui/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";

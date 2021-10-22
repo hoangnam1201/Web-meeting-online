@@ -7,7 +7,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -17,7 +16,6 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import LogoMeeting from "../../../assets/logomeeting.png";
 import { Link, useHistory } from "react-router-dom";
 import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
-import Alert from "@material-ui/lab/Alert";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -143,7 +141,6 @@ const schema = yup.object().shape({
 function Login(props) {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
   const matches = useMediaQuery("(min-height:650px)");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

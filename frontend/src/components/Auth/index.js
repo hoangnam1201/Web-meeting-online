@@ -1,6 +1,5 @@
 import React from "react";
 import { Route } from "react-router";
-import { Redirect } from "react-router-dom";
 
 const LayoutAuth = (props) => {
   return <>{props.children}</>;

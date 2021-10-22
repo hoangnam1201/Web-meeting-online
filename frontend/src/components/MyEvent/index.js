@@ -19,7 +19,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom } from "./modules/action";
-import moment from "moment";
 const useStyles = makeStyles({
   root: {
     padding: "40px 0",
@@ -83,17 +82,33 @@ const MyEvent = (props) => {
   const accessToken = localStorage
     ? JSON.parse(localStorage.getItem("user"))
     : "";
-  const listRoom = useSelector(
-    (state) => state.listRoomReducer?.data?.data?.docs
-  );
+  const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
+
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false);
   const [roomEvent, setRoomEvent] = useState({});
+  const [invitedRoom, setInvitedRoom] = useState([]);
   const [modal, setModal] = useState({
     title: "",
     button: "",
     id: "",
   });
+
+  const getInvitedRoom = async () => {
+    try {
+      const fetch = {
+        url: "http://localhost:3002/api/room/invited-room",
+        method: "GET",
+        headers: {
+          Authorization: `token ${accessToken.accessToken}`,
+        },
+      };
+      const res = await axios(fetch);
+      setInvitedRoom(res?.data?.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleAdd = () => {
     setModal({
       title: "Tạo room",
@@ -118,6 +133,7 @@ const MyEvent = (props) => {
 
   useEffect(() => {
     dispatch(actGetRoom());
+    getInvitedRoom();
   }, []);
   const deleteRoom = (roomID) => {
     Swal.fire({
@@ -189,7 +205,7 @@ const MyEvent = (props) => {
                 component="p"
                 className={classes.title}
               >
-                My Event
+                My Events
               </Typography>
             </Grid>
           </Grid>
@@ -253,6 +269,85 @@ const MyEvent = (props) => {
                   </Card>
                 </Grid>
               ))}
+            </Grid>
+          </div>
+          <Grid className="mt-5" container>
+            <Grid item>
+              <Typography
+                variant="h2"
+                color="primary"
+                component="p"
+                className={classes.title}
+              >
+                Invited Events
+              </Typography>
+            </Grid>
+          </Grid>
+          <div>
+            <Grid container spacing={4} className={classes.courseListContainer}>
+              {invitedRoom ? (
+                invitedRoom.map((room, index) => (
+                  <Grid item lg={3} md={4} sm={6} xs={12} key={index}>
+                    <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
+                      <Link to={`/room/id/${room._id}`}>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          image={ImgMeeting}
+                          alt="green iguana"
+                        />
+                      </Link>
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h7" component="div">
+                          {room?.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {room?.description}
+                        </Typography>
+                        <Typography
+                          className={classes.date}
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {new Date(room?.startDate).toDateString()}
+                        </Typography>
+                        <Typography
+                          className={classes.date}
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {new Date(room?.endDate).toDateString()}
+                        </Typography>
+                        {/* <div className={classes.groupButton}>
+                          <IconButton
+                            className={classes.roomButton}
+                            onClick={() => handleUpdate(room)}
+                          >
+                            <EditIcon fontSize="medium" />
+                          </IconButton>
+                          <IconButton
+                            className={classes.roomButton}
+                            onClick={() => deleteRoom(room?._id)}
+                          >
+                            <DeleteIcon fontSize="medium" />
+                          </IconButton>
+                        </div> */}
+                      </CardContent>
+                      <CardActions>
+                        <Button size="small" startIcon={<PersonIcon />}>
+                          0/50
+                        </Button>
+                        <Button size="small">0 sponsor</Button>
+                        <Button size="small">1 floor</Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))
+              ) : (
+                <Grid item>
+                  <h2>Bạn không có sự kiện nào được mời !!!</h2>
+                </Grid>
+              )}
             </Grid>
           </div>
         </Container>

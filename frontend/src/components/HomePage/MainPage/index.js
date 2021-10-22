@@ -26,10 +26,6 @@ const useStyles = makeStyles({
   textContent: {
     display: "block",
     textAlign: "left",
-  },
-  textContent: {
-    display: "block",
-    textAlign: "left",
     lineHeight: "40px",
   },
   groupText: {
