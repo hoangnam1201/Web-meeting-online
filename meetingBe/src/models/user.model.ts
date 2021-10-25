@@ -26,6 +26,7 @@ const userSchema = new Schema({
     isLook: { type: Boolean, default: false },
     role: { type: Number, required: true },
     phone: { type: String, required: true },
+    peerId: { type: String, required: true },
     dob: { type: Date, required: true },
     email: { type: String, required: true },
     invitedRooms: [{ type: SchemaTypes.ObjectId, ref: 'room' }]

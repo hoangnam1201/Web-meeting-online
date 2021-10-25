@@ -1,9 +1,14 @@
-import express from "express";
+import { Application } from "express";
+import { Server } from "socket.io";
 
-declare global {
-  namespace Express {
-    interface Request {
-      userData?: Record<string, any>
-    }
+export interface MyApplication extends Application {
+  io?: any
+}
+
+declare module "express" {
+  export interface Request {
+    userData?: Record<string, any>
+    app: MyApplication
   }
+
 }

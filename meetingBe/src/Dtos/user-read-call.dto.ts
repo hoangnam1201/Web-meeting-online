@@ -11,14 +11,11 @@ export class UserReadCallDto {
         userRead._id = user._id.toString();
         userRead.username = user.username;
         userRead.name = user.name;
+        userRead.peerId = user.peerId;
         return userRead;
     }
 
     static fromArrayUser(users: User[]): UserReadCallDto[] {
-        let userReads: UserReadCallDto[] = [];
-        users.forEach(user => {
-            userReads = [...userReads, this.fromUser(user)];
-        })
-        return userReads;
+        return users.map(user => this.fromUser(user))
     }
 }

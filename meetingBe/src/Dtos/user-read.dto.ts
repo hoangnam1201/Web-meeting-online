@@ -8,7 +8,6 @@ export class UserReadDto {
     phone: string;
     dob: Date;
     email: string;
-    peerId: string;
     createdAt: Date;
 
     static fromUser(user: User): UserReadDto {

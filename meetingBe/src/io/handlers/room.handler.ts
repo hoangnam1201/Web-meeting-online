@@ -8,47 +8,44 @@ import { UserReadDto } from "../../Dtos/user-read.dto";
 import messageModel, { Message } from "../../models/message.model";
 import roomModel, { Room } from "../../models/room.model";
 import tableModel, { Table } from "../../models/table.model";
-import { User } from "../../models/user.model";
+import userModel, { User } from "../../models/user.model";
 
-export default (io: any) => {
+export default (ioRoom: any, io: any) => {
 
-    const joinRoom = function (roomId: string, peerId: string) {
+    const joinRoom = async function (roomId: string, peerId: string) {
         const socket = this;
         const userId = socket.data.userData.userId;
+        try {
+            const check = await roomModel.exists({ $or: [{ _id: roomId, members: userId }, { _id: roomId, owner: userId }] })
+            if (check) {
+                socket.join(roomId);
+                socket.data.roomId = roomId;
+                await userModel.updateOne({ _id: userId }, { peerId });
 
-        roomModel.findOne({ $or: [{ _id: roomId, members: userId }, { _id: roomId, owner: userId }] }).then((result: Room) => {
-            if (!result) {
+                const room = await roomModel.findOneAndUpdate({ _id: roomId }, { $push: { joiners: userId } }, { timestamps: true, new: true }).populate('joiners')
+                if (!room) return socket.emit('error:bad-request', 'not found room');
+
+                socket.emit('room:joined', RoomReadDetailDto.fromRoom(room));
+                ioRoom.to(roomId).emit('room:user-joined', UserReadDto.fromArrayUser(room.joiners as User[]));
+
+                const tables = await tableModel.find({ room: room._id }).populate('users');
+                socket.emit('room:tables', TableDetailDto.fromArray(tables));
+
+                const messages = await messageModel.find({ room: new mongoose.Types.ObjectId(roomId) as any })
+                    .sort({ createdAt: -1 }).skip(0).limit(20);
+                socket.emit('room:messages', messages)
+
+            } else {
                 socket.emit('room:join-err', 'You are not a class member, Please wait for the room owner to accept');
-                roomModel.findOneAndUpdate({ _id: roomId, requests: { $ne: userId } }, { $push: { requests: userId } }, { timestamps: true, new: true }).exec((err: any, room: Room) => {
-                    console.log(err)
-                    if (err) return socket.emit('room:join-err', 'error to join room');
-                    if (!room) return socket.emit('error:bad-request', 'not found room');
-                    io.to(roomId).emit('room:user-request', room.requests);
-                })
-                return;
+                const room = roomModel.findOneAndUpdate({ _id: roomId, requests: { $ne: userId } }, { $push: { requests: userId } }, { timestamps: true, new: true });
+                if (!room) return socket.emit('error:bad-request', 'not found room');
+                ioRoom.to(roomId).emit('room:user-request', room.requests);
             }
 
-            socket.join(roomId);
-            socket.data.roomId = roomId;
-            roomModel.findOneAndUpdate({ _id: roomId }, { $push: { joiners: userId } }, { timestamps: true, new: true }).populate('joiners').exec((err: any, room: Room) => {
-                console.log(err)
-                if (err) return socket.emit('room:join-err', 'error to join room');
-                if (!room) return socket.emit('error:bad-request', 'not found room');
-                io.to(roomId).emit('room:user-joined', UserReadDto.fromArrayUser(room.joiners as User[]));
-                socket.emit('room:joined', RoomReadDetailDto.fromRoom(room));
-                tableModel.find({ room: room._id }, (errTable: any, tables: Table[]) => {
-                    if (errTable) return socket.emit('room:tables-err', { err: 'error to join room' });
-                    socket.emit('room:tables', TableDetailDto.fromArray(tables));
-                })
-                messageModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }, (errMessage, messages) => {
-                    if (errMessage) socket.emit('room:message-err', { err: 'error to get message' })
-                    console.log(messages)
-                    socket.emit('room:message', messages)
-                })
-            });
-        }).catch((err: any) => {
-            if (err) socket.emit('room:join-err', { err: 'error to join room' });
-        })
+        } catch (err) {
+            console.log(err);
+            socket.emit('room:err', { err });
+        }
 
     }
 
@@ -59,7 +56,7 @@ export default (io: any) => {
         roomModel.findOneAndUpdate({ _id: roomId }, { $pull: { joiners: userId } }, { timestamps: true, new: true }).populate('joiners').exec((err: any, room: Room) => {
             if (err) return;
             if (!room) return socket.emit('room:bad-request', 'not found room');
-            io.to(roomId).emit('room:user-joined', room.joiners);
+            ioRoom.to(roomId).emit('room:user-joined', room.joiners);
         });
     }
 
@@ -73,10 +70,10 @@ export default (io: any) => {
             room: roomId,
         };
         try {
-            let message = await messageModel.create(newMessage);
-            message = await messageModel.findById(message._id).populate('sender');
+            const message = await messageModel.create(newMessage);
+            const messageRead = await messageModel.findById(message._id).populate('sender');
             socket.emit('room:send-message-status', { message: 'success' });
-            io.to(roomId).emit('room:message', [message])
+            ioRoom.to(roomId).emit('room:message', messageRead)
         } catch (err: any) {
             return socket.emit('room:send-message-status', { err: 'error to send message' });
         }
