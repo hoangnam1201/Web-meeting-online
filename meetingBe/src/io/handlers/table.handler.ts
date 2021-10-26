@@ -17,12 +17,11 @@ export default (ioTable: any, io: any) => {
                 socket.emit('table:join-err', 'the table is full');
                 return
             }
-            const user = await userModel.findById(userId);
-
             const tableIdTemp = socket.data.tableId;
             if (tableIdTemp) {
                 socket.leave(tableIdTemp);
-                ioTable.to(tableIdTemp).emit('table:user-leave', UserReadCallDto.fromUser(user as User));
+                const table = await tableModel.findByIdAndUpdate(tableIdTemp, { $pull: { users: userId } },{new: true}).populate('users');
+                ioTable.to(tableIdTemp).emit('table:user-leave', UserReadCallDto.fromArrayUser(table.users as User[]));
             }
 
             await tableModel.updateMany({ room: roomId }, { $pull: { users: userId } });
@@ -30,8 +29,9 @@ export default (ioTable: any, io: any) => {
             const tables = await tableModel.find({ room: roomId }).populate('users');
             io.of('/socket/rooms').to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
 
-            ioTable.to(tableId).emit('table:user-joined', UserReadCallDto.fromUser(user as User));
+            const users = tables.find((tb: Table) => tb._id.toString() === tableId).users;
             socket.join(tableId);
+            ioTable.to(tableId).emit('table:user-joined', UserReadCallDto.fromArrayUser(users as User[]));
             socket.data.tableId = tableId;
             socket.emit('table:join-success', tableId);
         } catch (err) {
@@ -63,6 +63,9 @@ export default (ioTable: any, io: any) => {
             await tableModel.updateOne({ _id: tableId }, { $pull: { users: userId } });
             const tables = await tableModel.find({ room: roomId }).populate('users');
             io.of('/socket/rooms').to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
+
+            const table = await tableModel.findById(tableId).populate('users');
+            ioTable.to(tableId).emit('table:user-leave', UserReadCallDto.fromArrayUser(table.users as User[]));
         } catch (err) {
             console.log(err)
             socket.emit('table:err', err)
