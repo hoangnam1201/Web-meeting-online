@@ -8,8 +8,8 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
-import Peer from "peerjs";
 import { actSocketConnectRoom } from "./modules/action";
+import axios from "axios";
 const useStyles = makeStyles({
   root: {
     display: "flex",
@@ -56,39 +56,34 @@ const useStyles = makeStyles({
     justifyContent: "center",
     margin: "30px",
   },
+  titleRoom: {
+    fontSize: "large",
+    fontWeight: "bold",
+    marginBottom: "15px",
+    textTransform: "uppercase",
+  },
 });
 const CheckMedia = (props) => {
+  const { setCheckMedia, roomId, openMedia, peer } = props;
   const classes = useStyles();
   const accessToken = localStorage
     ? JSON.parse(localStorage.getItem("user"))
     : "";
-  const [peerId, setPeerId] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [playAudio, setPlayAudio] = useState(false);
   const videoRef = useRef(null);
   const [audioVolume, setAudioVolume] = useState(0);
   const [streamMedia, setStreamMedia] = useState(null);
   const [streamMediaAudio, setStreamMediaAudio] = useState(null);
-  const { setCheckMedia, roomId } = props;
+  const [infoRoom, setInfoRoom] = useState([]);
   const WIDTH = 400;
   const HEIGHT = 400;
   const dispatch = useDispatch();
   const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
-  let peer;
+
   useEffect(() => {
-    peer = new Peer(undefined, {
-      host: "localhost",
-      path: "/peerjs/meeting",
-      port: 3002,
-      debug: 3,
-    });
-
-    peer.on("open", (id) => {
-      setPeerId(id);
-    });
-
-    connectHandler();
-  }, []);
+    if (peer) connectHandler();
+  }, [peer]);
 
   useEffect(() => {
     if (socketRoomReducer.isConnect) {
@@ -121,7 +116,8 @@ const CheckMedia = (props) => {
   };
 
   const joinRoom = () => {
-    socketRoomReducer.socket.emit("room:join", roomId, peerId);
+    if (!peer) return;
+    socketRoomReducer.socket.emit("room:join", roomId, peer.id);
     setCheckMedia(true);
     console.log("join room");
   };
@@ -138,6 +134,7 @@ const CheckMedia = (props) => {
         function (stream) {
           //Video
           setStreamMedia(stream);
+          openMedia(stream);
           var video = document.querySelector("video");
           video.srcObject = stream;
           video.onloadedmetadata = function (e) {
@@ -215,6 +212,24 @@ const CheckMedia = (props) => {
     var track = streamMediaAudio.getTracks()[0];
     track.stop();
   };
+  const getRoomById = async (roomId) => {
+    try {
+      const fetch = {
+        url: `http://localhost:3002/api/room/${roomId}`,
+        method: "get",
+        headers: {
+          Authorization: `token ${accessToken.accessToken}`,
+        },
+      };
+      const res = await axios(fetch);
+      setInfoRoom(res?.data?.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getRoomById(roomId);
+  }, [roomId]);
   return (
     <div className={classes.root}>
       <div className={classes.mediaBox}>
@@ -263,6 +278,10 @@ const CheckMedia = (props) => {
         </div>
       </div>
       <div className={classes.btnBox}>
+        <div>
+          <h5 className={classes.titleRoom}>{infoRoom?.name}</h5>
+          <h5>{infoRoom?.description}</h5>
+        </div>
         <div className={classes.btnMedia}>
           <div>
             {playing ? (

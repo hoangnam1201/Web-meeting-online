@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState } from "react";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import { IconButton } from "@mui/material";
@@ -16,10 +16,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
-import TextField from "@material-ui/core/TextField";
-import SendIcon from "@mui/icons-material/Send";
-import { useSelector } from "react-redux";
 import { Avatar } from "@material-ui/core";
+import ContentChat from "../ContentChat";
 const useStyles = makeStyles({
   root: {
     background: "white",
@@ -30,6 +28,7 @@ const useStyles = makeStyles({
     alignItems: "center",
     border: "1px solid black",
     padding: "10px 10px",
+    borderRadius: "10px",
   },
   lobbyBox: {
     width: "300px",
@@ -40,6 +39,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     background: "#000044",
     color: "white",
+    zIndex: "999",
   },
   lobbyUser: {
     border: "none",
@@ -49,92 +49,46 @@ const useStyles = makeStyles({
     marginLeft: "10px",
     fontSize: "15px",
   },
+  videoUser: {
+    position: "absolute",
+    bottom: "400px",
+    left: "100px",
+    border: "1px solid black",
+  },
   rootChat: {
     bottom: "80px",
     left: "450px",
     position: "absolute",
     background: "white",
     width: "400px",
-    height: "500px",
+    height: "550px",
     border: "2px solid #ddd",
     overflow: "hidden",
   },
   titleChat: {
     marginTop: "10px",
     fontWeight: "bold",
+    textTransform: "uppercase",
     justifyContent: "center",
     flex: "10%",
   },
   contentChat: {
     border: "1px solid #ddd",
-    width: "400px",
-    height: "410px",
+    width: "420px",
+    height: "510px",
     borderRadius: "4px",
     overflow: "hidden",
   },
-  actionChat: {
-    display: "flex",
-  },
-  messages: {
-    height: "400px",
-    padding: "15px 10px",
-    overflowY: "auto",
-  },
-  msg: {
-    border: "1px solid #ddd",
-    padding: "7px 15px",
-    borderRadius: "20px",
-    fontSize: "13px",
-    background: "#dfe6e9",
-    marginBottom: "20px",
-    width: "80%",
-    float: "left",
-  },
-  msgSender: {
-    border: "1px solid #ddd",
-    padding: "7px 15px",
-    borderRadius: "20px",
-    fontSize: "13px",
-    background: "#00cec9",
-    marginBottom: "20px",
-    width: "80%",
-    float: "right",
-  },
-  screenShare: {
-    position: "absolute",
-    width: "700px",
-    height: "400px",
-    border: "1px solid black",
-    background: "white",
-    bottom: "100px",
-    zIndex: "999",
-  },
 });
 const ToolBar = (props) => {
-  const { member } = props;
+  const { member, tableMessages, socketTable } = props;
   const classes = useStyles();
-  const loginInfo = localStorage
-    ? JSON.parse(localStorage.getItem("loginInfo"))
-    : "";
   const [open, setOpen] = useState(false);
   const [mic, setMic] = useState(true);
   const [camera, setCamera] = useState(true);
   const [openLobby, setOpenLobby] = useState(false);
   const [openChat, setOpenChat] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
-  const screenRef = useRef();
-  console.log(member);
-  const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
-  const messageEl = useRef(null);
-  useEffect(() => {
-    if (messageEl) {
-      messageEl?.current?.addEventListener("DOMNodeInserted", (event) => {
-        const { currentTarget: target } = event;
-        target.scrollTo({ top: target.scrollHeight, behavior: "smooth" });
-      });
-    }
-  }, []);
+
   const handleClickOpenDialog = () => {
     setOpen(true);
   };
@@ -151,33 +105,7 @@ const ToolBar = (props) => {
     }
     setOpenLobby(open);
   };
-  useEffect(() => {
-    if (socketRoomReducer.isConnect) {
-      const socket = socketRoomReducer.socket;
-      socket.on("room:message", (data) => {
-        setMessages((perMessage) => {
-          const newMessage = [...perMessage, ...data];
-          return newMessage;
-        });
-      });
-    }
-    return () => {
-      if (socketRoomReducer.isConnect) {
-        const socketRoom = socketRoomReducer.socket;
-        socketRoom.off("room:message");
-      }
-    };
-  }, [socketRoomReducer]);
-  const sendMessage = () => {
-    if (socketRoomReducer.isConnect) {
-      const socket = socketRoomReducer.socket;
-      socket.emit("room:send-message", message);
-    }
-    setMessage("");
-  };
-  const handleEnterKey = (e) => {
-    if (e.key === "Enter") sendMessage(e);
-  };
+
   const popupChat = () => {
     return (
       <div className={classes.rootChat}>
@@ -185,89 +113,38 @@ const ToolBar = (props) => {
           <h5>Tin nhắn</h5>
         </div>
         <div className={classes.contentChat}>
-          <div className={classes.messages} ref={messageEl}>
-            {messages?.map((message, index) => (
-              <div
-                key={index}
-                className={
-                  message?.sender === loginInfo?._id
-                    ? `${classes.msgSender}`
-                    : `${classes.msg}`
-                }
-              >
-                {message?.message}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className={classes.actionChat}>
-          <TextField
-            onKeyDown={handleEnterKey}
-            variant="outlined"
-            margin="dense"
-            value={message}
-            fullWidth
-            label="Nhập tin nhắn..."
-            onChange={(e) => setMessage(e.target.value)}
+          <ContentChat
+            tableMessages={tableMessages}
+            socketTable={socketTable}
           />
-          <IconButton
-            onKeyDown={handleEnterKey}
-            onClick={sendMessage}
-            variant="contained"
-            color="primary"
-          >
-            <SendIcon fontSize="large" />
-          </IconButton>
         </div>
       </div>
     );
   };
-  const startShareScreen = () => {
-    navigator.mediaDevices.getDisplayMedia(
-      { video: { cursor: "always" }, audio: { restrictOwnAudio: false } },
-      function (stream) {
-        //Video
-        // setStreamMedia(stream);
-        const video = document.querySelector("video");
-        video.srcObject = stream.getVideoTracks()[0];
-        video.play();
-        // video.onloadedmetadata = function (e) {
-        //   video.play();
-        // };
-      },
-      function (err) {
-        console.log("The following error occurred: " + err.name);
-      }
-    );
-  };
+
   return (
     <>
       {openChat ? popupChat() : null}
-      {/* <video
-        playsinline
-        muted
-        className={`video ${classes.screenShare}`}
-        autoPlay
-      ></video> */}
+
       <div className={classes.root}>
         <IconButton onClick={handleClickOpenDialog}>
           <RecordVoiceOverIcon fontSize="large" />
         </IconButton>
         {mic ? (
-          <IconButton onClick={() => setMic(false)}>
+          <IconButton>
             <MicIcon fontSize="large" />
           </IconButton>
         ) : (
-          <IconButton onClick={() => setMic(true)}>
+          <IconButton>
             <MicOffIcon fontSize="large" />
           </IconButton>
         )}
         {camera ? (
-          <IconButton onClick={() => setCamera(false)}>
+          <IconButton>
             <PhotoCameraFrontIcon fontSize="large" />
           </IconButton>
         ) : (
-          <IconButton onClick={() => setCamera(true)}>
+          <IconButton>
             <VideocamOffIcon fontSize="large" />
           </IconButton>
         )}
@@ -284,7 +161,7 @@ const ToolBar = (props) => {
             <ChatIcon fontSize="large" />
           </IconButton>
         )}
-        <IconButton onClick={startShareScreen}>
+        <IconButton>
           <ScreenShareIcon fontSize="large" />
         </IconButton>
         <IconButton onClick={toggleDrawer(true)}>

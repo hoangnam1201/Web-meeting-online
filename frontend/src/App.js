@@ -1,7 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { routeAuth, routeHome, routeAdmin } from "./routes";
-import { useDispatch } from "react-redux";
 import Error from "./components/Error";
 import Home from "./components/HomePage/index";
 import Auth from "./components/Auth/index";
@@ -35,22 +34,6 @@ const showLayoutAuth = (routes) => {
   }
 };
 
-const showLayoutAdmin = (routes) => {
-  if (routes && routes.length > 0) {
-    return routes.map((item, index) => {
-      return (
-        // <Admin
-        //   key={index}
-        //   exact={item.exact}
-        //   path={item.path}
-        //   component={item.component}
-        // />
-        <h2>Null</h2>
-      );
-    });
-  }
-};
-
 function App() {
   // // dispatch lên redux
   // if (localStorage.getItem("user")) {
@@ -64,8 +47,6 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          {showLayoutAdmin(routeAdmin)}
-
           {showLayoutHome(routeHome)}
 
           {showLayoutAuth(routeAuth)}

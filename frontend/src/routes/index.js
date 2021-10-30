@@ -32,7 +32,6 @@ export const routeHome = [
     component: CheckMedia,
   },
 ];
-export const routeAdmin = [];
 export const routeAuth = [
   {
     exact: false,

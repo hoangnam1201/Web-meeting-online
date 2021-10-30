@@ -78,9 +78,15 @@ const Header = () => {
         <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
-              <Link to="/" className="navbar-brand">
-                <img width="200" height="200" src={imgLogo} alt="" />
-              </Link>
+              {loginInfo ? (
+                <Link to="/my-event" className="navbar-brand">
+                  <img width="200" height="200" src={imgLogo} alt="" />
+                </Link>
+              ) : (
+                <Link to="/" className="navbar-brand">
+                  <img width="200" height="200" src={imgLogo} alt="" />
+                </Link>
+              )}
               <div
                 className="collapse navbar-collapse mr-10"
                 id="navbarSuportedContent"

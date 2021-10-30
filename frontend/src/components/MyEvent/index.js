@@ -286,7 +286,7 @@ const MyEvent = (props) => {
           <div>
             <Grid container spacing={4} className={classes.courseListContainer}>
               {invitedRoom ? (
-                invitedRoom.map((room, index) => (
+                invitedRoom?.map((room, index) => (
                   <Grid item lg={3} md={4} sm={6} xs={12} key={index}>
                     <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
                       <Link to={`/room/id/${room._id}`}>

@@ -210,10 +210,10 @@ function Login(props) {
       })
       .catch((errors) => {
         setLoading(false);
-        if (errors.msg) {
-          setLoginError(errors.msg);
+        if (errors) {
+          setLoginError(errors.message);
         } else {
-          setLoginError(errors.response.msg);
+          setLoginError(errors.response.message);
         }
       });
   };

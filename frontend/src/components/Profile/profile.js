@@ -68,7 +68,6 @@ const schema = yup.object().shape({
     .string()
     .required("Số điện thoại đang trống !")
     .matches(phoneRegExp, "Số điện thoại không đúng định dạng !"),
-  email: yup.string().required("Email đang trống"),
 });
 
 export default function Profiles() {
@@ -113,7 +112,6 @@ export default function Profiles() {
       name: info.name,
       dob: date,
       phone: info.phone,
-      // email: info.email,
     };
     setLoading(true);
     axios
@@ -244,7 +242,7 @@ export default function Profiles() {
               id="date-picker-dialog-register"
               label="Ngày tháng năm sinh"
               format="MM/dd/yyyy"
-              name="ngaySinh"
+              name="dob"
               value={selectedDate}
               onChange={handleDateChange}
               className={classes.datePicker}
