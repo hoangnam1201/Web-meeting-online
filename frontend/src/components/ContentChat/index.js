@@ -171,7 +171,7 @@ const ContentChat = (props) => {
                 ref={messageEl}
                 key={index}
                 className={
-                  message?.sender == loginInfo?._id
+                  message.sender._id == loginInfo?._id
                     ? `${classes.msgSender}`
                     : `${classes.msg}`
                 }
