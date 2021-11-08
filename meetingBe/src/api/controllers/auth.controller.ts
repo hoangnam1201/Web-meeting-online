@@ -13,7 +13,7 @@ export default class AuthController {
         const username = req.body.username;
         const password = req.body.password;
         try {
-            const user = await UserModel.findOne({ username }).exec()
+            const user = await UserModel.findOne({ username })
             if (!user) return res.status(400).json({
                 status: 400, errors: [
                     {

@@ -1,5 +1,5 @@
 import express, { json, urlencoded, Express, Response, Request } from 'express';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import { createServer } from 'http';
 import dotenv from 'dotenv';

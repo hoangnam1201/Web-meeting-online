@@ -11,6 +11,7 @@ export default (io: any) => {
     const connectionHandler = (socket: Socket) => {
         socket.on('table:join', _tableHandler.joinTable);
         socket.on('table:send-message', _tableHandler.sendMessage);
+        socket.on('table:change-media', _tableHandler.changeMedia);
         socket.on('disconnecting', _tableHandler.disconnecting);
     }
 

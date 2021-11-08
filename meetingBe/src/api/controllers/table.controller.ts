@@ -16,7 +16,7 @@ export default class TablerController {
     createTable(req: Request, res: Response) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ status: 400, ...errors });
+            return res.status(400).json({ status: 400, errors: errors.array() });
         }
         const tableCreate = TableCreateDto.fromTable(req.body);
         tableModel.create(tableCreate, (err: Error) => {

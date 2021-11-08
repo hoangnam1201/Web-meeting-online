@@ -19,8 +19,8 @@ POST http://localhost:3002/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lamtvu258",
-    "password": "Namhoang123"
+    "username": "lamtvu01",
+    "password": "123123123"
 }
 
 //get person imformation
@@ -59,10 +59,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 ###
 POST http://localhost:3002/api/room HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTQ4NzlkNmM4Y2VlZjYxOThlNWFiMGIiLCJpYXQiOjE2MzMwOTM2MTYsImV4cCI6MTYzMzE4MDAxNn0.ZrmOgxIwdgASgVR_TR7SgoDljjhzTyhVnDSVFZURRy8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzYzMTI1MTIsImV4cCI6MTYzNjM5ODkxMn0.gTGaJwU9lI9-uWCU8opud77iksJKYaWk46B11uUcy1w
 
 {
-    "name":"room 01",
+    "name":"room 100",
     "description": "ta",
     "roomType": 1,
     "startDate": 123123123123,
@@ -159,14 +159,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
     
 //-----------------create table 
 ###
-POST http://localhost:3001/api/table HTTP/1.1
+POST http://localhost:3002/api/table HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzYzMTI1NTIsImV4cCI6MTYzNjM5ODk1Mn0.VFub7ca-YwzRya_cikwDsUyT2jTK36fmQxOc30ZomXM
 
 {
-    "room": "6151d435c93ac0467e79395b",
+    "room": "618825d4018803cfeb8e8601",
     "name": "string",
-    "numberOfSeat": "a"
+    "numberOfSeat": "4"
 }
 
 //-----------------delete table 

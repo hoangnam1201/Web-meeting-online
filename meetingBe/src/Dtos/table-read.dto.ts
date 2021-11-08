@@ -1,11 +1,12 @@
 import { Table } from "../models/table.model";
 import { User } from "../models/user.model";
 import { UserReadDto } from "./user-read.dto";
+import { UserTableReadDto } from "./user-table-read.dto";
 
 export class TableReadDto {
     _id: any;
     name: string;
-    users: UserReadDto[];
+    users: UserTableReadDto[];
     numberOfSeat: number
 
     static fromTable(table: Table): TableReadDto {
@@ -13,7 +14,7 @@ export class TableReadDto {
         tableDetail._id = table._id;
         tableDetail.name = table.name;
         tableDetail.numberOfSeat = table.numberOfSeat;
-        tableDetail.users = UserReadDto.fromArrayUser(table.users as User[]);
+        tableDetail.users = UserTableReadDto.fromArray(table.users as User[]);
         return tableDetail;
     }
 

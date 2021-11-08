@@ -14,7 +14,7 @@ export default class RoomController {
     createRoom = async (req: Request, res: Response) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ status: 400, ...errors });
+            return res.status(400).json({ status: 400, errors: errors.array() });
         }
 
         const userId = req.userData.userId;
@@ -50,6 +50,7 @@ export default class RoomController {
         const roomChange = RoomCreateDto.fromRoom(room);
         try {
             await roomModel.updateOne({ _id: roomId }, { ...roomChange });
+            return res.status(200).json({ status: 200, data: null });
         } catch (err) {
             return res.status(500).json({ status: 500, errors: [{ msg: err }] });
         }

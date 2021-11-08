@@ -8,6 +8,14 @@ const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
 export default class AuthMiddlesware {
     static verifyToken = async (req: Request, res: Response, next: NextFunction) => {
+        if (!req.headers.authorization) {
+            return res.status(401).json({
+                errors: [{
+                    msg: 'Unauthorizated',
+                }], status: 401
+            });
+        }
+
         const token = req.headers.authorization.split(' ')[1];
         try {
             const decoded = await jwtService.verifyToken(token, accessTokenSecret);

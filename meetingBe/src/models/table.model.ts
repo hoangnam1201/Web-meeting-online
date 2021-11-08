@@ -12,7 +12,12 @@ export class Table {
 const tableSchema = new Schema<Table>({
     room: { type: SchemaTypes.ObjectId, ref: 'room' },
     name: String,
-    users: [{ type: SchemaTypes.ObjectId, ref: 'user' }],
+    users: [{
+        user: { type: SchemaTypes.ObjectId, ref: 'user' },
+        video: Boolean,
+        audio: Boolean,
+        peerId: String,
+    }],
     numberOfSeat: Number
 })
 

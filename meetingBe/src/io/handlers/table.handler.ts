@@ -1,16 +1,15 @@
 import { Socket } from "socket.io";
 import { TableReadDto } from "../../Dtos/table-read.dto";
-import { UserReadCallDto } from "../../Dtos/user-read-call.dto";
 import { UserReadDto } from "../../Dtos/user-read.dto";
+import { UserTableReadDto } from "../../Dtos/user-table-read.dto";
 import tableModel, { Table } from "../../models/table.model";
 import userModel, { User } from "../../models/user.model";
 
 export default (ioTable: any, io: any) => {
-    const joinTable = async function (tableId: string) {
+    const joinTable = async function (tableId: string, mediaOption: { audio: boolean, video: boolean }, peerId: string) {
         const socket: Socket = this;
         const userId = socket.data.userData.userId;
         const roomId = socket.handshake.auth.roomId;
-
         try {
             const table: Table = await tableModel.findById(tableId);
             if (table.numberOfSeat <= table.users.length) {
@@ -20,18 +19,19 @@ export default (ioTable: any, io: any) => {
             const tableIdTemp = socket.data.tableId;
             if (tableIdTemp) {
                 socket.leave(tableIdTemp);
-                const table = await tableModel.findByIdAndUpdate(tableIdTemp, { $pull: { users: userId } },{new: true}).populate('users');
-                ioTable.to(tableIdTemp).emit('table:user-leave', UserReadCallDto.fromArrayUser(table.users as User[]));
+                const table = await tableModel.findByIdAndUpdate(tableIdTemp, { $pull: { users: { user: userId } } }, { new: true }).populate('users.user');
+                ioTable.to(tableIdTemp).emit('table:user-leave', UserTableReadDto.fromArray(table.users));
             }
 
-            await tableModel.updateMany({ room: roomId }, { $pull: { users: userId } });
-            await tableModel.updateOne({ _id: tableId }, { $push: { users: userId } });
-            const tables = await tableModel.find({ room: roomId }).populate('users');
+            await tableModel.updateMany({ room: roomId }, { $pull: { users: { user: userId } } });
+            const element = { user: userId, ...mediaOption, peerId }
+            await tableModel.updateOne({ _id: tableId }, { $push: { users: element } });
+            const tables = await tableModel.find({ room: roomId }).populate('users.user');
             io.of('/socket/rooms').to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
 
-            const users = tables.find((tb: Table) => tb._id.toString() === tableId).users;
             socket.join(tableId);
-            ioTable.to(tableId).emit('table:user-joined', UserReadCallDto.fromArrayUser(users as User[]));
+            const users = tables.find((tb: Table) => tb._id.toString() === tableId).users;
+            ioTable.to(tableId).emit('table:user-joined', UserTableReadDto.fromArray(users));
             socket.data.tableId = tableId;
             socket.emit('table:join-success', tableId);
         } catch (err) {
@@ -60,14 +60,34 @@ export default (ioTable: any, io: any) => {
         const userId = socket.data.userData.userId;
         const roomId = socket.handshake.auth.roomId;
         try {
-            await tableModel.updateOne({ _id: tableId }, { $pull: { users: userId } });
-            const tables = await tableModel.find({ room: roomId }).populate('users');
+            await tableModel.updateOne({ _id: tableId }, { $pull: { users: { user: userId } } });
+            const tables = await tableModel.find({ room: roomId }).populate('users.user');
             io.of('/socket/rooms').to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
 
-            const table = await tableModel.findById(tableId).populate('users');
-            ioTable.to(tableId).emit('table:user-leave', UserReadCallDto.fromArrayUser(table.users as User[]));
+            const table = await tableModel.findById(tableId).populate('users.user');
+            if (table)
+                ioTable.to(tableId).emit('table:user-leave', UserTableReadDto.fromArray(table.users));
         } catch (err) {
-            console.log(err)
+            socket.emit('table:err', err)
+        }
+    }
+
+    const changeMedia = async function (mediaOption: { audio: boolean, video: boolean }) {
+        const socket: Socket = this;
+        const tableId = socket.data.tableId;
+        const userId = socket.data.userData.userId;
+
+        try {
+            await tableModel.updateOne({ _id: tableId, 'users.user': userId }, {
+                $set: {
+                    'users.$.video': mediaOption.video,
+                    'users.$.audio': mediaOption.audio,
+                }
+            })
+            const table = await tableModel.findById(tableId).populate('users.user');
+            if (table) ioTable.to(tableId).emit('table:change-media', UserTableReadDto.fromArray(table.users));
+        } catch (err) {
+            console.log(err);
             socket.emit('table:err', err)
         }
     }
@@ -75,6 +95,7 @@ export default (ioTable: any, io: any) => {
     return {
         joinTable,
         sendMessage,
-        disconnecting
+        disconnecting,
+        changeMedia
     }
 }
