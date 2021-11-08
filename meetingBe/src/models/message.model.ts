@@ -1,11 +1,14 @@
 import { model, ObjectId, Schema, SchemaTypes } from 'mongoose';
+import { Room } from './room.model';
+import { User } from './user.model';
 
 export class Message {
-    room: ObjectId;
-    sender: ObjectId;
+    _id: any;
+    room: ObjectId | Room;
+    sender: ObjectId | User;
     message: string;
-    like: { option: number, user: ObjectId };
-    createAt: Date
+    like: [{ option: number, user: ObjectId | User }];
+    createdAt: Date
 }
 
 const messageSchema = new Schema<Message>({

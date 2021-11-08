@@ -15,6 +15,7 @@ export default (io: any) => {
         socket.on('disconnecting', _roomHandler.leaveRoom);
         socket.on('room:join', _roomHandler.joinRoom);
         socket.on('room:send-message', _roomHandler.sendMessage);
+        socket.on('room:get-messages', _roomHandler.getMessages);
     }
 
     roomNamespace.on("connection", connection);

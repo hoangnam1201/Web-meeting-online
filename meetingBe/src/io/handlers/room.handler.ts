@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Socket } from "socket.io";
+import { MessageReadDto } from "../../Dtos/message-read.dto";
 import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
 import { RoomReadDto } from "../../Dtos/room-read.dto";
 import { TableDetailDto } from "../../Dtos/table-detail.dto";
@@ -31,9 +32,9 @@ export default (ioRoom: any, io: any) => {
                 const tables = await tableModel.find({ room: room._id }).populate('users');
                 socket.emit('room:tables', TableDetailDto.fromArray(tables));
 
-                const messages = await messageModel.find({ room: new mongoose.Types.ObjectId(roomId) as any })
+                const messages = await messageModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }).populate('sender')
                     .sort({ createdAt: -1 }).skip(0).limit(20);
-                socket.emit('room:messages', messages)
+                socket.emit('room:messages', MessageReadDto.fromArray(messages));
 
             } else {
                 socket.emit('room:join-err', 'You are not a class member, Please wait for the room owner to accept');
@@ -79,10 +80,19 @@ export default (ioRoom: any, io: any) => {
         }
     }
 
+    const getMessages = async function (pageIndex = 0) {
+        const socket = this;
+        const roomId = socket.data.roomId;
+        const messages = await messageModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }).populate('sender')
+            .sort({ createdAt: -1 }).skip(pageIndex*20).limit(20);
+        socket.emit('room:messages', MessageReadDto.fromArray(messages));
+    }
+
     return {
         joinRoom,
         leaveRoom,
         sendMessage,
+        getMessages
     }
 
 }
