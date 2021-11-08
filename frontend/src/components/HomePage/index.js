@@ -4,17 +4,16 @@ import Footer from "./Footer";
 import Header from "./Header";
 import axios from "axios";
 import { useEffect } from "react";
+import { useCookies } from "react-cookie";
 const LayoutHome = (props) => {
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  const [cookies] = useCookies(['u_auth'])
   const getInfoUser = async () => {
     try {
       const fetch = {
         url: "http://localhost:3002/api/user/get-detail",
         method: "GET",
         headers: {
-          Authorization: `token ${accessToken.accessToken}`,
+          Authorization: `token ${cookies.u_auth.accessToken}`,
         },
       };
       const res = await axios(fetch);
@@ -26,11 +25,12 @@ const LayoutHome = (props) => {
   useEffect(() => {
     getInfoUser();
   }, [getInfoUser]);
+
   return (
     <>
       <Header />
       {props.children}
-      {accessToken ? "" : <Footer />}
+      <Footer />
     </>
   );
 };

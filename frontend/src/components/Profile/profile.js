@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Box, Button, Container } from "@material-ui/core";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,6 +14,8 @@ import {
 import DateFnsUtils from "@date-io/date-fns";
 import moment from "moment";
 import { Helmet } from "react-helmet";
+import { useSelector } from "react-redux";
+import { useCookies } from "react-cookie";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginBottom: "100px", padding: "0 100px" },
@@ -76,21 +78,17 @@ export default function Profiles() {
     resolver: yupResolver(schema),
   });
   const classes = useStyles();
-  const loginInfo = localStorage
-    ? JSON.parse(localStorage.getItem("loginInfo"))
-    : "";
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  const loginInfo = useSelector(state => state.userReducer?.user);
+  const [cookies] = useCookies(['u_auth']);
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date(loginInfo?.dob));
-  const [info, setInfo] = useState({
-    username: loginInfo?.username,
-    name: loginInfo?.name,
-    phone: loginInfo?.phone,
-    email: loginInfo?.email,
-  });
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [info, setInfo] = useState(null);
   const [errorNotify, setErrorNotify] = useState(null);
+
+  useEffect(() => {
+    setInfo({ ...loginInfo });
+    setSelectedDate(new Date(loginInfo?.dob));
+  }, [loginInfo]);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -115,13 +113,15 @@ export default function Profiles() {
     };
     setLoading(true);
     axios
-      .put({
-        url: "http://localhost:3002/api/user/change-infor",
+      .put(
+        "http://localhost:3002/api/user/change-infor",
         data,
-        headers: {
-          Authorization: `token ${accessToken.accessToken}`,
+        {
+          headers: {
+            Authorization: `token ${cookies.u_auth.accessToken}`,
+          }
         },
-      })
+      )
       .then((res) => {
         setLoading(false);
         setErrorNotify(null);
@@ -182,7 +182,7 @@ export default function Profiles() {
             inputRef={register}
             error={!!errors.username}
             helperText={errors?.username?.message}
-            value={info.username}
+            value={info?.username}
             onChange={handleInfoChange}
           />
           <TextField
@@ -198,7 +198,7 @@ export default function Profiles() {
             inputRef={register}
             error={!!errors.name}
             helperText={errors?.name?.message}
-            value={info.name}
+            value={info?.name}
             onChange={handleInfoChange}
           />
           <TextField
@@ -214,7 +214,7 @@ export default function Profiles() {
             inputRef={register}
             error={!!errors.phone}
             helperText={errors?.phone?.message}
-            value={info.phone}
+            value={info?.phone}
             onChange={handleInfoChange}
           />
           <TextField
@@ -230,7 +230,7 @@ export default function Profiles() {
             inputRef={register}
             error={!!errors.email}
             helperText={errors?.email?.message}
-            value={info.email}
+            value={info?.email}
             onChange={handleInfoChange}
           />
           <MuiPickersUtilsProvider

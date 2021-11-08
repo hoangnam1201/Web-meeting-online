@@ -1,15 +1,15 @@
 import React from "react";
 import { Box, Container, Typography, makeStyles } from "@material-ui/core";
 // import Page from "../../components/Page";
-import errorImage from  "../../assets/undraw_page_not_found_su7k.svg";
+import errorImage from "../../assets/undraw_page_not_found_su7k.svg";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.dark,
     height: "100%",
     width: "100%",
-    position: "fixed",
-    top: "50%",
+    position: "relative",
     left: "50%",
     transform: "translate(-50%,-60%)",
   },
@@ -41,35 +41,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Error = () => {
+const Error = ({ type }) => {
   const classes = useStyles();
 
   return (
-    <Box className={classes.root} title="404">
-      <Box
-        display="flex"
-        flexDirection="column"
-        height="100%"
-        justifyContent="center"
-      >
-        <Container maxWidth="md">
-          <Typography align="center" color="primary" className={classes.title}>
-            404: The page you are looking for isn’t here
-          </Typography>
-          <Typography align="center" color="secondary" className={classes.desc}>
-            You either tried some shady route or you came here by mistake.
-            Whichever it is, try using the navigation
-          </Typography>
-          <Box textAlign="center">
-            <img
-              alt="Under development"
-              className={classes.image}
-              src={errorImage}
-            />
-          </Box>
-        </Container>
-      </Box>
-    </Box>
+    <div className="p-4">
+      <img
+        alt="Under development"
+        className={classes.image}
+        src={errorImage}
+      />
+      <div className="text-xl font-medium text-gray-500">
+        The page you are looking for isn’t here
+      </div>
+      {type === 0 && <div className='py-2 px-4 bg-gray-100 rounded-md w-40 ml-auto mr-auto shadow-lg mt-4
+      text-gray-500 hover:bg-gray-200'>
+        <Link to="/" >Go Back Home</Link>
+      </div>}
+    </div>
   );
 };
 

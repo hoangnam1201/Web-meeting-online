@@ -26,6 +26,8 @@ import { ScaleLoader } from "react-spinners";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useDispatch } from "react-redux";
 import { Helmet } from "react-helmet";
+import { useCookies } from 'react-cookie';
+import { loginAPI } from "../../../api/user.api";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -128,20 +130,17 @@ const useStyles = makeStyles((theme) => ({
 const schema = yup.object().shape({
   username: yup
     .string()
-    .required("Vui lòng nhập tài khoản !")
-    .min(5, "Tên tài khoản phải từ 5 đến 16 kí tự")
-    .max(16, "Tên tài khoản phải từ 5 đến 16 kí tự"),
+    .required("Vui lòng nhập tài khoản !"),
   password: yup
     .string()
     .required("Vui lòng nhập mật khẩu !")
-    .min(8, "Mật khẩu phải có ít nhất 8 kí tự")
-    .max(16, "Mật khẩu chỉ tối đa 18 kí tự"),
 });
 
 function Login(props) {
   const classes = useStyles();
   const history = useHistory();
   const matches = useMediaQuery("(min-height:650px)");
+  const [cookies, setCookies] = useCookies(['u_auth']);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -150,10 +149,12 @@ function Login(props) {
     username: "",
     password: "",
   });
+
   const { register, handleSubmit, errors } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
+
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -163,6 +164,7 @@ function Login(props) {
       [name]: value,
     });
   };
+
   useEffect(() => {
     if (localStorage.getItem("remember")) {
       setRemember(true);
@@ -180,11 +182,7 @@ function Login(props) {
   const onSubmit = (data) => {
     setLoading(true);
 
-    axios({
-      url: `http://localhost:3002/api/auth/login`,
-      method: "POST",
-      data,
-    })
+    loginAPI(data)
       .then((result) => {
         setLoading(false);
         setLoginError(null);
@@ -193,19 +191,16 @@ function Login(props) {
         } else {
           localStorage.removeItem("remember");
         }
-        localStorage.setItem("user", JSON.stringify(result.data));
-        // dispatch lên redux
-        // dispatch({
-        //   type: "LOGGED_IN",
-        //   payload: JSON.parse(localStorage.getItem("user")),
-        // });
+
+        setCookies('u_auth',result);
+
         Swal.fire({
           icon: "success",
           title: "Đăng nhập thành công",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 1000,
         }).then(() => {
-          history.push("/my-event");
+          history.push("/user/my-event");
         });
       })
       .catch((errors) => {
@@ -333,7 +328,7 @@ function Login(props) {
                 </Grid>
                 <Grid item>
                   <Link
-                    to="/register"
+                    to="/auth/register"
                     variant="h6"
                     className={classes.bottomLink}
                   >

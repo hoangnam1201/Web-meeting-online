@@ -53,14 +53,10 @@ const ContentChat = (props) => {
   const classes = useStyles();
   const { tableMessages, socketTable } = props;
   const [value, setValue] = useState("1");
-  console.log(socketTable);
-  const loginInfo = localStorage
-    ? JSON.parse(localStorage.getItem("loginInfo"))
-    : "";
   const [messages, setMessages] = useState([]);
-  console.log(messages);
   const [message, setMessage] = useState("");
   const messageEl = useRef(null);
+  const loginInfo = useSelector((state) => state.userReducer.user);
   const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
 
   useEffect(() => {

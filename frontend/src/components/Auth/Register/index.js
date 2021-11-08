@@ -221,7 +221,6 @@ function Register(props) {
       data,
     })
       .then((result) => {
-        console.log(result.data);
         setLoading(false);
         setregisterError(null);
 
@@ -234,7 +233,6 @@ function Register(props) {
         history.replace("/login");
       })
       .catch((error) => {
-        console.log(error.response);
         setLoading(false);
         setregisterError(error.response.data);
       });
@@ -421,7 +419,7 @@ function Register(props) {
               </Button>
               <Grid container justifyContent="flex-end">
                 <Grid item>
-                  <Link to="/login" variant="h6" className={classes.bottomLink}>
+                  <Link to="/auth/login" variant="h6" className={classes.bottomLink}>
                     Bạn đã là thành viên? Đăng nhập ngay
                   </Link>
                 </Grid>

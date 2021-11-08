@@ -120,7 +120,6 @@ const ManageDialog = (props) => {
         });
       })
       .catch((error) => {
-        console.log(error);
         setOpenDialog2(false);
       });
   };

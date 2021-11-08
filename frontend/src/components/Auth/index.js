@@ -6,9 +6,6 @@ const LayoutAuth = (props) => {
 };
 
 const Auth = (props) => {
-  //   if (localStorage.getItem("user")) {
-  //     return <Redirect to="/home" />;
-  //   }
   return (
     <LayoutAuth>
       <Route

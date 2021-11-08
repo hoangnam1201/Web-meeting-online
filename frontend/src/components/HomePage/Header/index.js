@@ -1,69 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./header.css";
 import imgLogo from "../../../assets/logomeeting.png";
-import { Avatar, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import Avatar from 'react-avatar';
 import Swal from "sweetalert2";
 import { makeStyles } from "@material-ui/core/styles";
+import { useCookies } from "react-cookie";
+import { useSelector } from "react-redux";
+import { getInfoAPI } from "../../../api/user.api";
+import { useDispatch } from "react-redux";
+import { actionRemoveUserInfo, actionSetUserInfo } from "../../../rootReducer/userInfoAction";
 
-const randomColor = () => {
-  let hex = Math.floor(Math.random() * 0xffffff);
-  let color = "#" + hex.toString(16);
-
-  return color;
-};
-const useStyles = makeStyles((theme) => ({
-  avatarMenu: {
-    display: "flex",
-    flexDirection: "column",
-    listStyle: "none",
-    padding: "0 15px",
-    "& $li:not(:first-child)": {
-      paddingTop: "15px",
-    },
-  },
-  avatarName: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  avatar: {
-    marginLeft: "50px",
-    textTransform: "uppercase",
-    backgroundColor: randomColor(),
-    cursor: "pointer",
-  },
-  avatarMenuContainer: {
-    position: "absolute",
-    top: "90%",
-    left: "80%",
-    backgroundColor: "#0e1e40",
-    zIndex: "20",
-    display: "none",
-  },
-  avatarLink: {
-    color: "white",
-    marginLeft: 0,
-    textDecoration: "none",
-  },
-  isShowAvatarMenu: {
-    display: "block",
-  },
-}));
-const Header = () => {
-  const classes = useStyles();
-  // const [showMenu, setShowMenu] = useState(false);
+//type: 0-unlogin 1-logged
+const Header = React.memo(({ type = 0, ...rest }) => {
+  const currentUser = useSelector(state => state.userReducer);
+  const dispatch = useDispatch();
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
-  // const classMenuResult = showMenu ? classes.show : "";
-  const classAvatarMenuResult = showAvatarMenu ? classes.isShowAvatarMenu : "";
-  const loginInfo = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
-  const infoUser = localStorage
-    ? JSON.parse(localStorage.getItem("loginInfo"))
-    : "";
+  const [cookies, setCookies, removeCookies] = useCookies(['u_auth']);
+
+  useEffect(() => {
+    console.count('dispath user');
+    if (type === 1 && currentUser) {
+      if (!currentUser.user) {
+        getInfoAPI().then(res => {
+          dispatch(actionSetUserInfo(res.data));
+        });
+      }
+    }
+  }, [type, currentUser])
+
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("loginInfo");
+    removeCookies('u_auth');
+    dispatch(actionRemoveUserInfo());
     Swal.fire({
       icon: "success",
       title: "Đăng xuất thành công",
@@ -72,26 +41,21 @@ const Header = () => {
       timer: 1500,
     });
   };
+
   return (
-    <>
-      <section id="header">
+    <div {...rest}>
+      <section id="header" className='shadow-lg'>
         <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
-              {loginInfo ? (
-                <Link to="/my-event" className="navbar-brand">
-                  <img width="200" height="200" src={imgLogo} alt="" />
-                </Link>
-              ) : (
-                <Link to="/" className="navbar-brand">
-                  <img width="200" height="200" src={imgLogo} alt="" />
-                </Link>
-              )}
+              <Link to="/" className="navbar-brand">
+                <img width="150" height="100" src={imgLogo} alt="" />
+              </Link>
               <div
                 className="collapse navbar-collapse mr-10"
                 id="navbarSuportedContent"
               >
-                {!loginInfo ? (
+                {type === 0 ? (
                   <ul className="navbar-nav ml-auto flex justify-center">
                     <li className="nav-item active">
                       <Link className="nav-link" to="/">
@@ -124,63 +88,53 @@ const Header = () => {
                   </ul>
                 )}
               </div>
-              {loginInfo ? (
+              {type === 1 ? (
                 <div className="collapse navbar-collapse mr-10">
-                  <Avatar
-                    className={classes.avatar}
-                    onClick={() => setShowAvatarMenu(!showAvatarMenu)}
-                  >
-                    {infoUser?.username.charAt(0)}
-                  </Avatar>
-                  <div
-                    className={
-                      classes.avatarMenuContainer + " " + classAvatarMenuResult
-                    }
-                  >
-                    <ul className={classes.avatarMenu}>
-                      <li>
-                        <Typography
-                          className={classes.avatarName}
-                          noWrap="true"
-                          variant="body2"
-                          component="span"
-                        >
-                          Tên user
-                        </Typography>
-                      </li>
-                      <li>
-                        <Link
-                          underline="none"
-                          className={classes.avatarLink}
-                          to="/profile"
-                        >
-                          Thông tin cá nhân
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          underline="none"
-                          className={classes.avatarLink}
-                          to="/"
-                          onClick={handleLogout}
-                        >
-                          Đăng xuất
-                        </Link>
-                      </li>
-                    </ul>
+                  <div className="relative">
+                    <Avatar
+                      name={currentUser?.user?.name}
+                      size="50"
+                      round={true}
+                      className='cursor-pointer'
+                      onClick={() => setShowAvatarMenu(!showAvatarMenu)} >
+                    </Avatar>
+                    {showAvatarMenu &&
+                      (<div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">
+                        <ul className='p-1'>
+                          <li className='font-bold text-gray-500 border-b-2 p-3'>
+                            {currentUser?.user?.name}
+                          </li>
+                          <li className='py-3 font-medium hover:bg-pink-100 text-gray-500'>
+                            <Link
+                              underline="none"
+                              to="/user/profile"
+                            >
+                              Thông tin cá nhân
+                            </Link>
+                          </li>
+                          <li className='py-3 font-medium hover:bg-pink-100 text-gray-500'>
+                            <Link
+                              underline="none"
+                              to="/"
+                              onClick={handleLogout}
+                            >
+                              Đăng xuất
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>)}
                   </div>
                 </div>
               ) : (
                 <div className="collapse navbar-collapse mr-10">
                   <ul className="navbar-nav ml-auto flex justify-center">
                     <li className="nav-item active">
-                      <Link className="nav-link" to="/login">
+                      <Link className="nav-link" to="/auth/login">
                         Login
                       </Link>
                     </li>
                     <li className="nav-item ">
-                      <Link className="nav-link" to="/register">
+                      <Link className="nav-link" to="/auth/register">
                         SignUp
                       </Link>
                     </li>
@@ -191,8 +145,8 @@ const Header = () => {
           </nav>
         </div>
       </section>
-    </>
+    </div>
   );
-};
+});
 
 export default Header;

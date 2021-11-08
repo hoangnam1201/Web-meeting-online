@@ -44,7 +44,7 @@ const MainPage = () => {
   const classes = useStyles();
   return (
     <>
-      <Container className={classes.root} component="div" maxWidth="lg">
+      <Container className={classes.root} component="div" maxWidth={false}>
         <h1 className={classes.title}>Thiết lập cho các nhóm hiện đại</h1>
         <Grid
           container
@@ -127,7 +127,7 @@ const MainPage = () => {
           </Grid>
         </Grid>
       </Container>
-      <Container className={classes.container2} component="div" maxWidth="lg">
+      <Container className={classes.container2} component="div" maxWidth={false}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <img width="500" height="500" src={imgMeeting} alt="meet" />

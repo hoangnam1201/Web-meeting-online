@@ -19,6 +19,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom } from "./modules/action";
+import { Cookies } from 'react-cookie';
+
 const useStyles = makeStyles({
   root: {
     padding: "40px 0",
@@ -79,9 +81,7 @@ const useStyles = makeStyles({
 });
 const MyEvent = (props) => {
   const classes = useStyles();
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  const [accessToken] = useState(new Cookies().get('u_auth'))
   const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
 
   const dispatch = useDispatch();
@@ -135,6 +135,7 @@ const MyEvent = (props) => {
     dispatch(actGetRoom());
     getInvitedRoom();
   }, []);
+
   const deleteRoom = (roomID) => {
     Swal.fire({
       icon: "question",

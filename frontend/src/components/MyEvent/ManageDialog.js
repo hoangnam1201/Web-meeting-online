@@ -22,6 +22,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { actGetRoom } from "./modules/action";
+import { useCookies } from "react-cookie";
 const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%",
@@ -83,12 +84,12 @@ const schema = yup.object().shape({
   description: yup.string().required("Vui lòng nhập mô tả !!!"),
   roomType: yup.string().required("Vui lòng nhập loại phòng!"),
 });
+
+
 const ManageDialog = (props) => {
   const classes = useStyles();
   const { openDialog, setOpenDialog, handleCloseDialog, modal } = props;
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  const [cookies] = useCookies(['u_auth']);
   const dispatch = useDispatch();
   const [startDate, setStartData] = useState(Date.now());
   const [endDate, setEndDate] = useState(Date.now());
@@ -97,6 +98,9 @@ const ManageDialog = (props) => {
     resolver: yupResolver(schema),
   });
   const [roomEvent, setRoomEvent] = useState({ ...props.roomEvent });
+
+  useEffect(() => console.log(props.roomEvent, endDate), []);
+
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -128,7 +132,7 @@ const ManageDialog = (props) => {
         endDate: endDate,
       },
       headers: {
-        Authorization: `token ${accessToken.accessToken}`,
+        Authorization: `token ${cookies.u_auth.accessToken}`,
       },
     })
       .then(() => {
@@ -143,7 +147,7 @@ const ManageDialog = (props) => {
         });
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.response);
         setOpenDialog(false);
       });
   };
@@ -159,7 +163,7 @@ const ManageDialog = (props) => {
         endDate: endDate,
       },
       headers: {
-        Authorization: `token ${accessToken.accessToken}`,
+        Authorization: `token ${cookies.u_auth.accessToken}`,
       },
     })
       .then(() => {
@@ -174,7 +178,6 @@ const ManageDialog = (props) => {
         });
       })
       .catch((error) => {
-        console.log(error);
         setOpenDialog(false);
       });
   };
@@ -245,7 +248,7 @@ const ManageDialog = (props) => {
                     label="Ngày bắt đầu"
                     format="MM/dd/yyyy"
                     name="startDate"
-                    value={startDate}
+                    value={new Date(startDate)}
                     onChange={handleDateChange}
                     className={classes.datePicker}
                   />
@@ -259,7 +262,7 @@ const ManageDialog = (props) => {
                     label="Ngày kết thúc"
                     format="MM/dd/yyyy"
                     name="endDate"
-                    value={endDate}
+                    value={new Date(endDate)}
                     onChange={handleDateChange2}
                     className={classes.datePicker}
                   />
@@ -278,8 +281,7 @@ const ManageDialog = (props) => {
               modal.id === "tao"
                 ? handleSubmit(onAddSubmit)
                 : handleSubmit(onUpdateSubmit)
-            }
-          >
+            }>
             {modal.button}
           </Button>
         </DialogActions>

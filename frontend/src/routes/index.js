@@ -5,47 +5,50 @@ import Profile from "../components/Profile/index";
 import MyEvent from "../components/MyEvent";
 import RoomDetail from "../components/RoomDetail";
 import CheckMedia from "../components/CheckMedia";
-export const routeHome = [
+
+export const userRoute = [
+  {
+    exact: false,
+    path: "/user/profile",
+    component: Profile,
+  },
+  {
+    exact: true,
+    path: "/user/my-event",
+    component: MyEvent,
+  },
+];
+
+export const roomRoute = [
+  {
+    exact: true,
+    path: "/room/id/:id",
+    component: RoomDetail,
+  },
+  {
+    exact: true,
+    path: "/room/check-media",
+    component: CheckMedia,
+  },
+]
+
+export const authRoute = [
+  {
+    exact: true,
+    path: "/auth/login",
+    component: Login,
+  },
+  {
+    exact: true,
+    path: "/auth/register",
+    component: Register,
+  },
+];
+
+export const homeRoute = [
   {
     exact: true,
     path: ["/", "/home"],
     component: HomePage,
   },
-  {
-    exact: false,
-    path: "/profile",
-    component: Profile,
-  },
-  {
-    exact: false,
-    path: "/my-event",
-    component: MyEvent,
-  },
-  {
-    exact: false,
-    path: "/room/id/:id",
-    component: RoomDetail,
-  },
-  {
-    exact: false,
-    path: "/check-media",
-    component: CheckMedia,
-  },
-];
-export const routeAuth = [
-  {
-    exact: false,
-    path: "/login",
-    component: Login,
-  },
-  {
-    exact: false,
-    path: "/register",
-    component: Register,
-  },
-  // {
-  //   exact: false,
-  //   path: "/forgot",
-  //   component: Forget,
-  // },
-];
+]

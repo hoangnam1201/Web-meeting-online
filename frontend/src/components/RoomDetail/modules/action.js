@@ -1,17 +1,16 @@
 import * as actionTypes from "./constant";
 import axios from "axios";
+import { Cookies } from 'react-cookie';
 
 export const actGetTable = (roomID) => {
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  const auth = new Cookies().get('u_auth');
   return (dispatch) => {
     dispatch(actGetTableRequest());
     axios({
       url: `http://localhost:3002/api/table/get-by-room/${roomID}`,
       method: "GET",
       headers: {
-        Authorization: `token ${accessToken.accessToken}`,
+        Authorization: `token ${auth.accessToken}`,
       },
     })
       .then((result) => {
@@ -83,3 +82,43 @@ const actGetMemberFailed = (error) => {
     payload: error,
   };
 };
+
+// media action
+export const actTurnOnVideo = () => {
+  return {
+    type: actionTypes.MEDIA_TURN_ON_VIDEO
+  }
+}
+
+export const actTurnOffVideo = () => {
+  return {
+    type: actionTypes.MEDIA_TURN_OFF_VIDEO
+  }
+}
+
+export const actTurnOnAudio = () => {
+  return {
+    type: actionTypes.MEDIA_TURN_ON_AUDIO
+  }
+}
+
+export const actTurnOffAudio = () => {
+  return {
+    type: actionTypes.MEDIA_TURN_OFF_AUDIO
+  }
+}
+
+
+//stream action
+export const actSetStream = (payload) => {
+  return {
+    type: actionTypes.SET_STREAM,
+    payload
+  }
+}
+
+export const actStopStream = () => {
+  return {
+    type: actionTypes.STOP_STREAM,
+  }
+}

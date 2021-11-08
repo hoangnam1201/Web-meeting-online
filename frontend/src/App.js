@@ -1,58 +1,53 @@
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { routeAuth, routeHome, routeAdmin } from "./routes";
+import { roomRoute, userRoute, homeRoute, authRoute } from "./routes";
+import UserAuth from "./routes/helper/userAuth";
 import Error from "./components/Error";
-import Home from "./components/HomePage/index";
-import Auth from "./components/Auth/index";
-const showLayoutHome = (routes) => {
-  if (routes && routes.length > 0) {
-    return routes.map((item, index) => {
-      return (
-        <Home
-          key={index}
-          exact={item.exact}
-          path={item.path}
-          component={item.component}
-        />
-      );
-    });
-  }
-};
-
-const showLayoutAuth = (routes) => {
-  if (routes && routes.length > 0) {
-    return routes.map((item, index) => {
-      return (
-        <Auth
-          key={index}
-          exact={item.exact}
-          path={item.path}
-          component={item.component}
-        />
-      );
-    });
-  }
-};
+import DefautLayout from './layouts/defautLayout';
 
 function App() {
-  // // dispatch lên redux
-  // if (localStorage.getItem("user")) {
-  //   dispatch({
-  //     type: "LOGGED_IN",
-  //     payload: JSON.parse(localStorage.getItem("user")),
-  //   });
-  // }
-
   return (
     <div className="App">
       <BrowserRouter>
         <Switch>
-          {showLayoutHome(routeHome)}
-
-          {showLayoutAuth(routeAuth)}
-
-          {/* Không tìm ra trang nào */}
-          <Route path="" component={Error} />
+          <Route path="/auth">
+            <Switch>
+              {authRoute.map((route, index) => (
+                <Route path={route.path} exact={route.exact} component={route.component} key={index} />
+              ))}
+              <Route path="*">
+                <Error type={0} />
+              </Route>
+            </Switch>
+          </Route>
+          <UserAuth path="/user">
+            <DefautLayout logged={true}>
+              <Switch>
+                {userRoute.map((route, index) => (
+                  <Route path={route.path} exact={route.exact} component={route.component} key={index} />
+                ))}
+                <Route path="*" exact component={Error} />
+              </Switch>
+            </DefautLayout>
+          </UserAuth>
+          <UserAuth path="/room">
+            <DefautLayout logged={true}>
+              <Switch>
+                {roomRoute.map((route, index) => (
+                  <Route path={route.path} exact={route.exact} component={route.component} key={index} />
+                ))}
+                <Route path="*" exact component={Error} />
+              </Switch>
+            </DefautLayout>
+          </UserAuth>
+          <DefautLayout logged={false}>
+            <Switch>
+              {homeRoute.map((route, index) => (
+                <Route path={route.path} exact={route.exact} component={route.component} Key={index} />
+              ))}
+              <Route path="*" component={Error} />
+            </Switch>
+          </DefautLayout>
         </Switch>
       </BrowserRouter>
     </div>

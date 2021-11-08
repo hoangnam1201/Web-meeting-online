@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import ToolBar from "./toolbar";
 import { useDispatch, useSelector } from "react-redux";
 import ManageDialog from "./ManageDialog";
-import { actGetTable } from "./modules/action";
+import { actGetTable, actStopStream } from "./modules/action";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -21,14 +21,9 @@ import { ScaleLoader } from "react-spinners";
 import MyVideoCall from "./myVideoCall";
 import io from "socket.io-client";
 import Peer from "peerjs";
-import { Avatar } from "@material-ui/core";
+import { useCookies } from 'react-cookie';
+import Avatar from "react-avatar";
 
-const randomColor = () => {
-  let hex = Math.floor(Math.random() * 0xffffff);
-  let color = "#" + hex.toString(16);
-
-  return color;
-};
 const useStyles = makeStyles({
   root: {
     padding: "25px 15px",
@@ -93,11 +88,6 @@ const useStyles = makeStyles({
     left: "50%",
     transform: "translate(-50%,-50%)",
   },
-  avatar: {
-    textTransform: "uppercase",
-    backgroundColor: randomColor(),
-    cursor: "pointer",
-  },
 });
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -108,18 +98,19 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const RoomDetail = (props) => {
   const classes = useStyles();
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
-  const infoUser = localStorage
-    ? JSON.parse(localStorage.getItem("loginInfo"))
-    : "";
-  const roomID = props.match.params.id;
-  const dispatch = useDispatch();
-  const listTableRoom = useSelector(
-    (state) => state.listTableReducer?.data?.data
-  );
+
+  const [cookies] = useCookies(['u_auth']);
+
+  //redux
+  const listTableRoom = useSelector((state) => state.listTableReducer?.data?.data);
+  const currentUser = useSelector(state => state.userReducer);
   const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
+  const myStream = useSelector(state => state.streamReducer);
+  const mediaOption = useSelector(state => state.mediaReducer);
+  const dispatch = useDispatch();
+  //params
+  const roomID = props.match.params.id;
+  //states
   const [loading, setLoading] = useState(false);
   const [checkMedia, setCheckMedia] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -127,13 +118,12 @@ const RoomDetail = (props) => {
   const [tableRoom, setTableRoom] = useState({});
   const [member, setMember] = useState([]);
   const [socketTable, setSocketTable] = useState(null);
-  console.log("socketTable", socketTable);
   const [tableMessages, setTableMessages] = useState([]);
   const [userCall, setUserCall] = useState([]);
-  const [localStream, setLocalSteam] = useState(null);
   const [peer, setPeer] = useState(null);
   const [joinTables, setJoinTables] = useState(false);
   const [ownerRoom, setOwnerRoom] = useState([]);
+
   const [modal, setModal] = useState({
     title: "",
     button: "",
@@ -165,15 +155,16 @@ const RoomDetail = (props) => {
   };
 
   useEffect(() => {
-    if (peer) {
+    if (peer && myStream) {
       peer.on("call", (call) => {
-        call.answer(localStream);
+        console.log('answare tracks',myStream.stream?.getTracks());
+        call.answer(myStream.stream);
       });
     }
     return () => {
       if (peer) peer.off("call");
     };
-  }, [localStream]);
+  }, [myStream]);
 
   useEffect(() => {
     setLoading(true);
@@ -185,7 +176,6 @@ const RoomDetail = (props) => {
     if (socketRoomReducer.isConnect) {
       const socket = socketRoomReducer.socket;
       socket.on("room:user-joined", (data) => {
-        // console.log(data);
         setMember(data);
       });
       socket.on("room:joined", (room) => {
@@ -201,12 +191,12 @@ const RoomDetail = (props) => {
       }
     };
   }, [socketRoomReducer]);
+
   useEffect(() => {
     const _peer = new Peer(undefined, {
       host: "localhost",
       path: "/peerjs/meeting",
       port: 3002,
-      debug: 3,
     });
 
     _peer.on("open", (id) => {
@@ -216,7 +206,7 @@ const RoomDetail = (props) => {
     _peer.on("disconnected", () => {
       console.log("disconnected");
     });
-    const tokenValue = "Beaner " + accessToken.accessToken;
+    const tokenValue = "Beaner " + cookies.u_auth.accessToken;
     setSocketTable(
       io("http://localhost:3002/socket/tables", {
         forceNew: true,
@@ -226,7 +216,13 @@ const RoomDetail = (props) => {
         },
       })
     );
+
+    return () => {
+      dispatch(actStopStream());
+      socketTable?.disconect();
+    }
   }, []);
+
   useEffect(() => {
     if (socketTable) {
       socketTable.on("table:message", (data) => {
@@ -238,18 +234,27 @@ const RoomDetail = (props) => {
         setTableMessages([]);
       });
       socketTable.on("table:user-joined", (data) => {
-        setUserCall(data);
+        console.log('join', data)
+        setUserCall([...data]);
       });
       socketTable.on("table:user-leave", (data) => {
-        setUserCall(data);
+        console.log('leave', data)
+        setUserCall([...data]);
       });
+      socketTable.on('table:change-media', (data) => {
+        console.log('change', data)
+        setUserCall([...data]);
+      })
+    }
+    return () => {
+      socketTable?.offAny();
     }
   }, [socketTable]);
 
   const joinTable = (tableId) => {
     setTableMessages([]);
     setJoinTables(true);
-    socketTable.emit("table:join", tableId);
+    socketTable.emit("table:join", tableId, { ...mediaOption }, peer.id);
   };
 
   const deleteTable = (tableID) => {
@@ -267,7 +272,7 @@ const RoomDetail = (props) => {
           url: `http://localhost:3002/api/table/${tableID}`,
           method: "DELETE",
           headers: {
-            Authorization: `token ${accessToken.accessToken}`,
+            Authorization: `token ${cookies.u_auth.accessToken}`,
           },
         })
           .then((result) => {
@@ -297,14 +302,13 @@ const RoomDetail = (props) => {
     <>
       {!checkMedia ? (
         <CheckMedia
-          openMedia={setLocalSteam}
           checkMedia={checkMedia}
           roomId={roomID}
           setCheckMedia={setCheckMedia}
           peer={peer}
         />
       ) : (
-        <>
+        <div className='min-h-screen'>
           <Box className={classes.loaderBox}>
             <ScaleLoader
               color="#f50057"
@@ -330,7 +334,7 @@ const RoomDetail = (props) => {
             roomID={roomID}
           />
           <div>
-            {infoUser?._id === ownerRoom?.owner?._id ? (
+            {currentUser?.user?._id === ownerRoom?.owner?._id ? (
               <div className={classes.btnCreate}>
                 <Button variant="contained" color="primary" onClick={handleAdd}>
                   New Tables
@@ -346,20 +350,18 @@ const RoomDetail = (props) => {
             ) : (
               ""
             )}
-            <Grid container rowSpacing={1}>
+
+            <div className='flex fixed left-1/2 top-11 z-50 gap-1 transform -translate-x-1/2'>
               {userCall.map((user, index) => {
                 return (
-                  <Grid item lg={3} md={4} sm={6} xs={12}>
-                    <MyVideoCall
-                      peer={peer}
-                      user={user}
-                      stream={localStream}
-                      key={index}
-                    ></MyVideoCall>
-                  </Grid>
-                );
+                  <MyVideoCall
+                    peer={peer}
+                    user={user}
+                    key={index}
+                  ></MyVideoCall>
+                )
               })}
-            </Grid>
+            </div>
           </div>
           <div className={classes.container}>
             <Box className={classes.root} sx={{ width: "100%" }}>
@@ -379,7 +381,7 @@ const RoomDetail = (props) => {
                       <Item className={classes.table}>
                         <div>
                           <h5 className="mt-10">{table?.name}</h5>
-                          {infoUser?._id === ownerRoom?.owner?._id ? (
+                          {currentUser?.user?._id === ownerRoom?.owner?._id ? (
                             <IconButton
                               className={classes.btnDelete}
                               onClick={() => deleteTable(table._id)}
@@ -398,11 +400,12 @@ const RoomDetail = (props) => {
                               <Grid item xs={6} key={index}>
                                 <IconButton
                                   color="primary"
-                                  className={classes.chair}
-                                >
+                                  className={classes.chair}>
                                   {joinTables ? (
-                                    <Avatar className={classes.avatar}>
-                                      {user?.username.charAt(0)}
+                                    <Avatar
+                                      name={user?.user?.name}
+                                      size="50"
+                                      round={true}>
                                     </Avatar>
                                   ) : (
                                     <ChairTwoToneIcon fontSize="large" />
@@ -424,16 +427,14 @@ const RoomDetail = (props) => {
                       <Item className={classes.table}>
                         <div>
                           <h5 className="pb-12">{table?.name}</h5>
-                          {infoUser?._id === ownerRoom?.owner?._id ? (
+                          {currentUser.user?._id === ownerRoom?.owner?._id ? (
                             <IconButton
                               className={classes.btnDelete}
                               onClick={() => deleteTable(table._id)}
                             >
                               <DeleteIcon fontSize="large" />
                             </IconButton>
-                          ) : (
-                            ""
-                          )}
+                          ) : ("")}
                           <Grid
                             container
                             rowSpacing={1}
@@ -486,7 +487,7 @@ const RoomDetail = (props) => {
                       <Item className={classes.table}>
                         <div>
                           <h5 className="pb-12">{table?.name}</h5>
-                          {infoUser?._id === ownerRoom?.owner?._id ? (
+                          {currentUser?.user?._id === ownerRoom?.owner?._id ? (
                             <IconButton
                               className={classes.btnDelete}
                               onClick={() => deleteTable(table._id)}
@@ -541,7 +542,7 @@ const RoomDetail = (props) => {
               />
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

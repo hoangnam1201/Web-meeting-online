@@ -10,12 +10,16 @@ import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import { actSocketConnectRoom } from "./modules/action";
 import axios from "axios";
+import { useCookies } from "react-cookie";
+import { actSetStream, actTurnOffAudio, actTurnOffVideo, actTurnOnAudio, actTurnOnVideo } from "../RoomDetail/modules/action";
 const useStyles = makeStyles({
   root: {
     display: "flex",
     padding: "50px",
-    justifyContent: "space-between",
+    justifyContent: 'center',
+    gap: '2rem',
     alignItems: "center",
+    minHeight: "100vh"
   },
   videoBox: {
     border: "1px solid black",
@@ -64,32 +68,37 @@ const useStyles = makeStyles({
   },
 });
 const CheckMedia = (props) => {
-  const { setCheckMedia, roomId, openMedia, peer } = props;
+
   const classes = useStyles();
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
-  const [playing, setPlaying] = useState(false);
-  const [playAudio, setPlayAudio] = useState(false);
-  const videoRef = useRef(null);
+  const { setCheckMedia, roomId, peer } = props;
+  //state
+  const [cookies] = useCookies(['u_auth']);
   const [audioVolume, setAudioVolume] = useState(0);
-  const [streamMedia, setStreamMedia] = useState(null);
   const [streamMediaAudio, setStreamMediaAudio] = useState(null);
+  const [stateVideo, setStateVideo] = useState({ msg: 'Máy quay đang tắc', status: 'OFF' })
   const [infoRoom, setInfoRoom] = useState([]);
-  const WIDTH = 400;
-  const HEIGHT = 400;
+  //redux
   const dispatch = useDispatch();
-  const socketRoomReducer = useSelector((state) => state.socketRoomReducer);
+  const socketRoomReducer = useSelector(state => state.socketRoomReducer);
+  const mediaOption = useSelector(state => state.mediaReducer);
+  const myStream = useSelector(state => state.streamReducer);
+  //ref
+  const videoRef = useRef(null);
 
   useEffect(() => {
     if (peer) connectHandler();
   }, [peer]);
 
   useEffect(() => {
+    if (!myStream) return;
+    videoRef.current.srcObject = myStream.stream;
+    videoRef.current.muted = myStream.stream;
+  }, [myStream])
+
+  useEffect(() => {
     if (socketRoomReducer.isConnect) {
       const socketRoom = socketRoomReducer.socket;
       socketRoom.on("room:join-err", (data) => {
-        console.log(data);
       });
     }
     return () => {
@@ -101,8 +110,7 @@ const CheckMedia = (props) => {
   }, [socketRoomReducer]);
 
   const connectHandler = () => {
-    console.log("connect");
-    const tokenValue = "Beaner " + accessToken.accessToken;
+    const tokenValue = "Beaner " + cookies.u_auth.accessToken;
     dispatch(
       actSocketConnectRoom(
         io("http://localhost:3002/socket/rooms", {
@@ -119,72 +127,77 @@ const CheckMedia = (props) => {
     if (!peer) return;
     socketRoomReducer.socket.emit("room:join", roomId, peer.id);
     setCheckMedia(true);
-    console.log("join room");
   };
 
   const startVideo = () => {
-    setPlaying(true);
     navigator.getUserMedia =
       navigator.getUserMedia ||
       navigator.webkitGetUserMedia ||
       navigator.mozGetUserMedia;
     if (navigator.getUserMedia) {
+      setStateVideo({ msg: 'Đang khởi động máy quay', status: 'LOADING' })
       navigator.getUserMedia(
-        { audio: false, video: true },
+        { video: true, audio: false },
         function (stream) {
           //Video
-          setStreamMedia(stream);
-          openMedia(stream);
-          var video = document.querySelector("video");
-          video.srcObject = stream;
-          video.onloadedmetadata = function (e) {
-            video.play();
-          };
+          // setStreamMedia(stream);
+          if (myStream.stream)
+            myStream.stream.addTrack(stream.getTracks()[0]);
+          else
+            dispatch(actSetStream(stream));
+
+          dispatch(actTurnOnVideo());
+
+          setStateVideo({ msg: '', status: 'RUNNING' })
         },
         function (err) {
-          console.log("The following error occurred: " + err.name);
+          setStateVideo({ msg: 'Máy quay đang tắc', status: 'OFF' })
         }
       );
     } else {
       console.log("getUserMedia not supported");
     }
   };
+
   const startAudio = () => {
-    setPlayAudio(true);
     navigator.getUserMedia =
       navigator.getUserMedia ||
       navigator.webkitGetUserMedia ||
       navigator.mozGetUserMedia;
     if (navigator.getUserMedia) {
       navigator.getUserMedia(
-        { audio: true, video: false },
+        { audio: true, video: mediaOption.video },
         function (stream) {
           //Audio
-          setStreamMediaAudio(stream);
-          var audioContext = new AudioContext();
-          var analyser = audioContext.createAnalyser();
-          var microphone = audioContext.createMediaStreamSource(stream);
-          var javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
-          analyser.smoothingTimeConstant = 0.8;
-          analyser.fftSize = 1024;
-          microphone.connect(analyser);
-          analyser.connect(javascriptNode);
-          javascriptNode.connect(audioContext.destination);
-          javascriptNode.onaudioprocess = function () {
-            var array = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(array);
-            var values = 0;
+          if (myStream.stream)
+            myStream.stream.addTrack(stream.getTracks()[0]);
+          else
+            dispatch(actSetStream(stream));
 
-            var length = array.length;
-            for (var i = 0; i < length; i++) {
-              values += array[i];
-            }
+          dispatch(actTurnOnAudio());
 
-            var average = values / length;
+          // var audioContext = new AudioContext();
+          // var analyser = audioContext.createAnalyser();
+          // var microphone = audioContext.createMediaStreamSource(stream);
+          // var javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+          // analyser.smoothingTimeConstant = 0.8;
+          // analyser.fftSize = 1024;
+          // microphone.connect(analyser);
+          // analyser.connect(javascriptNode);
+          // javascriptNode.connect(audioContext.destination);
+          // javascriptNode.onaudioprocess = function () {
+          //   var array = new Uint8Array(analyser.frequencyBinCount);
+          //   analyser.getByteFrequencyData(array);
+          //   var values = 0;
+          //   var length = array.length;
+          //   for (var i = 0; i < length; i++) {
+          //     values += array[i];
+          //   }
 
-            // console.log(Math.round(average));
-            colorPids(average);
-          };
+          //   var average = values / length;
+
+          //   colorPids(average);
+          // };
         },
         function (err) {
           console.log("The following error occurred: " + err.name);
@@ -194,6 +207,7 @@ const CheckMedia = (props) => {
       console.log("getUserMedia not supported");
     }
   };
+
   const colorPids = (vol) => {
     let amout_of_pids = Math.round(vol / 10);
     setAudioVolume(amout_of_pids);
@@ -201,24 +215,28 @@ const CheckMedia = (props) => {
 
   // stop only camera
   const stopVideo = () => {
-    setPlaying(false);
-    var track = streamMedia.getTracks()[0];
-    track.stop();
+    const track = myStream.stream.getTracks().find(track => track.kind === 'video');
+    track?.stop();
+    myStream.stream.removeTrack(track);
+    dispatch(actTurnOffVideo());
+    setStateVideo({ msg: 'Máy quay đang tắc', status: 'OFF' })
   };
 
   // stop only mic
   const stopAudio = () => {
-    setPlayAudio(false);
-    var track = streamMediaAudio.getTracks()[0];
-    track.stop();
+    const track = myStream.stream.getTracks().find(track => track.kind === 'audio');
+    track?.stop();
+    myStream.stream.removeTrack(track);
+    dispatch(actTurnOffAudio());
   };
+
   const getRoomById = async (roomId) => {
     try {
       const fetch = {
         url: `http://localhost:3002/api/room/${roomId}`,
         method: "get",
         headers: {
-          Authorization: `token ${accessToken.accessToken}`,
+          Authorization: `token ${cookies.u_auth.accessToken}`,
         },
       };
       const res = await axios(fetch);
@@ -227,55 +245,41 @@ const CheckMedia = (props) => {
       console.log(err);
     }
   };
+
   useEffect(() => {
     getRoomById(roomId);
   }, [roomId]);
+
   return (
     <div className={classes.root}>
       <div className={classes.mediaBox}>
-        <h5>Camera</h5>
-        <video
-          height={HEIGHT}
-          width={WIDTH}
-          muted
-          autoPlay
-          className={`video ${classes.videoBox}`}
-          ref={videoRef}
-        ></video>
-
-        <div className={`pidsWrapper mt-10 ${classes.pidsWrapper}`}>
-          <h5>Microphone</h5>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 1 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 2 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 3 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 4 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 5 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 6 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 7 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 8 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 9 && "bg-black"}`}
-          ></div>
-          <div
-            className={`pid ${classes.pid} ${audioVolume > 10 && "bg-black"}`}
-          ></div>
+        <div className='relative' style={{ width: '600px', height: '400px' }}>
+          <video
+            muted
+            autoPlay
+            className='bg-black rounded-xl w-full h-full'
+            ref={videoRef}
+          >
+          </video>
+          {stateVideo.status !== 'RUNNING' &&
+            (<div className='absolute text-xl font-bold text-white top-1/2 left-1/2 transform -translate-x-1/2'>
+              {stateVideo.msg}
+            </div>)}
         </div>
+
+        {/* <h5>Microphone</h5>
+        <div className={`pidsWrapper mt-10 ${classes.pidsWrapper} flex justify-around`}>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 1 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 2 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 3 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 4 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 5 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 6 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 7 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 8 && "bg-red-400"}`}></div>
+          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 9 && "bg-red-400"}`}></div>
+        </div> */}
+
       </div>
       <div className={classes.btnBox}>
         <div>
@@ -284,7 +288,7 @@ const CheckMedia = (props) => {
         </div>
         <div className={classes.btnMedia}>
           <div>
-            {playing ? (
+            {mediaOption?.video ? (
               <IconButton
                 variant="contained"
                 color="primary"
@@ -303,7 +307,7 @@ const CheckMedia = (props) => {
             )}
           </div>
           <div className="ml-10">
-            {playAudio ? (
+            {mediaOption?.audio ? (
               <IconButton
                 variant="contained"
                 color="primary"
@@ -334,7 +338,7 @@ const CheckMedia = (props) => {
           </Button>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -1,10 +1,9 @@
 import * as actionTypes from "./constant";
 import axios from "axios";
+import { Cookies } from 'react-cookie';
 
 export const actGetRoom = () => {
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  const accessToken = new Cookies().get('u_auth');
   return (dispatch) => {
     dispatch(actGetRoomRequest());
     axios({

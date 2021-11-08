@@ -1,43 +1,80 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { useSelector } from 'react-redux'
+import MicOffIcon from "@mui/icons-material/MicOff";
+import Avatar from "react-avatar";
 
-const MyVideoCall = ({ peer, stream, user }) => {
+const MyVideoCall = ({ peer, user, ...rest }) => {
+  const userReducer = useSelector(state => state.userReducer);
+  const myStream = useSelector(state => state.streamReducer);
+  const [call, setCall] = useState(null);
   const videoRef = useRef(null);
-  const HEIGHT = 300;
-  const WIDTH = 300;
+
   useEffect(() => {
     console.count("video init");
-    const c_user = localStorage.getItem("loginInfo");
-    const currentUser = JSON.parse(c_user);
+  }, []);
 
-    if (user._id === currentUser._id) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.muted = stream;
+  useEffect(() => {
+    if (!userReducer || !myStream) return;
+    const currentUser = userReducer.user;
+
+    if (user.user._id === currentUser._id) {
+      videoRef.current.srcObject = myStream.stream;
+      videoRef.current.muted = myStream.stream;
+      console.log(user.user.name, 'dont call')
       return;
     }
+    callVideo(user.peerId);
+  }, [user]);
 
-    const call = peer.call(user.peerId, stream);
-    call.on("stream", (parentStream) => {
+  const callVideo = (peerId) => {
+    if (call) call.close();
+    var options = {
+      'constraints': {
+        'mandatory': {
+          'OfferToReceiveAudio': true,
+          'OfferToReceiveVideo': true
+        },
+        offerToReceiveAudio: 1,
+        offerToReceiveVideo: 1,
+      }
+    }
+    const _call = peer.call(peerId, myStream.stream, options);
+    console.log(user.user.name, 'call')
+    setCall(_call);
+    _call.on("stream", (parentStream) => {
+      console.log('paren track', parentStream.getTracks());
       videoRef.current.srcObject = parentStream;
       videoRef.current.muted = parentStream;
     });
-    call.on("close", () => {
+    _call.on("close", () => {
+      console.log('close')
       videoRef.current.srcObject = null;
     });
-    return () => {
-      call.off("close");
-      call.off("stream");
-    };
-  }, []);
+  }
+
   return (
-    <div>
-      <div> username: {user.username}</div>
-      <video
-        height={HEIGHT}
-        width={WIDTH}
-        autoPlay
-        ref={videoRef}
-        className="rounded-xl"
-      ></video>
+    <div {...rest} >
+      <div className='relative overflow-hidden rounded-xl'>
+        {user?.video ? (
+          <div className="absolute z-10 left-1/2 top-3 text-white transform -translate-x-1/2">{user?.user.name}</div>)
+          : (
+            <div className='absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+              <Avatar
+                name={user?.user.name}
+                size='200'
+                round={false} >
+              </Avatar>
+            </div>)}
+        {!user?.audio &&
+          (<div className='absolute z-20'>
+            <MicOffIcon fontSize='medium' className="text-white" />
+          </div>)}
+        <video
+          autoPlay
+          ref={videoRef}
+          className="rounded-xl w-48 h-36 bg-black"
+        ></video>
+      </div>
     </div>
   );
 };
