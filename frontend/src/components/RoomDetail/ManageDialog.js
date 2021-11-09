@@ -17,6 +17,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { actGetTable } from "./modules/action";
+import { useCookies } from "react-cookie";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -81,9 +82,7 @@ const schema = yup.object().shape({
 const ManageDialog = (props) => {
   const classes = useStyles();
   const { openDialog, setOpenDialog, handleCloseDialog, modal, roomID } = props;
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  const [cookies] = useCookies(["u_auth"]);
   const dispatch = useDispatch();
 
   const { register, handleSubmit, errors } = useForm({
@@ -107,7 +106,7 @@ const ManageDialog = (props) => {
       method: "POST",
       data,
       headers: {
-        Authorization: `token ${accessToken.accessToken}`,
+        Authorization: `token ${cookies.u_auth.accessToken}`,
       },
     })
       .then(() => {

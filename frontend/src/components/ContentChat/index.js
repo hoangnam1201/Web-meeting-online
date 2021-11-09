@@ -73,6 +73,7 @@ const ContentChat = (props) => {
   useEffect(() => {
     if (socketRoomReducer.isConnect) {
       const socket = socketRoomReducer.socket;
+      socket.emit("room:get-messages");
       socket.on("room:message", (data) => {
         setMessages((perMessage) => {
           const newMessage = [...perMessage, data];
@@ -169,7 +170,7 @@ const ContentChat = (props) => {
                 className={
                   message.sender._id == loginInfo?._id
                     ? `${classes.msgSender}`
-                    : `${classes.msg}`
+                    : `${classes.msgReceiver}`
                 }
               >
                 {message?.message}

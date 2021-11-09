@@ -234,7 +234,7 @@ function Register(props) {
       })
       .catch((error) => {
         setLoading(false);
-        setregisterError(error.response.data);
+        setregisterError(error.response.msg);
       });
   };
 
@@ -419,7 +419,11 @@ function Register(props) {
               </Button>
               <Grid container justifyContent="flex-end">
                 <Grid item>
-                  <Link to="/auth/login" variant="h6" className={classes.bottomLink}>
+                  <Link
+                    to="/auth/login"
+                    variant="h6"
+                    className={classes.bottomLink}
+                  >
                     Bạn đã là thành viên? Đăng nhập ngay
                   </Link>
                 </Grid>
