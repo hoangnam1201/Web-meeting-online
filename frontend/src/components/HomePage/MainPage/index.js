@@ -80,7 +80,7 @@ const MainPage = () => {
             <div>
               <img width="100" height="100" src={iconCheck} alt="iconcheck" />
             </div>
-            <div className={classes.textContent2}>
+            <div className={classes.textContent}>
               <h4 className={classes.title2}>Dành cho Kết nối</h4>
               <p>
                 Bộ lọc, cảm xúc, thăm dò ý kiến, giơ tay, và chia sẻ nhạc hoặc
@@ -127,7 +127,11 @@ const MainPage = () => {
           </Grid>
         </Grid>
       </Container>
-      <Container className={classes.container2} component="div" maxWidth={false}>
+      <Container
+        className={classes.container2}
+        component="div"
+        maxWidth={false}
+      >
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <img width="500" height="500" src={imgMeeting} alt="meet" />

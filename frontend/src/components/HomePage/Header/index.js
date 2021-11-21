@@ -3,35 +3,38 @@ import { Link } from "react-router-dom";
 import "./header.css";
 import imgLogo from "../../../assets/logomeeting.png";
 import { Typography } from "@material-ui/core";
-import Avatar from 'react-avatar';
+import Avatar from "react-avatar";
 import Swal from "sweetalert2";
 import { makeStyles } from "@material-ui/core/styles";
 import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
 import { getInfoAPI } from "../../../api/user.api";
 import { useDispatch } from "react-redux";
-import { actionRemoveUserInfo, actionSetUserInfo } from "../../../rootReducer/userInfoAction";
+import {
+  actionRemoveUserInfo,
+  actionSetUserInfo,
+} from "../../../rootReducer/userInfoAction";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
-  const currentUser = useSelector(state => state.userReducer);
+  const currentUser = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
-  const [cookies, setCookies, removeCookies] = useCookies(['u_auth']);
+  const [cookies, setCookies, removeCookies] = useCookies(["u_auth"]);
 
   useEffect(() => {
-    console.count('dispath user');
+    console.count("dispath user");
     if (type === 1 && currentUser) {
       if (!currentUser.user) {
-        getInfoAPI().then(res => {
+        getInfoAPI().then((res) => {
           dispatch(actionSetUserInfo(res.data));
         });
       }
     }
-  }, [type, currentUser])
+  }, [type, currentUser]);
 
   const handleLogout = () => {
-    removeCookies('u_auth');
+    removeCookies("u_auth");
     dispatch(actionRemoveUserInfo());
     Swal.fire({
       icon: "success",
@@ -44,7 +47,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
 
   return (
     <div {...rest}>
-      <section id="header" className='shadow-lg'>
+      <section id="header" className="shadow-lg">
         <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
@@ -81,7 +84,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                 ) : (
                   <ul>
                     <li className="nav-item active">
-                      <Link className="nav-link" to="/my-event">
+                      <Link className="nav-link" to="/user/my-event">
                         My Event
                       </Link>
                     </li>
@@ -95,24 +98,21 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                       name={currentUser?.user?.name}
                       size="50"
                       round={true}
-                      className='cursor-pointer'
-                      onClick={() => setShowAvatarMenu(!showAvatarMenu)} >
-                    </Avatar>
-                    {showAvatarMenu &&
-                      (<div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">
-                        <ul className='p-1'>
-                          <li className='font-bold text-gray-500 border-b-2 p-3'>
+                      className="cursor-pointer"
+                      onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+                    ></Avatar>
+                    {showAvatarMenu && (
+                      <div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">
+                        <ul className="p-1">
+                          <li className="font-bold text-gray-500 border-b-2 p-3">
                             {currentUser?.user?.name}
                           </li>
-                          <li className='py-3 font-medium hover:bg-pink-100 text-gray-500'>
-                            <Link
-                              underline="none"
-                              to="/user/profile"
-                            >
+                          <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
+                            <Link underline="none" to="/user/profile">
                               Thông tin cá nhân
                             </Link>
                           </li>
-                          <li className='py-3 font-medium hover:bg-pink-100 text-gray-500'>
+                          <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
                             <Link
                               underline="none"
                               to="/"
@@ -122,7 +122,8 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                             </Link>
                           </li>
                         </ul>
-                      </div>)}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

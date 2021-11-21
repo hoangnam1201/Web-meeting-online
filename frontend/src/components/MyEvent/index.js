@@ -19,7 +19,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom } from "./modules/action";
-import { Cookies } from 'react-cookie';
+import { Cookies } from "react-cookie";
 
 const useStyles = makeStyles({
   root: {
@@ -81,7 +81,7 @@ const useStyles = makeStyles({
 });
 const MyEvent = (props) => {
   const classes = useStyles();
-  const [accessToken] = useState(new Cookies().get('u_auth'))
+  const [accessToken] = useState(new Cookies().get("u_auth"));
   const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
 
   const dispatch = useDispatch();

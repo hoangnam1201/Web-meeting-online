@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import { IconButton } from "@mui/material";
@@ -19,7 +19,7 @@ import Drawer from "@mui/material/Drawer";
 import { Avatar } from "@material-ui/core";
 import ContentChat from "../ContentChat";
 import { useDispatch, useSelector } from "react-redux";
-import * as actions from './modules/action'
+import * as actions from "./modules/action";
 const useStyles = makeStyles({
   root: {
     background: "white",
@@ -83,12 +83,11 @@ const useStyles = makeStyles({
   },
 });
 const ToolBar = (props) => {
-
   const classes = useStyles();
   const { member, tableMessages, socketTable } = props;
   //redux
-  const mediaOption = useSelector(state => state.mediaReducer);
-  const myStream = useSelector(state => state.streamReducer);
+  const mediaOption = useSelector((state) => state.mediaReducer);
+  const myStream = useSelector((state) => state.streamReducer);
   const dispath = useDispatch();
   //state
   const [open, setOpen] = useState(false);
@@ -97,8 +96,8 @@ const ToolBar = (props) => {
 
   useEffect(() => {
     console.log(myStream?.stream.getTracks());
-    socketTable.emit('table:change-media', { ...mediaOption });
-  }, [mediaOption])
+    socketTable.emit("table:change-media", { ...mediaOption });
+  }, [mediaOption]);
 
   const handleClickOpenDialog = () => {
     setOpen(true);
@@ -119,36 +118,62 @@ const ToolBar = (props) => {
   };
 
   const turnOnVideo = () => {
-    navigator.getUserMedia({ video: true, audio: false },
-      (stream) => {
-        myStream.stream.addTrack(stream.getTracks()[0]);
-        dispath(actions.actTurnOnVideo());
-      }
-    )
-  }
+    navigator.getUserMedia({ video: true, audio: false }, (stream) => {
+      myStream.stream.addTrack(stream.getTracks()[0]);
+      dispath(actions.actTurnOnVideo());
+    });
+  };
 
   const turnOffVideo = () => {
-    const track = myStream.stream.getTracks().find(track => track.kind === 'video')
+    const track = myStream.stream
+      .getTracks()
+      .find((track) => track.kind === "video");
     track?.stop();
     myStream.stream.removeTrack(track);
     dispath(actions.actTurnOffVideo());
-  }
+  };
 
   const turnOnAudio = () => {
-    navigator.getUserMedia({ video: false, audio: true },
-      (stream) => {
-        myStream.stream.addTrack(stream.getTracks()[0]);
-        dispath(actions.actTurnOnAudio());
-      }
-    )
-  }
+    navigator.getUserMedia({ video: false, audio: true }, (stream) => {
+      myStream.stream.addTrack(stream.getTracks()[0]);
+      dispath(actions.actTurnOnAudio());
+    });
+  };
 
   const turnOffAudio = () => {
-    const track = myStream.stream.getTracks().find(track => track.kind === 'audio')
+    const track = myStream.stream
+      .getTracks()
+      .find((track) => track.kind === "audio");
     track?.stop();
     myStream.stream.removeTrack(track);
     dispath(actions.actTurnOffAudio());
-  }
+  };
+
+  const shareScreen = () => {
+    navigator.mediaDevices
+      .getDisplayMedia({
+        video: { cursor: "always" },
+        audio: { echoCancellation: true, noiseSuppression: true },
+      })
+      .then((stream) => {
+        const screenTrack = stream.getVideoTracks()[0];
+
+        const sender = myStream?.stream
+          .getTracks()
+          .find((track) => track.kind === "video");
+
+        myStream.stream.removeTrack(sender);
+        myStream.stream.addTrack(screenTrack);
+
+        screenTrack.onended = () => {
+          myStream.stream.removeTrack(screenTrack);
+          turnOnVideo();
+        };
+      })
+      .catch((err) => {
+        console.log("Unable to get display media" + err);
+      });
+  };
 
   const popupChat = () => {
     return (
@@ -206,7 +231,7 @@ const ToolBar = (props) => {
           </IconButton>
         )}
         <IconButton>
-          <ScreenShareIcon fontSize="large" />
+          <ScreenShareIcon onClick={shareScreen} fontSize="large" />
         </IconButton>
         <IconButton onClick={toggleDrawer(true)}>
           <GroupIcon fontSize="large" />
