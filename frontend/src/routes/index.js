@@ -5,6 +5,7 @@ import Profile from "../components/Profile/index";
 import MyEvent from "../components/MyEvent";
 import RoomDetail from "../components/RoomDetail";
 import CheckMedia from "../components/CheckMedia";
+import Presentation from "../components/Present";
 
 export const userRoute = [
   {
@@ -30,7 +31,8 @@ export const roomRoute = [
     path: "/room/check-media",
     component: CheckMedia,
   },
-]
+  { exact: true, path: "/room/present", component: Presentation },
+];
 
 export const authRoute = [
   {
@@ -51,4 +53,4 @@ export const homeRoute = [
     path: ["/", "/home"],
     component: HomePage,
   },
-]
+];
