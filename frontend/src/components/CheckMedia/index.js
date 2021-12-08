@@ -73,8 +73,6 @@ const CheckMedia = (props) => {
   const { setCheckMedia, roomId, peer } = props;
   //state
   const [cookies] = useCookies(['u_auth']);
-  const [audioVolume, setAudioVolume] = useState(0);
-  const [streamMediaAudio, setStreamMediaAudio] = useState(null);
   const [stateVideo, setStateVideo] = useState({ msg: 'Máy quay đang tắc', status: 'OFF' })
   const [infoRoom, setInfoRoom] = useState([]);
   //redux
@@ -94,6 +92,10 @@ const CheckMedia = (props) => {
     videoRef.current.srcObject = myStream.stream;
     videoRef.current.muted = myStream.stream;
   }, [myStream])
+
+  useEffect(() => {
+    getRoomById(roomId);
+  }, [roomId]);
 
   useEffect(() => {
     if (socketRoomReducer.isConnect) {
@@ -139,8 +141,6 @@ const CheckMedia = (props) => {
       navigator.getUserMedia(
         { video: true, audio: false },
         function (stream) {
-          //Video
-          // setStreamMedia(stream);
           if (myStream.stream)
             myStream.stream.addTrack(stream.getTracks()[0]);
           else
@@ -175,29 +175,6 @@ const CheckMedia = (props) => {
             dispatch(actSetStream(stream));
 
           dispatch(actTurnOnAudio());
-
-          // var audioContext = new AudioContext();
-          // var analyser = audioContext.createAnalyser();
-          // var microphone = audioContext.createMediaStreamSource(stream);
-          // var javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
-          // analyser.smoothingTimeConstant = 0.8;
-          // analyser.fftSize = 1024;
-          // microphone.connect(analyser);
-          // analyser.connect(javascriptNode);
-          // javascriptNode.connect(audioContext.destination);
-          // javascriptNode.onaudioprocess = function () {
-          //   var array = new Uint8Array(analyser.frequencyBinCount);
-          //   analyser.getByteFrequencyData(array);
-          //   var values = 0;
-          //   var length = array.length;
-          //   for (var i = 0; i < length; i++) {
-          //     values += array[i];
-          //   }
-
-          //   var average = values / length;
-
-          //   colorPids(average);
-          // };
         },
         function (err) {
           console.log("The following error occurred: " + err.name);
@@ -206,11 +183,6 @@ const CheckMedia = (props) => {
     } else {
       console.log("getUserMedia not supported");
     }
-  };
-
-  const colorPids = (vol) => {
-    let amout_of_pids = Math.round(vol / 10);
-    setAudioVolume(amout_of_pids);
   };
 
   // stop only camera
@@ -246,10 +218,6 @@ const CheckMedia = (props) => {
     }
   };
 
-  useEffect(() => {
-    getRoomById(roomId);
-  }, [roomId]);
-
   return (
     <div className={classes.root}>
       <div className={classes.mediaBox}>
@@ -266,20 +234,6 @@ const CheckMedia = (props) => {
               {stateVideo.msg}
             </div>)}
         </div>
-
-        {/* <h5>Microphone</h5>
-        <div className={`pidsWrapper mt-10 ${classes.pidsWrapper} flex justify-around`}>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 1 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 2 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 3 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 4 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 5 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 6 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 7 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 8 && "bg-red-400"}`}></div>
-          <div className={`pid rounded-lg w-4 h-4 border-2 border-red-300 ${audioVolume > 9 && "bg-red-400"}`}></div>
-        </div> */}
-
       </div>
       <div className={classes.btnBox}>
         <div>

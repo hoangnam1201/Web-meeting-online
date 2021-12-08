@@ -1,6 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Route, Switch, NavLink, Redirect } from "react-router-dom";
 import ChangePassword from "./changepassword";
 import Profiles from "./profile";
 import { makeStyles, Container } from "@material-ui/core";
@@ -64,6 +63,7 @@ const Profile = () => {
       <Switch>
         <Route path="/user/profile/change-profile" component={Profiles} />
         <Route path="/user/profile/change-password" component={ChangePassword} />
+        <Route path="/" render={() => <Redirect to='/user/profile/change-profile' />} />
       </Switch>
     </div>
   );

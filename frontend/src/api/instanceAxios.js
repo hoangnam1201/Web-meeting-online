@@ -4,9 +4,10 @@ import { Cookies } from 'react-cookie';
 const baseURL = process.env.baseURL || 'http://localhost:3002/api/'
 
 const instance = axios.create({ baseURL });
+const cookies = new Cookies();
 
 instance.interceptors.request.use((config) => {
-    const auth = new Cookies().get('u_auth');
+    const auth = cookies.get('u_auth');
     if (auth) {
         config.headers['Authorization'] = `Bearer ${auth.accessToken}`;
         return config;
@@ -17,6 +18,10 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use((response) => {
     return response.data;
 }, (err) => {
+    if (err.response.status === 401) {
+        cookies.remove('u_auth', { path: '/' });
+        return Promise.reject(err);
+    }
     return Promise.reject(err);
 })
 

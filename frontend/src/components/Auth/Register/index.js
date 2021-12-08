@@ -184,14 +184,7 @@ function Register(props) {
   const [registerError, setregisterError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [confirmShowPassword, setConfirmShowPassword] = useState(false);
-  // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = useState(new Date("2000-08-29"));
-
-  // const [valueRadio, setValueRadio] = useState("nam");
-
-  // const handleRadioChange = (event) => {
-  //   setValueRadio(event.target.value);
-  // };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -213,7 +206,6 @@ function Register(props) {
 
   const onSubmit = (data) => {
     data["dob"] = moment(selectedDate).format("yyyy-MM-DD");
-    // data["gioiTinh"] = valueRadio;
     setLoading(true);
     axios({
       url: `http://localhost:3002/api/user/register`,
@@ -227,14 +219,13 @@ function Register(props) {
         Swal.fire({
           icon: "success",
           title: "Đăng ký thành công",
-          // text: "Vui lòng xác nhận email của bạn để hoàn tất thủ tục đăng ký",
-          // timer: 1500,
         });
         history.replace("/login");
       })
       .catch((error) => {
         setLoading(false);
-        setregisterError(error.response.msg);
+        console.log(error.response.data)
+        // setregisterError(error.response.msg);
       });
   };
 
@@ -257,9 +248,8 @@ function Register(props) {
       <div className={`${classes.root} ${loading ? classes.loaderRoot : null}`}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
-          className={`${classes.containerMobile} ${
-            matches ? classes.containerDesktop : null
-          }`}
+          className={`${classes.containerMobile} ${matches ? classes.containerDesktop : null
+            }`}
           component="main"
           maxWidth="xs"
         >

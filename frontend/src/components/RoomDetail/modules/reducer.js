@@ -52,8 +52,8 @@ export const listMemberReducer = (state = initialState, { payload, type }) => {
 };
 
 const mediaInitialState = {
-  audio: false,
-  video: false,
+  audio: true,
+  video: true,
 }
 
 export const mediaReducer = (state = mediaInitialState, { payload, type }) => {

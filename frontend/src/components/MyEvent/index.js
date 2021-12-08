@@ -15,11 +15,12 @@ import ManageDialog from "./ManageDialog";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom } from "./modules/action";
-import { Cookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 
 const useStyles = makeStyles({
   root: {
@@ -65,23 +66,22 @@ const useStyles = makeStyles({
     },
   },
   roomButton: {
-    position: "absolute",
     top: "10px",
     left: 0,
-    padding: "15px",
-    fontSize: "18px",
     textAlign: "center",
     visibility: "hidden",
+    display: 'block',
     opacity: 0,
     transition: "all .3s",
   },
   groupButton: {
     display: "flex",
+    alignItems: 'center'
   },
 });
 const MyEvent = (props) => {
   const classes = useStyles();
-  const [accessToken] = useState(new Cookies().get("u_auth"));
+  const [cookies, setCookies] = useCookies(['u_auth'])
   const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
 
   const dispatch = useDispatch();
@@ -100,7 +100,7 @@ const MyEvent = (props) => {
         url: "http://localhost:3002/api/room/invited-room",
         method: "GET",
         headers: {
-          Authorization: `token ${accessToken.accessToken}`,
+          Authorization: `token ${cookies.u_auth.accessToken}`,
         },
       };
       const res = await axios(fetch);
@@ -109,6 +109,7 @@ const MyEvent = (props) => {
       console.log(err);
     }
   };
+
   const handleAdd = () => {
     setModal({
       title: "Tạo room",
@@ -150,7 +151,7 @@ const MyEvent = (props) => {
           url: `http://localhost:3002/api/room/${roomID}`,
           method: "DELETE",
           headers: {
-            Authorization: `token ${accessToken.accessToken}`,
+            Authorization: `token ${cookies.u_auth.accessToken}`,
           },
         })
           .then((result) => {
@@ -174,6 +175,7 @@ const MyEvent = (props) => {
       }
     });
   };
+
 
   return (
     <div className={classes.root}>
@@ -246,18 +248,32 @@ const MyEvent = (props) => {
                         {new Date(room?.endDate).toDateString()}
                       </Typography>
                       <div className={classes.groupButton}>
-                        <IconButton
-                          className={classes.roomButton}
-                          onClick={() => handleUpdate(room)}
-                        >
-                          <EditIcon fontSize="medium" />
-                        </IconButton>
-                        <IconButton
-                          className={classes.roomButton}
-                          onClick={() => deleteRoom(room?._id)}
-                        >
-                          <DeleteIcon fontSize="medium" />
-                        </IconButton>
+                        <div className={classes.roomButton} >
+                          <IconButton
+                            onClick={() => handleUpdate(room)}
+                          >
+                            <EditIcon fontSize="medium" />
+                          </IconButton>
+                        </div>
+                        <div className={classes.roomButton} >
+                          <IconButton
+                            onClick={() => deleteRoom(room?._id)}
+                          >
+                            <DeleteIcon fontSize="medium" />
+                          </IconButton>
+
+                        </div>
+                        <div
+                          className={classes.roomButton} >
+                          <Button>
+                            <Link
+                              className='block w-full h-full'
+                              to={`/user/update-event/${room?._id}`}
+                            >
+                              <MoreVertIcon fontSize='medium' />
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                     <CardActions>
@@ -353,7 +369,7 @@ const MyEvent = (props) => {
           </div>
         </Container>
       </section>
-    </div>
+    </div >
   );
 };
 

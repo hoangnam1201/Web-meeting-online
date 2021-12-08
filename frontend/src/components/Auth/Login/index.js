@@ -192,7 +192,7 @@ function Login(props) {
           localStorage.removeItem("remember");
         }
 
-        setCookies('u_auth',result);
+        setCookies('u_auth', result, { path: '/' });
 
         Swal.fire({
           icon: "success",
@@ -205,13 +205,10 @@ function Login(props) {
       })
       .catch((errors) => {
         setLoading(false);
-        if (errors) {
-          setLoginError(errors.message);
-        } else {
-          setLoginError(errors.response.message);
-        }
-      });
-  };
+        // setLoginError(errors.response.data);
+        console.log(errors.response.data)
+      })
+  }
 
   return (
     <>
@@ -232,9 +229,8 @@ function Login(props) {
       <div className={classes.root}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
-          className={`${classes.containerMobile} ${
-            matches ? classes.containerDesktop : null
-          }`}
+          className={`${classes.containerMobile} ${matches ? classes.containerDesktop : null
+            }`}
           component="main"
           maxWidth="xs"
         >

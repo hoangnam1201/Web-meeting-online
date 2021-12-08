@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./header.css";
 import imgLogo from "../../../assets/logomeeting.png";
-import { Typography } from "@material-ui/core";
 import Avatar from "react-avatar";
 import Swal from "sweetalert2";
-import { makeStyles } from "@material-ui/core/styles";
 import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
 import { getInfoAPI } from "../../../api/user.api";
@@ -13,7 +11,7 @@ import { useDispatch } from "react-redux";
 import {
   actionRemoveUserInfo,
   actionSetUserInfo,
-} from "../../../rootReducer/userInfoAction";
+} from '../../../store/actions/userInfoAction';
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
@@ -23,15 +21,14 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   const [cookies, setCookies, removeCookies] = useCookies(["u_auth"]);
 
   useEffect(() => {
-    console.count("dispath user");
     if (type === 1 && currentUser) {
-      if (!currentUser.user) {
+      if (!currentUser?.user) {
         getInfoAPI().then((res) => {
           dispatch(actionSetUserInfo(res.data));
         });
       }
     }
-  }, [type, currentUser]);
+  }, [type]);
 
   const handleLogout = () => {
     removeCookies("u_auth");

@@ -11,3 +11,41 @@ body {
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+@layer utilities {
+    @variants responsive {
+        .text-shadow {
+          text-shadow: 2px 2px 4px black;
+        }
+        .text-shadow-md {
+          text-shadow: 4px 4px 8px black;
+        }
+        .text-shadow-lg {
+          text-shadow: 15px 15px 30px black;
+        }
+        .text-shadow-none {
+          text-shadow: none;
+        }
+    } 
+    .croll-none::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    body::-webkit-scrollbar {
+      width: 15px;
+      height: 10px;
+    }
+  
+    body::-webkit-scrollbar-track {
+      background: #F9FAFB;
+    }
+  
+    body::-webkit-scrollbar-thumb {
+      background: #D1D5DB;
+      border-radius: 20px;
+    }
+  
+    body::-webkit-scrollbar-thumb:hover {
+      background: #9CA3AF;
+    }
+  }

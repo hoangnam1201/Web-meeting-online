@@ -6,6 +6,8 @@ import MyEvent from "../components/MyEvent";
 import RoomDetail from "../components/RoomDetail";
 import CheckMedia from "../components/CheckMedia";
 import Presentation from "../components/Present";
+import UpdateEvent from "../components/updateEvent";
+import RoomCall from "../components/roomCall";
 
 export const userRoute = [
   {
@@ -18,13 +20,18 @@ export const userRoute = [
     path: "/user/my-event",
     component: MyEvent,
   },
+  {
+    exact: true,
+    path: "/user/update-event/:id",
+    component: UpdateEvent,
+  },
 ];
 
 export const roomRoute = [
   {
     exact: true,
     path: "/room/id/:id",
-    component: RoomDetail,
+    component: RoomCall,
   },
   {
     exact: true,
