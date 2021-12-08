@@ -3,7 +3,6 @@ import userHandler from './handlers/user.handler';
 import AuthMiddlesware from './middlewares/auth.middleware';
 import roomNamespace from './namespaces/room.namespace';
 import notificationHandler from './handlers/notification.handler';
-import tableNamespace from './namespaces/table.namespace';
 
 export const initIOServer = (io: Server) => {
 
@@ -13,7 +12,7 @@ export const initIOServer = (io: Server) => {
     const _notifyHandler = notificationHandler(io);
 
     roomNamespace(io);
-    tableNamespace(io);
+    // tableNamespace(io);
 
     io.on('connection', (socket) => {
         _userHandler.connect(socket);

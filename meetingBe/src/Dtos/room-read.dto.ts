@@ -8,7 +8,6 @@ export class RoomReadDto {
     description: string;
     startDate: number;
     endDate: number;
-    roomType: number;
     memberCount: number;
     owner: UserReadDto;
 
@@ -20,7 +19,6 @@ export class RoomReadDto {
         roomRead.description = room.description;
         roomRead.startDate = room.startDate;
         roomRead.endDate = room.endDate;
-        roomRead.roomType = room.roomType;
         roomRead.memberCount = room.members.length;
         return roomRead;
     }

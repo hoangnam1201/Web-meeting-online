@@ -30,7 +30,8 @@ export default class AuthController {
             const accessToken = await jwtService.generateToken(userData, accessTokenSecret, accessTokenLife)
             return res.json({ accessToken, role: user.role })
         } catch (err) {
-            return res.status(400).json({ status: 400, errors: [{ msg: err }] });
+            console.log(err)
+            return res.status(400).json({ status: 400, msg:'Internal Server Error' });
         }
     }
 }

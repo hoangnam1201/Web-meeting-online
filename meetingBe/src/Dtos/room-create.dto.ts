@@ -6,7 +6,6 @@ export class RoomCreateDto {
     description: string;
     startDate: number;
     endDate: number;
-    roomType: number;
     owner: ObjectId;
 
     static fromRoom(room: Room) {
@@ -14,7 +13,6 @@ export class RoomCreateDto {
         roomCreate.name = room.name;
         roomCreate.owner = room.owner as ObjectId;
         roomCreate.description = room.description;
-        roomCreate.roomType = room.roomType;
         roomCreate.startDate = room.startDate;
         roomCreate.endDate = room.endDate;
         return roomCreate;

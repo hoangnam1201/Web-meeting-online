@@ -59,7 +59,10 @@ export default class RoomController {
     getRoomById = async (req: Request, res: Response) => {
         const roomId = req.params.roomId;
         try {
-            const room = await roomModel.findById(roomId).populate('requests').populate('members').populate('owner');
+            const room = await roomModel.findById(roomId)
+                .populate('requests')
+                .populate('members')
+                .populate('owner');
             const roomDetail = RoomReadDetailDto.fromRoom(room)
             return res.status(200).json({ status: 200, data: roomDetail });
         } catch (err) {
@@ -135,7 +138,7 @@ export default class RoomController {
         const userId = req.body.userId;
         const authId = req.userData.userId;
         try {
-            const room = await roomModel.findOneAndUpdate({ _id: roomId }, { $push: { members: userId } });
+            const room = await roomModel.findOneAndUpdate({ _id: roomId }, { $addToSet: { members: userId } });
             await userModel.updateOne({ _id: userId }, { $push: { invitedRooms: roomId } });
             res.status(200).json({ status: 200, data: null });
 
@@ -157,7 +160,7 @@ export default class RoomController {
         try {
 
             const room = await roomModel.findOneAndUpdate({ _id: roomId }, {
-                $push: {
+                $addToSet: {
                     members: {
                         $each: userIds
                     }
@@ -201,7 +204,7 @@ export default class RoomController {
 
     removeMember = async (req: Request, res: Response) => {
         const roomId = req.params.roomId;
-        const userId = req.body.userId;
+        const userId = req.query.userId;
         try {
             await roomModel.updateOne({ _id: roomId }, { $pull: { members: userId } });
             await userModel.updateOne({ _id: userId }, { $pull: { invitedRooms: roomId } });

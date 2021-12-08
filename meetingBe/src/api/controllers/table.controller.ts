@@ -70,7 +70,7 @@ export default class TablerController {
         const roomId = req.params.roomId;
         tableModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }, (err: any, tables: Table) => {
             if (err) {
-                return res.status(400).json({ status: 400, errors: [{ msg: err }] })
+                return res.status(400).json({ err })
             }
             return res.status(200).json({ status: 200, data: tables });
         })

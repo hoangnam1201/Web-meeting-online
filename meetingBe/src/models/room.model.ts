@@ -5,7 +5,6 @@ export class Room {
     _id: any;
     name: string;
     description: string;
-    roomType: number;
     startDate: number;
     endDate: number;
     owner: ObjectId | User;
@@ -17,7 +16,6 @@ export class Room {
 const RoomSchema = new Schema<Room>({
     name: String,
     description: String,
-    roomType: String,
     startDate: Number,
     endDate: Number,
     owner: { type: SchemaTypes.ObjectId, ref: 'user' },

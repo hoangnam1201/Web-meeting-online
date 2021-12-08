@@ -9,11 +9,14 @@ import UserChangeDto from '../../Dtos/user-change.dto';
 
 export default class UserController {
     searchUser = async (req: Request, res: Response) => {
-        let searchValue = req.query.searchValue as string;
-        searchValue = searchValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        let searchValue = req.query.searchValue || '';
+        searchValue = (searchValue as string).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(searchValue, 'i');
         try {
-            const users = await UserModel.find({ $or: [{ username: { $regex: regex } }, { email: { $regex: regex } }] }).limit(6);
+            const users = await UserModel.find({
+                $or: [{ username: { $regex: regex } },
+                { email: { $regex: regex } }]
+            }).sort({ createdAt: 1 }).limit(6);
             return res.status(200).json({ status: 200, data: users });
         } catch {
             return res.status(500).json({ status: 500, data: null, error: "Internal Server Errror" });
@@ -51,6 +54,7 @@ export default class UserController {
             await UserModel.create(userCreate);
             return res.status(200).json({ status: 200, data: null });
         } catch (err) {
+            console.log(err)
             return res.status(500).json({ status: 500, data: null, error: "Internal Server Errror" });
         }
     }

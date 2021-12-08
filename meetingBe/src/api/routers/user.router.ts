@@ -11,5 +11,6 @@ userRoute.get('/get-detail', AuthMiddlesware.verifyToken, userController.getDeta
 userRoute.post('/register', userValidator.userCreateValidator(), userController.register);
 userRoute.put('/change-infor', [AuthMiddlesware.verifyToken, ...userValidator.changeInforValidator()], userController.changeInfor);
 userRoute.put('/change-password', [AuthMiddlesware.verifyToken, ...userValidator.changePasswordValidator()], userController.changePassword);
+userRoute.get('/search', [AuthMiddlesware.verifyToken], userController.searchUser)
 
 export default userRoute;

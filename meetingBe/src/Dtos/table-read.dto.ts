@@ -6,7 +6,7 @@ import { UserTableReadDto } from "./user-table-read.dto";
 export class TableReadDto {
     _id: any;
     name: string;
-    users: UserTableReadDto[];
+    users: UserReadDto[];
     numberOfSeat: number
 
     static fromTable(table: Table): TableReadDto {
@@ -14,7 +14,7 @@ export class TableReadDto {
         tableDetail._id = table._id;
         tableDetail.name = table.name;
         tableDetail.numberOfSeat = table.numberOfSeat;
-        tableDetail.users = UserTableReadDto.fromArray(table.users as User[]);
+        tableDetail.users = UserReadDto.fromArrayUser(table.users as User[]);
         return tableDetail;
     }
 
