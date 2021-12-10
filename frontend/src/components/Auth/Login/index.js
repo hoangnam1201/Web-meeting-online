@@ -26,8 +26,9 @@ import { ScaleLoader } from "react-spinners";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useDispatch } from "react-redux";
 import { Helmet } from "react-helmet";
-import { useCookies } from 'react-cookie';
+import { useCookies } from "react-cookie";
 import { loginAPI } from "../../../api/user.api";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -128,19 +129,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const schema = yup.object().shape({
-  username: yup
-    .string()
-    .required("Vui lòng nhập tài khoản !"),
-  password: yup
-    .string()
-    .required("Vui lòng nhập mật khẩu !")
+  username: yup.string().required("Vui lòng nhập tài khoản !"),
+  password: yup.string().required("Vui lòng nhập mật khẩu !"),
 });
 
 function Login(props) {
   const classes = useStyles();
   const history = useHistory();
   const matches = useMediaQuery("(min-height:650px)");
-  const [cookies, setCookies] = useCookies(['u_auth']);
+  const [cookies, setCookies] = useCookies(["u_auth"]);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -192,7 +189,7 @@ function Login(props) {
           localStorage.removeItem("remember");
         }
 
-        setCookies('u_auth', result, { path: '/' });
+        setCookies("u_auth", result, { path: "/" });
 
         Swal.fire({
           icon: "success",
@@ -205,10 +202,16 @@ function Login(props) {
       })
       .catch((errors) => {
         setLoading(false);
-        // setLoginError(errors.response.data);
-        console.log(errors.response.data)
-      })
-  }
+        if (errors?.response?.data?.err) {
+          setLoginError(errors?.response?.data?.err);
+        } else if (errors?.response?.data?.errors[0].msg) {
+          setLoginError(errors?.response?.data?.errors[0].msg);
+        } else {
+          setLoginError(errors?.response?.data?.errors);
+        }
+        console.log(errors.response.data);
+      });
+  };
 
   return (
     <>
@@ -229,8 +232,9 @@ function Login(props) {
       <div className={classes.root}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
-          className={`${classes.containerMobile} ${matches ? classes.containerDesktop : null
-            }`}
+          className={`${classes.containerMobile} ${
+            matches ? classes.containerDesktop : null
+          }`}
           component="main"
           maxWidth="xs"
         >
@@ -302,7 +306,11 @@ function Login(props) {
                 onChange={() => setRemember(!remember)}
               />
               {/* // In ra loi neu dang nhap that bai */}
-              {loginError ? <h5>{loginError}</h5> : null}
+              {loginError ? (
+                <Alert style={{ marginTop: "15px" }} severity="error">
+                  {loginError}
+                </Alert>
+              ) : null}
               <Button
                 type="submit"
                 fullWidth

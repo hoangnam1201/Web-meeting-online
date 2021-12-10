@@ -23,6 +23,7 @@ import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { actGetRoom } from "./modules/action";
 import { useCookies } from "react-cookie";
+import Alert from "@material-ui/lab/Alert";
 const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%",
@@ -82,24 +83,21 @@ const DialogActions = withStyles((theme) => ({
 const schema = yup.object().shape({
   name: yup.string().required("Vui lòng nhập tên!!"),
   description: yup.string().required("Vui lòng nhập mô tả !!!"),
-  roomType: yup.string().required("Vui lòng nhập loại phòng!"),
 });
-
 
 const ManageDialog = (props) => {
   const classes = useStyles();
   const { openDialog, setOpenDialog, handleCloseDialog, modal } = props;
-  const [cookies] = useCookies(['u_auth']);
+  const [cookies] = useCookies(["u_auth"]);
   const dispatch = useDispatch();
   const [startDate, setStartData] = useState(Date.now());
   const [endDate, setEndDate] = useState(Date.now());
+  const [roomError, setRoomError] = useState(null);
   const { register, handleSubmit, errors } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
   const [roomEvent, setRoomEvent] = useState({ ...props.roomEvent });
-
-  useEffect(() => console.log(props.roomEvent, endDate), []);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -127,7 +125,6 @@ const ManageDialog = (props) => {
       data: {
         name: roomEvent.name,
         description: roomEvent.description,
-        roomType: roomEvent.roomType,
         startDate: startDate,
         endDate: endDate,
       },
@@ -148,7 +145,16 @@ const ManageDialog = (props) => {
       })
       .catch((error) => {
         console.log(error.response);
-        setOpenDialog(false);
+        // setOpenDialog(false);
+        if (error?.response?.data?.msg) {
+          setRoomError(error?.response?.data?.msg);
+        }
+        if (error?.response?.data?.errors[0].msg) {
+          setRoomError(error?.response?.data?.errors[0].msg);
+        }
+        if (error?.response?.data?.err) {
+          setRoomError(error?.response?.data?.err);
+        }
       });
   };
   const onUpdateSubmit = () => {
@@ -158,7 +164,6 @@ const ManageDialog = (props) => {
       data: {
         name: roomEvent.name,
         description: roomEvent.description,
-        roomType: roomEvent.roomType,
         startDate: startDate,
         endDate: endDate,
       },
@@ -223,23 +228,7 @@ const ManageDialog = (props) => {
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  margin="dense"
-                  required
-                  fullWidth
-                  id="roomType"
-                  label="Loại phòng"
-                  name="roomType"
-                  autoComplete="roomType"
-                  inputRef={register}
-                  error={!!errors.roomType}
-                  helperText={errors?.roomType?.message}
-                  value={roomEvent.roomType}
-                  onChange={handleChange}
-                />
-              </Grid>
+
               <Grid item xs={12}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
@@ -272,6 +261,11 @@ const ManageDialog = (props) => {
           </form>
         </DialogContent>
         <DialogActions>
+          {roomError ? (
+            <Alert style={{ marginTop: "15px" }} severity="error">
+              {roomError}
+            </Alert>
+          ) : null}
           <Button
             type="submit"
             className={classes.button}
@@ -281,7 +275,8 @@ const ManageDialog = (props) => {
               modal.id === "tao"
                 ? handleSubmit(onAddSubmit)
                 : handleSubmit(onUpdateSubmit)
-            }>
+            }
+          >
             {modal.button}
           </Button>
         </DialogActions>

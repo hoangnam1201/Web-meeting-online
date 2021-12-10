@@ -224,8 +224,16 @@ function Register(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error.response.data)
-        // setregisterError(error.response.msg);
+        console.log(error.response.data);
+        if (error?.response?.data?.msg) {
+          setregisterError(error?.response?.data?.msg);
+        }
+        if (error?.response?.data?.errors[0].msg) {
+          setregisterError(error?.response?.data?.errors[0].msg);
+        }
+        if (error?.response?.data?.err) {
+          setregisterError(error?.response?.data?.err);
+        }
       });
   };
 
@@ -248,8 +256,9 @@ function Register(props) {
       <div className={`${classes.root} ${loading ? classes.loaderRoot : null}`}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
-          className={`${classes.containerMobile} ${matches ? classes.containerDesktop : null
-            }`}
+          className={`${classes.containerMobile} ${
+            matches ? classes.containerDesktop : null
+          }`}
           component="main"
           maxWidth="xs"
         >
