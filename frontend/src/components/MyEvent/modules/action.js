@@ -7,7 +7,7 @@ export const actGetRoom = () => {
   return (dispatch) => {
     dispatch(actGetRoomRequest());
     axios({
-      url: `http://localhost:3002/api/room/owned-room`,
+      url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room/owned-room`,
       method: "GET",
       headers: {
         Authorization: `token ${accessToken.accessToken}`,

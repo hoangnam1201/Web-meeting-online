@@ -101,7 +101,7 @@ const ManageDialog = (props) => {
 
   const onAddSubmit = (data) => {
     axios({
-      url: `http://localhost:3002/api/room/members/add-member/${roomID}`,
+      url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room/members/add-member/${roomID}`,
       method: "POST",
       data,
       headers: {

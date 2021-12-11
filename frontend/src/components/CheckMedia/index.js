@@ -115,7 +115,7 @@ const CheckMedia = (props) => {
     const tokenValue = "Beaner " + cookies.u_auth.accessToken;
     dispatch(
       actSocketConnectRoom(
-        io("http://localhost:3002/socket/rooms", {
+        io("http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/socket/rooms", {
           forceNew: true,
           auth: {
             token: tokenValue,
@@ -205,7 +205,7 @@ const CheckMedia = (props) => {
   const getRoomById = async (roomId) => {
     try {
       const fetch = {
-        url: `http://localhost:3002/api/room/${roomId}`,
+        url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room/${roomId}`,
         method: "get",
         headers: {
           Authorization: `token ${cookies.u_auth.accessToken}`,

@@ -97,7 +97,7 @@ const MyEvent = (props) => {
   const getInvitedRoom = async () => {
     try {
       const fetch = {
-        url: "http://localhost:3002/api/room/invited-room",
+        url: "http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room/invited-room",
         method: "GET",
         headers: {
           Authorization: `token ${cookies.u_auth.accessToken}`,
@@ -148,7 +148,7 @@ const MyEvent = (props) => {
     }).then((swalRes) => {
       if (swalRes.isConfirmed) {
         axios({
-          url: `http://localhost:3002/api/room/${roomID}`,
+          url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room/${roomID}`,
           method: "DELETE",
           headers: {
             Authorization: `token ${cookies.u_auth.accessToken}`,

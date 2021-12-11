@@ -10,7 +10,7 @@ const LayoutHome = (props) => {
   const getInfoUser = async () => {
     try {
       const fetch = {
-        url: "http://localhost:3002/api/user/get-detail",
+        url: "http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/user/get-detail",
         method: "GET",
         headers: {
           Authorization: `token ${cookies.u_auth.accessToken}`,

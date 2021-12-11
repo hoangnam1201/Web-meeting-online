@@ -2,17 +2,17 @@ import openSocket from 'socket.io-client';
 import { Cookies } from 'react-cookie';
 import { store } from '../store'
 import Peer from 'peerjs';
-import { roomAccessMediaAction, roomSetMessages, roomSetTablesAction } from '../store/actions/roomCallAction';
-import { tableAddMessageAction, tableCallChangeMedia, tableUserJoinAction, tableUserLeaveAction, TABLE_CHANGEMEDIA } from '../store/actions/tableCallAction';
+import { roomAccessMediaAction } from '../store/actions/roomCallAction';
+import { tableUserJoinAction, tableUserLeaveAction, TABLE_CHANGEMEDIA } from '../store/actions/tableCallAction';
 import { ROOMTABLE_SET } from '../store/reducers/roomTablesReducer';
 import { ROOMMESSAGES_SET } from '../store/reducers/roomMessagesReducer';
 import { TABLEMESSAGES_SET } from '../store/reducers/tableMessagesReducer';
 const peerEndPoint = {
-    host: "localhost",
+    host: "ec2-54-161-198-205.compute-1.amazonaws.com",
     path: "/peerjs/meeting",
     port: 3002,
 }
-const socketRoomEndPoint = 'http://localhost:3002/socket/rooms';
+const socketRoomEndPoint = 'http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/socket/rooms';
 
 const initializePeerConnection = () => {
     return new Peer('', peerEndPoint);
@@ -201,10 +201,27 @@ class Connection {
 
     clearPeers = () => {
         Object.values(this.peers).forEach((peer) => {
-            console.log(peer)
+            peer.close();
         });
     }
 
+    destructor = () => {
+        this.socket?.offAny();
+        this.socket?.disconnect();
+        Object.values(this.peers).forEach((peer) => {
+            peer.close();
+        });
+        this.myPeer?.disconnect()
+        const myStream = store.getState().myStream;
+        // console.log(myStream)
+        // myStream.stream.stop();
+        myStream?.stream.getTracks().forEach(tr => {
+            console.log(tr)
+            tr.stop();
+            // myStream.removeTrack(tr)
+        });
+
+    }
 }
 
 export default Connection;

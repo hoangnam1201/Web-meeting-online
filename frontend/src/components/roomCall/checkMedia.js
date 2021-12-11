@@ -101,7 +101,7 @@ const CheckMedia = ({ connection }) => {
             }
         })
         setMedia(temp)
-        connection.replaceStream();
+        connection?.replaceStream();
     }, [myStream])
 
     const joinRoomHandler = () => {

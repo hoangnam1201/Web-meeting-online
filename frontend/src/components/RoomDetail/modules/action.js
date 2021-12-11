@@ -7,7 +7,7 @@ export const actGetTable = (roomID) => {
   return (dispatch) => {
     dispatch(actGetTableRequest());
     axios({
-      url: `http://localhost:3002/api/table/get-by-room/${roomID}`,
+      url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/table/get-by-room/${roomID}`,
       method: "GET",
       headers: {
         Authorization: `token ${auth.accessToken}`,
@@ -48,7 +48,7 @@ export const actGetMember = () => {
   return (dispatch) => {
     dispatch(actGetMemberRequest());
     axios({
-      url: `http://localhost:3002/api/room/invited-room`,
+      url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room/invited-room`,
       method: "GET",
       headers: {
         Authorization: `token ${accessToken.accessToken}`,

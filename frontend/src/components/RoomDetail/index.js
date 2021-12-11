@@ -194,7 +194,7 @@ const RoomDetail = (props) => {
 
   useEffect(() => {
     const _peer = new Peer(undefined, {
-      host: "localhost",
+      host: "ec2-54-161-198-205.compute-1.amazonaws.com",
       path: "/peerjs/meeting",
       port: 3002,
     });
@@ -208,7 +208,7 @@ const RoomDetail = (props) => {
     });
     const tokenValue = "Beaner " + cookies.u_auth.accessToken;
     setSocketTable(
-      io("http://localhost:3002/socket/tables", {
+      io("http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/socket/tables", {
         forceNew: true,
         auth: {
           token: tokenValue,
@@ -269,7 +269,7 @@ const RoomDetail = (props) => {
       if (swalRes.isConfirmed) {
         setLoading(true);
         axios({
-          url: `http://localhost:3002/api/table/${tableID}`,
+          url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/table/${tableID}`,
           method: "DELETE",
           headers: {
             Authorization: `token ${cookies.u_auth.accessToken}`,

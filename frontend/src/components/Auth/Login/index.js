@@ -204,12 +204,12 @@ function Login(props) {
         setLoading(false);
         if (errors?.response?.data?.err) {
           setLoginError(errors?.response?.data?.err);
-        } else if (errors?.response?.data?.errors[0].msg) {
-          setLoginError(errors?.response?.data?.errors[0].msg);
-        } else {
-          setLoginError(errors?.response?.data?.errors);
+          return;
         }
-        console.log(errors.response.data);
+        if (errors?.response?.data?.errors) {
+          setLoginError(errors?.response?.data?.errors[0].msg);
+          return;
+        }
       });
   };
 
@@ -232,9 +232,8 @@ function Login(props) {
       <div className={classes.root}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
-          className={`${classes.containerMobile} ${
-            matches ? classes.containerDesktop : null
-          }`}
+          className={`${classes.containerMobile} ${matches ? classes.containerDesktop : null
+            }`}
           component="main"
           maxWidth="xs"
         >

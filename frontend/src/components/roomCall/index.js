@@ -10,13 +10,19 @@ const RoomCall = () => {
 
     useEffect(() => {
         setConnection(new Connection());
+        return () => {
+            setConnection(cn => {
+                cn?.destructor();
+                return null;
+            })
+        }
     }, [])
 
     return (
         <div>
             {!roomCall.accessMedia ?
                 <CheckMedia connection={connection} /> :
-                <RoomDetail connection={connection}/>}
+                <RoomDetail connection={connection} />}
         </div>
     )
 }
