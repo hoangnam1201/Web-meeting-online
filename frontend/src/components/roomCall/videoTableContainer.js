@@ -10,8 +10,8 @@ const VideoTableContainer = ({ ...rest }) => {
         <div {...rest}>
             <div className='flex gap-4 justify-center'>
                 <MyVideo className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden' />
-                {tableCall?.streams.map(s => {
-                    return <Video className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden' name={s.user.name} stream={s.stream} key={s.user._id} />
+                {tableCall?.streams.map((s, index) => {
+                    return <Video className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden' name={s.user.name} stream={s.stream} key={index} />
                 })}
             </div>
         </div>
@@ -41,14 +41,16 @@ const MyVideo = React.memo(({ ...rest }) => {
             }
         })
         setMedia(temp)
+        videoRef.current.defaultMuted = true;
+        videoRef.current.muted = true;
         videoRef.current.srcObject = stream;
-        videoRef.current.muted = stream;
+        // videoRef.current.muted = stream;
     }, [myStream])
 
     return (
         <div {...rest}>
             <div className='h-full w-full relative' >
-                <video ref={videoRef} autoPlay className='h-full w-full' />
+                <video ref={videoRef} autoPlay className='h-full w-full' muted />
                 <div className='absolute top-1 left-1 z-10 flex gap-2'>
                     <div className='text-shadow text-white'> {currentUser?.user?.name} </div>
                     <div hidden={media.audio}>
@@ -66,11 +68,10 @@ const MyVideo = React.memo(({ ...rest }) => {
 })
 
 const Video = ({ name, stream, ...rest }) => {
-    const videoRef = useRef(null)
+    const videoRef = useRef(null);
+    const audioRef = useRef(null);
+
     const [media, setMedia] = useState({ video: false, audio: false })
-
-    console.log(stream.getTracks())
-
     useEffect(() => {
         if (!stream) return;
         let temp = {}
@@ -84,18 +85,18 @@ const Video = ({ name, stream, ...rest }) => {
         })
         console.log('video', stream.getTracks())
         setMedia(temp)
-        videoRef.current.defaultMuted = true;
         videoRef.current.muted = true;
         videoRef.current.srcObject = stream;
-        // videoRef.current.muted = stream;
 
-        console.log('video render')
+        audioRef.current.srcObject = stream;
+
     }, [stream])
 
     return (
         <div {...rest}>
             <div className='h-full w-full relative' >
-                <video ref={videoRef} className='h-full w-full' muted autoPlay />
+                <video ref={videoRef} className='h-full w-full' autoPlay muted={true} />
+                <audio ref={audioRef} autoPlay />
                 <div className='absolute top-1 left-1 z-10 flex gap-2'>
                     <div className='text-shadow text-white'> {name} </div>
                     <div hidden={media.audio}>

@@ -1,8 +1,9 @@
-import { ROOM_LOADING, ROOM_SETACCESSMEDIA, ROOM_SHOWCHAT } from "../actions/roomCallAction"
+import { ROOM_CHANGE, ROOM_LOADING, ROOM_SETACCESSMEDIA, ROOM_SHOWCHAT } from "../actions/roomCallAction"
 
 const initState = {
     loading: false,
     accessMedia: false,
+    canAccessMedia: false,
     showChat: false,
 }
 
@@ -18,6 +19,10 @@ export const roomCallReducer = (state = initState, { type, payload }) => {
                 loading: false,
                 accessMedia: payload
             };
+        case ROOM_CHANGE:
+            return {
+                ...state,
+            }
         default:
             return { ...state }
     }

@@ -1,6 +1,7 @@
 export const ROOM_LOADING = 'ROOM_LOADING';
 export const ROOM_SETACCESSMEDIA = 'ROOM_SETACCESSMEDIA';
 export const ROOM_SHOWCHAT = 'ROOM_SHOWCHAT';
+export const ROOM_CHANGE = 'ROOM_CANACCESS';
 
 export const roomAccessMediaAction = (access) => {
     return {

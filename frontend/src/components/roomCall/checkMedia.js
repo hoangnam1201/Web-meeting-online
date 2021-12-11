@@ -121,7 +121,7 @@ const CheckMedia = ({ connection }) => {
             </div>
             <div>
                 <div className='text-2xl text-gray-500 font-semibold my-4'>{id}</div>
-                {(connection?.socket.connected && connection?.myPeer) ?
+                {(connection?.socket.connected && connection?.myID) ?
                     <><div className='flex justify-center gap-4 my-4 '>
                         {media.audio ? (
                             <IconButton

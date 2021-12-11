@@ -2,7 +2,7 @@ import openSocket from 'socket.io-client';
 import { Cookies } from 'react-cookie';
 import { store } from '../store'
 import Peer from 'peerjs';
-import { roomAccessMediaAction } from '../store/actions/roomCallAction';
+import { roomAccessMediaAction, ROOM_CHANGE } from '../store/actions/roomCallAction';
 import { tableUserJoinAction, tableUserLeaveAction, TABLE_CHANGEMEDIA } from '../store/actions/tableCallAction';
 import { ROOMTABLE_SET } from '../store/reducers/roomTablesReducer';
 import { ROOMMESSAGES_SET } from '../store/reducers/roomMessagesReducer';
@@ -51,6 +51,7 @@ class Connection {
         console.log('listen socket')
         this.socket.on('connect', () => {
             console.log('socket connected');
+            store.dispatch({ type: ROOM_CHANGE });
         });
 
         this.socket.on('room:user-request', (user) => {
@@ -96,12 +97,13 @@ class Connection {
         })
 
         this.socket.on('table:user-joined', (data) => {
-            console.log('user joined')
             const myStream = store.getState().myStream;
             const userCurrent = store.getState().userReducer;
             const { peerId, user } = data
+            console.log('call', myStream.stream.getAudioTracks());
             const call = this.myPeer.call(peerId, myStream.stream, { metadata: { name: userCurrent.user.name, _id: userCurrent.user._id } });
             call.on('stream', (userStream) => {
+                console.log('call-answerstream', userStream.getAudioTracks());
                 store.dispatch(tableUserJoinAction({ user: user, stream: userStream }));
             })
             call.on('close', () => {
@@ -141,6 +143,7 @@ class Connection {
     initializePeersEvents = () => {
         this.myPeer.on('open', (id) => {
             console.log('peerjs open')
+            store.dispatch({ type: ROOM_CHANGE });
             this.myID = id;
         });
         this.myPeer.on('error', (err) => {
@@ -152,10 +155,10 @@ class Connection {
     setPeersListeners = (stream) => {
         console.log('listent call')
         this.myPeer.on('call', (call) => {
-            console.count('call event')
+            console.count('answer', stream.getAudioTracks());
             call.answer(stream);
             call.on('stream', (userVideoStream) => {
-                console.log('user stream data', userVideoStream)
+                console.log('answer-callstream', userVideoStream.getAudioTracks())
                 store.dispatch(tableUserJoinAction({ user: call.metadata, stream: userVideoStream }));
             });
             call.on('close', () => {
@@ -213,12 +216,9 @@ class Connection {
         });
         this.myPeer?.disconnect()
         const myStream = store.getState().myStream;
-        // console.log(myStream)
-        // myStream.stream.stop();
         myStream?.stream.getTracks().forEach(tr => {
             console.log(tr)
             tr.stop();
-            // myStream.removeTrack(tr)
         });
 
     }

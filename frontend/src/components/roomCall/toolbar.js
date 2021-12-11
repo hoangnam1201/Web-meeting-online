@@ -85,7 +85,7 @@ const Toolbar = ({ connection, ...rest }) => {
             }
         })
         setMedia(temp)
-        connection.replaceStream();
+        connection?.replaceStream();
     }, [myStream])
 
     return (
