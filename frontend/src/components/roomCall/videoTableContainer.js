@@ -84,8 +84,10 @@ const Video = ({ name, stream, ...rest }) => {
         })
         console.log('video', stream.getTracks())
         setMedia(temp)
+        videoRef.current.defaultMuted = true;
+        videoRef.current.muted = true;
         videoRef.current.srcObject = stream;
-        videoRef.current.muted = stream;
+        // videoRef.current.muted = stream;
 
         console.log('video render')
     }, [stream])
@@ -93,7 +95,7 @@ const Video = ({ name, stream, ...rest }) => {
     return (
         <div {...rest}>
             <div className='h-full w-full relative' >
-                <video ref={videoRef} autoPlay className='h-full w-full' />
+                <video ref={videoRef} className='h-full w-full' muted autoPlay />
                 <div className='absolute top-1 left-1 z-10 flex gap-2'>
                     <div className='text-shadow text-white'> {name} </div>
                     <div hidden={media.audio}>
