@@ -2,6 +2,7 @@ export const TABLE_USERLEAVE = 'TABLE_USERLEAVE';
 export const TABLE_USERJOIN = 'TABLE_USERJOIN';
 export const TABLE_USERCLEAER = 'TABLE_USERCLEAR';
 export const TABLE_CHANGEMEDIA = 'TABLE_CHANGEMEDIA';
+export const TABLE_PINSTREAM = 'TABLE_PINSTREAM';
 
 export const tableUserLeaveAction = (userId) => {
     return {
@@ -9,6 +10,13 @@ export const tableUserLeaveAction = (userId) => {
         payload: userId
     }
 }
+
+export const tableSetPinStream = (streamData) => {
+    return {
+        type: TABLE_PINSTREAM,
+        payload: streamData
+    }
+};
 
 export const tableUserJoinAction = (streamData) => {
     return {
@@ -23,8 +31,9 @@ export const tableCallClear = () => {
     }
 }
 
-export const tableCallChangeMedia = () => {
+export const tableCallChangeMedia = (data) => {
     return {
-        type: TABLE_CHANGEMEDIA
+        type: TABLE_CHANGEMEDIA,
+        payload: data
     }
 }

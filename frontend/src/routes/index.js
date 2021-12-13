@@ -3,8 +3,6 @@ import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import Profile from "../components/Profile/index";
 import MyEvent from "../components/MyEvent";
-import RoomDetail from "../components/RoomDetail";
-import CheckMedia from "../components/CheckMedia";
 import Presentation from "../components/Present";
 import UpdateEvent from "../components/updateEvent";
 import RoomCall from "../components/roomCall";
@@ -32,11 +30,6 @@ export const roomRoute = [
     exact: true,
     path: "/room/id/:id",
     component: RoomCall,
-  },
-  {
-    exact: true,
-    path: "/room/check-media",
-    component: CheckMedia,
   },
   { exact: true, path: "/room/present", component: Presentation },
 ];

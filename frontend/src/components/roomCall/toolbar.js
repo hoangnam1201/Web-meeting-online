@@ -51,7 +51,6 @@ const Toolbar = ({ connection, ...rest }) => {
             const track = myStream.stream.getTracks().find(track => track.kind === 'video');
             track.stop();
             dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-            connection.socket.emit('table:change-media')
         } catch (err) {
             console.log(err)
         }
@@ -67,7 +66,26 @@ const Toolbar = ({ connection, ...rest }) => {
             const streamTemp = await Connection.getVideoAudioStream(true, false, 12);
             myStream.stream.addTrack(streamTemp.getTracks()[0]);
             dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-            connection.socket.emit('table:change-media')
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const shareScreen = async () => {
+        try {
+            const track = myStream.stream.getVideoTracks()[0];
+            if (track) {
+                track?.stop();
+                myStream.stream.removeTrack(track)
+            }
+            const streamTemp = await Connection.getDisplayMediaStream();
+            const displayTrack = streamTemp.getVideoTracks()[0];
+            displayTrack.addEventListener('ended', (mediaTrack, ev) => {
+                turnOffVideo();
+            })
+
+            myStream.stream.addTrack(displayTrack);
+            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
         } catch (err) {
             console.log(err)
         }
@@ -75,7 +93,7 @@ const Toolbar = ({ connection, ...rest }) => {
 
     useEffect(() => {
         if (!myStream.stream) return;
-        let temp = {}
+        let temp = { video: false, audio: false };
         myStream.stream.getTracks().forEach(track => {
             if (track.kind === 'audio' && track.readyState === 'live') {
                 temp = { ...temp, audio: true };
@@ -84,8 +102,11 @@ const Toolbar = ({ connection, ...rest }) => {
                 temp = { ...temp, video: true };
             }
         })
+
         setMedia(temp)
-        connection?.replaceStream();
+        connection?.current?.replaceStream();
+        console.log(temp)
+        connection?.current?.socket.emit('table:change-media', temp);
     }, [myStream])
 
     return (
@@ -107,7 +128,7 @@ const Toolbar = ({ connection, ...rest }) => {
                         <VideocamOff fontSize='large' />
                     </IconButton>
                 }
-                <IconButton>
+                <IconButton onClick={shareScreen}>
                     <ScreenShareIcon fontSize='large' />
                 </IconButton>
                 <IconButton onClick={() => {

@@ -114,7 +114,7 @@ export default function Profiles() {
     setLoading(true);
     axios
       .put(
-        "http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/user/change-infor",
+        "http://localhost:3002/api/user/change-infor",
         data,
         {
           headers: {

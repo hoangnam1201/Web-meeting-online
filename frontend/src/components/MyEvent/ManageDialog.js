@@ -120,7 +120,7 @@ const ManageDialog = (props) => {
     // data["startDate"] = moment(startDate).format("yyyy-MM-DD");
     // data["endDate"] = moment(endDate).format("yyyy-MM-DD");
     axios({
-      url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room`,
+      url: `http://localhost:3002/api/room`,
       method: "POST",
       data: {
         name: roomEvent.name,
@@ -159,7 +159,7 @@ const ManageDialog = (props) => {
   };
   const onUpdateSubmit = () => {
     axios({
-      url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/room/${roomEvent._id}`,
+      url: `http://localhost:3002/api/room/${roomEvent._id}`,
       method: "PUT",
       data: {
         name: roomEvent.name,

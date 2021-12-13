@@ -208,7 +208,7 @@ function Register(props) {
     data["dob"] = moment(selectedDate).format("yyyy-MM-DD");
     setLoading(true);
     axios({
-      url: `http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/api/user/register`,
+      url: `http://localhost:3002/api/user/register`,
       method: "POST",
       data,
     })
@@ -220,7 +220,7 @@ function Register(props) {
           icon: "success",
           title: "Đăng ký thành công",
         });
-        history.replace("/login");
+        history.replace("/auth/login");
       })
       .catch((error) => {
         setLoading(false);

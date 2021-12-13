@@ -10,7 +10,7 @@ export const tableMessageReducer = (state = initState, { type, payload }) => {
         case TABLEMESSAGES_SET:
             return { items: [...payload], loading: false};
         default:
-            return { ...state }
+            return state
     }
 }
 

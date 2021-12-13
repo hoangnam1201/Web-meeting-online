@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import Connection from '../../services/connection';
 import CheckMedia from './checkMedia'
@@ -6,15 +6,13 @@ import RoomDetail from './roomDetail';
 
 const RoomCall = () => {
     const roomCall = useSelector(state => state.roomCall);
-    const [connection, setConnection] = useState();
+    const connection = useRef(null)
 
     useEffect(() => {
-        setConnection(new Connection());
+        connection.current = new Connection();
         return () => {
-            setConnection(cn => {
-                cn?.destructor();
-                return null;
-            })
+            connection.current.destructor();
+            window.location.reload();
         }
     }, [])
 

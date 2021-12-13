@@ -13,13 +13,12 @@ const ChatBox = ({ connection, ...rest }) => {
     const [value, setValue] = useState(0)
     const [msgText, setMsgText] = useState('');
     const dispatch = useDispatch();
-    const roomMessages = useSelector(state => state.roomMessages);
     const tableMessages = useSelector(state => state.tableMessages);
+    const roomMessages = useSelector(state => state.roomMessages);
     const currentUser = useSelector((state) => state.userReducer);
     const endRef = useRef(null);
 
     const handleChange = (e, newValue) => {
-        console.log(newValue)
         setValue(newValue)
     }
 
@@ -27,14 +26,16 @@ const ChatBox = ({ connection, ...rest }) => {
         endRef.current.scrollIntoView();
     }, [value])
 
+    console.log('render')
+
     const handleKeydown = (e) => {
         if (e.key === 'Enter') {
             if (value == 0) {
-                connection.socket.emit('table:send-message', msgText);
+                connection.current.socket.emit('table:send-message', msgText);
                 dispatch({ type: TABLEMESSAGES_LOADING })
             }
             if (value == 1) {
-                connection.socket.emit('room:send-message', msgText);
+                connection.current.socket.emit('room:send-message', msgText);
                 dispatch({ type: ROOMMESSAGES_LOADING })
             }
             setMsgText('');
@@ -53,20 +54,21 @@ const ChatBox = ({ connection, ...rest }) => {
             </div>
             <div className='h-3/4 overflow-auto'>
                 <div hidden={value != 0}>
-                    {tableMessages?.items.map((m, index) => <Message msgData={m} key={index}
+                    {tableMessages.items?.map((m, index) => <Message msgData={m} key={index}
                         type={currentUser.user._id === m.sender._id ? 0 : 1} />)}
+                    <Waypoint onEnter={() => console.log('enter')} />
                 </div>
                 <div hidden={value != 1}>
                     <div className='flex flex-col-reverse'>
-                        {roomMessages.items?.map((m, index) => <Message msgData={m} key={index}
-                            type={currentUser.user._id === m.sender._id ? 0 : 1} />)}
-                        <Waypoint onEnter={() => console.log('enter')} />
+                    {roomMessages.items?.map((m, index) => <Message msgData={m} key={index}
+                        type={currentUser.user._id === m.sender._id ? 0 : 1} />)}
+                    <Waypoint onEnter={() => console.log('enter')} />
                     </div>
                 </div>
                 <div ref={endRef} />
             </div>
             <div className='h-2'>
-                <div hidden={!roomMessages?.loading && !tableMessages?.loading}>
+                <div hidden={!tableMessages?.loading}>
                     <LinearProgress />
                 </div>
             </div>

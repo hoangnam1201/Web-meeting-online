@@ -10,7 +10,7 @@ export const roomMessageReducer = (state = initState, { type, payload }) => {
         case ROOMMESSAGES_SET:
             return { items: [...payload], loading: false};
         default:
-            return { ...state }
+            return state
     }
 }
 

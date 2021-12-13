@@ -12,6 +12,6 @@ export const userReducer = (state = initialState, { type, payload }) => {
     case REMOVE_USER_INFO:
       return { user: null, loaded: false };
     default:
-      return { ...state };
+      return state;
   }
 };

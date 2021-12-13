@@ -7,7 +7,7 @@ import Seat3top from '../seats/seat3top'
 const Table7 = ({ data, ...rest }) => {
     return (
         <div {...rest}>
-            <div className='h-full bg-blue-200 relative' style={{ minWidth: '100px' }}>
+            <div className='bg-blue-200 h-full relative hover:border-blue-300 border-4' style={{ minWidth: '100px' }}>
                 <div className='absolute z-50 text-white text-shadow'>{data?.name}</div>
                 <div className='z-10 relative'>
                     <Seat3top users={data?.users.slice(0, 2)} />

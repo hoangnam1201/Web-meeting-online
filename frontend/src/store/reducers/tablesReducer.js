@@ -15,6 +15,6 @@ export const TablesReducer = (state = initState, { type, payload }) => {
         case TABLE_ERROR:
             return { ...state, loading: false, error: payload };
         default:
-            return { ...state }
+            return state
     }
 }

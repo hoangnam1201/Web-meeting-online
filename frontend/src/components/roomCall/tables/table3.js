@@ -6,7 +6,7 @@ import Seat1Left from '../seats/seat1left'
 const Table3 = ({ data, ...rest }) => {
     return (
         <div {...rest}>
-            <div className='bg-blue-200 relative h-full' style={{ minWidth: '100px' }}>
+            <div className='bg-blue-200 h-full relative hover:border-blue-300 border-4' style={{ minWidth: '100px' }}>
                 <div className='absolute z-50 text-white text-shadow'>{data?.name}</div>
                 <Seat1 className='z-10 relative' user={data?.users[0]} />
                 <div className='z-10 relative flex justify-around'>

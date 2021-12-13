@@ -1,7 +1,6 @@
 import { makeStyles } from "@material-ui/styles";
 import React, { useState } from "react";
 import ContentChat from "../ContentChat";
-import ToolBar from "../RoomDetail/toolbar";
 
 const useStyles = makeStyles({
   root: {

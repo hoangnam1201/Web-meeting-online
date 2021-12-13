@@ -10,7 +10,7 @@ export const roomTablesReducer = (state = initState, { type, payload }) => {
         case ROOMTABLE_LOADING:
             return { ...state, loading: true }
         default:
-            return { ...state }
+            return state
     }
 }
 

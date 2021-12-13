@@ -24,6 +24,6 @@ export const roomCallReducer = (state = initState, { type, payload }) => {
                 ...state,
             }
         default:
-            return { ...state }
+            return state
     }
 }

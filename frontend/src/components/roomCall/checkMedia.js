@@ -28,7 +28,7 @@ const CheckMedia = ({ connection }) => {
             console.count('get tracks')
             const stream = await Connection.getVideoAudioStream(true, true, 12)
             dispatch({ type: MYSTREAM_SET, payload: stream })
-            connection.setPeersListeners(stream);
+            connection.current.setPeersListeners(stream);
         } catch {
             console.log('err')
         }
@@ -64,6 +64,7 @@ const CheckMedia = ({ connection }) => {
         try {
             const track = myStream.stream.getTracks().find(track => track.kind === 'video');
             track.stop();
+            track.enabled = false
             dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
         } catch (err) {
             console.log(err)
@@ -75,7 +76,7 @@ const CheckMedia = ({ connection }) => {
             const track = myStream.stream.getTracks().find(track => track.kind === 'video');
             if (track) {
                 track?.stop();
-                myStream.stream.removeTrack(track)
+                myStream.stream.removeTrack(track);
             }
             const streamTemp = await Connection.getVideoAudioStream(true, false, 12);
             myStream.stream.addTrack(streamTemp.getTracks()[0]);
@@ -91,7 +92,6 @@ const CheckMedia = ({ connection }) => {
 
         if (!myStream.stream) return;
         let temp = {}
-        console.log(myStream.stream.getTracks())
         myStream.stream.getTracks().forEach(track => {
             if (track.kind === 'audio' && track.readyState === 'live') {
                 temp = { ...temp, audio: true };
@@ -101,11 +101,11 @@ const CheckMedia = ({ connection }) => {
             }
         })
         setMedia(temp)
-        connection?.replaceStream();
+        // connection?.replaceStream();
     }, [myStream])
 
     const joinRoomHandler = () => {
-        connection.socket.emit('room:join', id);
+        connection.current.socket.emit('room:join', id);
     }
 
     return (
@@ -121,7 +121,7 @@ const CheckMedia = ({ connection }) => {
             </div>
             <div>
                 <div className='text-2xl text-gray-500 font-semibold my-4'>{id}</div>
-                {(connection?.socket.connected && connection?.myID) ?
+                {(connection?.current?.socket.connected && myStream?.stream) ?
                     <><div className='flex justify-center gap-4 my-4 '>
                         {media.audio ? (
                             <IconButton

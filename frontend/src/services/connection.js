@@ -8,11 +8,11 @@ import { ROOMTABLE_SET } from '../store/reducers/roomTablesReducer';
 import { ROOMMESSAGES_SET } from '../store/reducers/roomMessagesReducer';
 import { TABLEMESSAGES_SET } from '../store/reducers/tableMessagesReducer';
 const peerEndPoint = {
-    host: "ec2-54-161-198-205.compute-1.amazonaws.com",
+    host: "54.161.198.205",
     path: "/peerjs/meeting",
-    port: 3002,
+    port: 3002
 }
-const socketRoomEndPoint = 'http://ec2-54-161-198-205.compute-1.amazonaws.com:3002/socket/rooms';
+const socketRoomEndPoint = 'http://localhost:3002/socket/rooms';
 
 const initializePeerConnection = () => {
     return new Peer('', peerEndPoint);
@@ -29,18 +29,16 @@ const initializeSocketConnection = () => {
 }
 
 class Connection {
-    streaming = false;
     myPeer;
     socket;
     myID = '';
     //unit
-    peers = [];
+    peers = {};
     //room
     info = null;
-    roomMessages = [];
-    joiner = [];
 
-    constructor() {
+    constructor(setting) {
+        this.setting = setting;
         this.myPeer = initializePeerConnection();
         this.socket = initializeSocketConnection();
         this.initializeSocketEvents();
@@ -74,15 +72,15 @@ class Connection {
 
         this.socket.on('room:messages', (messages) => {
             const roomMessages = store.getState().roomMessages;
-            const temp = [...messages, ...roomMessages.items]
-            store.dispatch({ type: ROOMMESSAGES_SET, payload: temp });
+            const messagesTemp = [...messages, ...roomMessages.items];
+            store.dispatch({ type: ROOMMESSAGES_SET, payload: messagesTemp });
+            console.log('message room')
         });
 
         this.socket.on('room:message', (message) => {
-            const roomMessages = store.getState().roomMessages;
-            const temp = [message, ...roomMessages.items]
-            store.dispatch({ type: ROOMMESSAGES_SET, payload: temp });
-            console.log('message', message);
+            const roomMessage = store.getState().roomMessages;
+            const messages = [message, ...roomMessage.items];
+            store.dispatch({ type: ROOMMESSAGES_SET, payload: messages });
         });
 
         this.socket.on('room:join-err', (str) => {
@@ -91,20 +89,39 @@ class Connection {
 
         this.socket.on('table:user-leave', (data) => {
             console.log('table:user-leave', data)
-            const { userId, peerId } = data;
-            this.peers[userId] && this.peers[userId].close();
-            store.dispatch(tableUserLeaveAction(userId));
+            this.peers[data] && this.peers[data].close();
+            store.dispatch(tableUserLeaveAction(data));
         })
 
         this.socket.on('table:user-joined', (data) => {
             const myStream = store.getState().myStream;
             const userCurrent = store.getState().userReducer;
-            const { peerId, user } = data
-            console.log('call', myStream.stream.getAudioTracks());
-            const call = this.myPeer.call(peerId, myStream.stream, { metadata: { name: userCurrent.user.name, _id: userCurrent.user._id } });
+            const { peerId, user, media } = data
+            console.log(media)
+
+            let myMedia = { video: false, audio: false };
+            myStream.stream.getTracks().forEach(track => {
+                if (track.kind === 'audio' && track.readyState === 'live') {
+                    myMedia = { ...myMedia, audio: true };
+                }
+                if (track.kind === 'video' && track.readyState === 'live') {
+                    myMedia = { ...myMedia, video: true };
+                }
+            })
+
+            const options = {
+                metadata: {
+                    user: {
+                        name: userCurrent.user.name,
+                        _id: userCurrent.user._id,
+                    },
+                    media: myMedia
+                },
+            };
+
+            const call = this.myPeer.call(peerId, myStream.stream, options);
             call.on('stream', (userStream) => {
-                console.log('call-answerstream', userStream.getAudioTracks());
-                store.dispatch(tableUserJoinAction({ user: user, stream: userStream }));
+                store.dispatch(tableUserJoinAction({ user, stream: userStream, media }));
             })
             call.on('close', () => {
                 console.log('closing new user', peerId);
@@ -119,9 +136,9 @@ class Connection {
             store.dispatch({ type: TABLEMESSAGES_SET, payload: [] });
         })
 
-        this.socket.on('table:media', () => {
-            console.log('change media')
-            store.dispatch({ type: TABLE_CHANGEMEDIA });
+        this.socket.on('table:media', ({ userId, media }) => {
+            console.log(userId, media)
+            store.dispatch({ type: TABLE_CHANGEMEDIA, payload: { userId, media } });
         })
 
         this.socket.on('table:message', (msg) => {
@@ -140,11 +157,12 @@ class Connection {
         });
     }
 
+
+
     initializePeersEvents = () => {
         this.myPeer.on('open', (id) => {
-            console.log('peerjs open')
-            store.dispatch({ type: ROOM_CHANGE });
             this.myID = id;
+            store.dispatch({ type: ROOM_CHANGE });
         });
         this.myPeer.on('error', (err) => {
             console.log('peer connection error', err);
@@ -155,11 +173,13 @@ class Connection {
     setPeersListeners = (stream) => {
         console.log('listent call')
         this.myPeer.on('call', (call) => {
-            console.count('answer', stream.getAudioTracks());
             call.answer(stream);
             call.on('stream', (userVideoStream) => {
-                console.log('answer-callstream', userVideoStream.getAudioTracks())
-                store.dispatch(tableUserJoinAction({ user: call.metadata, stream: userVideoStream }));
+                store.dispatch(tableUserJoinAction({
+                    user: call.metadata.user,
+                    stream: userVideoStream,
+                    media: call.metadata.media
+                }));
             });
             call.on('close', () => {
                 console.log('closing peers listeners', call.metadata.id);
@@ -167,7 +187,7 @@ class Connection {
             call.on('error', () => {
                 console.log('peer error ------');
             });
-            this.peers[call.metadata._id] = call;
+            this.peers[call.metadata.user._id] = call;
         });
     }
 
@@ -182,6 +202,11 @@ class Connection {
             } : false,
             audio: audio,
         });
+    }
+
+    static getDisplayMediaStream = () => {
+        const myNavigator = navigator.mediaDevices.getDisplayMedia();
+        return myNavigator;
     }
 
     replaceStream = () => {
