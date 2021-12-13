@@ -99,7 +99,7 @@ export default (ioRoom: any, io: any) => {
     }
 
 
-    const joinTable = async function (tableId: string, peerId: string) {
+    const joinTable = async function (tableId: string, peerId: string, media: { audio: boolean, video: boolean }) {
         const socket: Socket = this;
         const userId = socket.data.userData.userId;
         const roomId = socket.data.roomId;
@@ -124,7 +124,7 @@ export default (ioRoom: any, io: any) => {
             ioRoom.to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
 
             const user = await userModel.findById(userId);
-            ioRoom.to(tableId).emit('table:user-joined', { user, peerId });
+            ioRoom.to(tableId).emit('table:user-joined', { user, peerId, media });
             socket.join(tableId);
             socket.data.tableId = tableId;
             socket.emit('table:join-success', tableId);
@@ -148,10 +148,12 @@ export default (ioRoom: any, io: any) => {
         }
     }
 
-    const changeMedia = async function () {
+    const changeMedia = async function (media: { audio: boolean, video: boolean }) {
         const socket: Socket = this;
         const tableId = socket.data.tableId;
-        ioRoom.to(tableId).emit('table:media', 'changes');
+        const userId = socket.data.userData.userId;
+
+        ioRoom.to(tableId).emit('table:media', { userId: userId, media });
     }
     return {
         joinRoom,

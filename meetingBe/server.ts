@@ -6,7 +6,6 @@ import dotenv from 'dotenv';
 import initRouter from './src/api/routers/index.router'
 import { initIOServer } from './src/io/index';
 import { ExpressPeerServer } from 'peer';
-import { databaseConfig } from './src/config/database.config';
 import notificationModel from './src/models/notifications.model';
 
 interface ExpressApp extends Express {
@@ -28,13 +27,13 @@ app.use((req: Request, res: Response, next: any) => {
 app.use(json());
 app.use(urlencoded({ extended: false }));
 
-const uri = databaseConfig.connectionString;
+const uri = process.env.HOST_DB;
 mongoose.connect(uri);
 
 // socketjs
 const io = new Server(httpServer, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: '*',
         methods: ['GET', 'POST'],
     }
 });

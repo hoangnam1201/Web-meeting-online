@@ -139,7 +139,7 @@ export default class RoomController {
         const authId = req.userData.userId;
         try {
             const room = await roomModel.findOneAndUpdate({ _id: roomId }, { $addToSet: { members: userId } });
-            await userModel.updateOne({ _id: userId }, { $push: { invitedRooms: roomId } });
+            await userModel.updateOne({ _id: userId }, { $addToSet: { invitedRooms: roomId } });
             res.status(200).json({ status: 200, data: null });
 
             const msg = `You are invited to class ${room.name}`
@@ -167,7 +167,7 @@ export default class RoomController {
                 }
             })
             await userModel.updateMany({ _id: { $in: userIds } }, {
-                $push: {
+                $addToSet: {
                     invitedRooms: room._id
                 }
             })
