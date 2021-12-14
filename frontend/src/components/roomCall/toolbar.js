@@ -1,118 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import { IconButton } from '@mui/material'
 import ChatIcon from "@mui/icons-material/Chat";
-import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOff from '@mui/icons-material/VideocamOff';
 import MicIcon from "@mui/icons-material/Mic";
-import Connection from '../../services/connection';
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import { useDispatch, useSelector } from 'react-redux';
 import { roomShowChatAction } from '../../store/actions/roomCallAction';
-import { MYSTREAM_SET } from '../../store/reducers/myStreamReducer';
+import Connection from '../../services/connection';
 
 
-const Toolbar = ({ connection, ...rest }) => {
+const Toolbar = ({ connection, mediaStatus, ...rest }) => {
     const roomCall = useSelector(state => state.roomCall);
-    const myStream = useSelector(state => state.myStream);
-    const [media, setMedia] = useState({ audio: false, video: false });
     const dispatch = useDispatch();
 
-    const turnOffAudio = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'audio');
-            track?.stop();
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+    const turnOffAudio = () => {
+        connection.current.turnOffAudio();
     }
 
-    const turnOnAudio = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'audio');
-            if (track) {
-                track?.stop();
-                myStream.stream.removeTrack(track)
-            }
-            const streamTemp = await Connection.getVideoAudioStream(false, true, 12);
-            myStream.stream.addTrack(streamTemp.getTracks()[0]);
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+    const turnOnAudio = () => {
+        connection.current.turnOnAudio();
     }
 
-    const turnOffVideo = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'video');
-            track.stop();
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+    const turnOffVideo = () => {
+        connection.current.turnOffVideo();
     }
 
-    const turnOnVideo = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'video');
-            if (track) {
-                track?.stop();
-                myStream.stream.removeTrack(track)
-            }
-            const streamTemp = await Connection.getVideoAudioStream(true, false, 12);
-            myStream.stream.addTrack(streamTemp.getTracks()[0]);
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+    const turnOnVideo = () => {
+        connection.current.turnOnVideo();
     }
 
     const shareScreen = async () => {
-        try {
-            const track = myStream.stream.getVideoTracks()[0];
-            if (track) {
-                track?.stop();
-                myStream.stream.removeTrack(track)
-            }
-            const streamTemp = await Connection.getDisplayMediaStream();
-            const displayTrack = streamTemp.getVideoTracks()[0];
-            displayTrack.addEventListener('ended', (mediaTrack, ev) => {
-                turnOffVideo();
-            })
-
-            myStream.stream.addTrack(displayTrack);
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+        connection.current.getDisplayMediaStream();
     }
-
-    useEffect(() => {
-        if (!myStream.stream) return;
-        let temp = { video: false, audio: false };
-        myStream.stream.getTracks().forEach(track => {
-            if (track.kind === 'audio' && track.readyState === 'live') {
-                temp = { ...temp, audio: true };
-            }
-            if (track.kind === 'video' && track.readyState === 'live') {
-                temp = { ...temp, video: true };
-            }
-        })
-
-        setMedia(temp)
-        connection?.current?.replaceStream();
-        console.log(temp)
-        connection?.current?.socket.emit('table:change-media', temp);
-    }, [myStream])
 
     return (
         <div {...rest}>
             <div className='flex gap-8 py-2 text-gray-500'>
-                {media.audio ?
+                {mediaStatus.audio ?
                     <IconButton onClick={turnOffAudio}>
                         <MicIcon fontSize='large' />
                     </IconButton> :
@@ -120,8 +46,8 @@ const Toolbar = ({ connection, ...rest }) => {
                         <MicOffIcon fontSize='large' />
                     </IconButton>
                 }
-                {media.video ?
-                    <IconButton onClick={turnOffVideo}>
+                {mediaStatus.video ?
+                    <IconButton onClick={turnOffVideo} disabled={connection.current.isShare}>
                         <PhotoCameraFrontIcon fontSize='large' />
                     </IconButton> :
                     <IconButton onClick={turnOnVideo}>
@@ -129,7 +55,7 @@ const Toolbar = ({ connection, ...rest }) => {
                     </IconButton>
                 }
                 <IconButton onClick={shareScreen}>
-                    <ScreenShareIcon fontSize='large' />
+                    <ScreenShareIcon fontSize='large' className={connection.current.isShare && 'text-blue-500'}/>
                 </IconButton>
                 <IconButton onClick={() => {
                     if (roomCall)

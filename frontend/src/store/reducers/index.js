@@ -2,21 +2,11 @@ import { combineReducers } from "redux";
 import { listRoomReducer } from "../../components/MyEvent/modules/reducer";
 import { userReducer } from "./userInfoReducer";
 import { roomCallReducer } from "./roomCallReducer";
-import { TablesReducer } from "./tablesReducer";
-import { tableCallReducer } from "./tableCallReducer";
-import { roomTablesReducer } from "./roomTablesReducer";
-import { roomMessageReducer } from "./roomMessagesReducer";
-import { tableMessageReducer } from "./tableMessagesReducer";
-import { myStreamReducer } from "./myStreamReducer";
+import { selectedVideoReducer } from "./selectVideoReducer";
 
 export const rootReducer = combineReducers({
   userReducer,
   listRoomReducer,
   roomCall: roomCallReducer,
-  myStream: myStreamReducer,
-  roomTables: roomTablesReducer,
-  roomMessages: roomMessageReducer,
-  tableMessages: tableMessageReducer,
-  tableCall: tableCallReducer,
-  tables: TablesReducer
+  selectedVideo: selectedVideoReducer
 });

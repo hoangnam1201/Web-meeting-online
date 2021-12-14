@@ -7,101 +7,35 @@ import VideoIcon from "@mui/icons-material/PhotoCameraFront";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { useParams } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
-import { MYSTREAM_SET } from '../../store/reducers/myStreamReducer';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const CheckMedia = ({ connection }) => {
+const CheckMedia = ({ connection, myStream, canAccess }) => {
     const myVideo = useRef(null);
-    const myStream = useSelector(state => state.myStream);
     const [media, setMedia] = useState({ audio: false, video: false });
-    const dispatch = useDispatch();
     const { id } = useParams();
 
-    useEffect(() => {
-        if (connection)
-            openMedia();
-    }, [connection])
-
-    const openMedia = async () => {
-        try {
-            console.count('get tracks')
-            const stream = await Connection.getVideoAudioStream(true, true, 12)
-            dispatch({ type: MYSTREAM_SET, payload: stream })
-            connection.current.setPeersListeners(stream);
-        } catch {
-            console.log('err')
-        }
+    const turnOffAudio = () => {
+        connection.current.turnOffAudio();
     }
 
-
-    const turnOffAudio = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'audio');
-            track?.stop();
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+    const turnOnAudio = () => {
+        connection.current.turnOnAudio();
     }
 
-    const turnOnAudio = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'audio');
-            if (track) {
-                myStream.stream.removeTrack(track)
-                track?.stop();
-            }
-            const streamTemp = await Connection.getVideoAudioStream(false, true, 12);
-            myStream.stream.addTrack(streamTemp.getTracks()[0]);
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+    const turnOffVideo = () => {
+        connection.current.turnOffVideo();
     }
 
-    const turnOffVideo = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'video');
-            track.stop();
-            track.enabled = false
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    const turnOnVideo = async () => {
-        try {
-            const track = myStream.stream.getTracks().find(track => track.kind === 'video');
-            if (track) {
-                track?.stop();
-                myStream.stream.removeTrack(track);
-            }
-            const streamTemp = await Connection.getVideoAudioStream(true, false, 12);
-            myStream.stream.addTrack(streamTemp.getTracks()[0]);
-            dispatch({ type: MYSTREAM_SET, payload: myStream.stream })
-        } catch (err) {
-            console.log(err)
-        }
+    const turnOnVideo = () => {
+        connection.current.turnOnVideo();
     }
 
     useEffect(() => {
+        if (!myStream.stream) return;
         myVideo.current.srcObject = myStream.stream;
         myVideo.current.muted = myStream.stream;
+        setMedia(Connection.getMediaStatus(myStream.stream))
 
-        if (!myStream.stream) return;
-        let temp = {}
-        myStream.stream.getTracks().forEach(track => {
-            if (track.kind === 'audio' && track.readyState === 'live') {
-                temp = { ...temp, audio: true };
-            }
-            if (track.kind === 'video' && track.readyState === 'live') {
-                temp = { ...temp, video: true };
-            }
-        })
-        setMedia(temp)
-        // connection?.replaceStream();
     }, [myStream])
 
     const joinRoomHandler = () => {
@@ -121,7 +55,7 @@ const CheckMedia = ({ connection }) => {
             </div>
             <div>
                 <div className='text-2xl text-gray-500 font-semibold my-4'>{id}</div>
-                {(connection?.current?.socket.connected && myStream?.stream) ?
+                {canAccess ?
                     <><div className='flex justify-center gap-4 my-4 '>
                         {media.audio ? (
                             <IconButton

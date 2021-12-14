@@ -53,6 +53,8 @@ export default (ioRoom: any, io: any) => {
         const socket = this;
         const roomId = socket.data.roomId;
         const userId = socket.data.userData.userId;
+        const peerId = socket.data.peerId;
+
         roomModel.findOneAndUpdate({ _id: roomId }, { $pull: { joiners: userId } }, { timestamps: true, new: true }).populate('joiners').exec((err: any, room: Room) => {
             if (err) return;
             if (!room) return socket.emit('room:bad-request', 'not found room');
@@ -65,7 +67,7 @@ export default (ioRoom: any, io: any) => {
             await tableModel.updateOne({ _id: tableId }, { $pull: { users: userId } });
             const tables = await tableModel.find({ room: roomId }).populate('users');
             io.of('/socket/rooms').to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
-            ioRoom.to(tableId).emit('table:user-leave', userId);
+            ioRoom.to(tableId).emit('table:user-leave', { userId, peerId });
         } catch (err) {
             socket.emit('table:err', err)
         }
@@ -102,7 +104,7 @@ export default (ioRoom: any, io: any) => {
     const joinTable = async function (tableId: string, peerId: string, media: { audio: boolean, video: boolean }) {
         const socket: Socket = this;
         const userId = socket.data.userData.userId;
-        const roomId = socket.data.roomId;
+        const roomId = socket.data.roomId
 
         try {
             const table: Table = await tableModel.findById(tableId);
@@ -124,9 +126,11 @@ export default (ioRoom: any, io: any) => {
             ioRoom.to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
 
             const user = await userModel.findById(userId);
-            ioRoom.to(tableId).emit('table:user-joined', { user, peerId, media });
+            ioRoom.to(tableId).emit('table:user-joined', { user: UserReadDto.fromUser(user), peerId, media });
             socket.join(tableId);
+
             socket.data.tableId = tableId;
+            socket.data.peerId = peerId;
             socket.emit('table:join-success', tableId);
         } catch (err) {
             console.log(err)
@@ -152,8 +156,9 @@ export default (ioRoom: any, io: any) => {
         const socket: Socket = this;
         const tableId = socket.data.tableId;
         const userId = socket.data.userData.userId;
+        const peerId = socket.data.peerId;
 
-        ioRoom.to(tableId).emit('table:media', { userId: userId, media });
+        ioRoom.to(tableId).emit('table:media', { peerId: peerId, userId: userId, media });
     }
     return {
         joinRoom,

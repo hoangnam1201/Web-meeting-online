@@ -6,15 +6,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { roomShowChatAction } from '../../store/actions/roomCallAction';
 import { Waypoint } from 'react-waypoint';
 import LinearProgress from '@mui/material/LinearProgress';
-import { ROOMMESSAGES_LOADING } from '../../store/reducers/roomMessagesReducer';
-import { TABLEMESSAGES_LOADING } from '../../store/reducers/tableMessagesReducer';
 
-const ChatBox = ({ connection, ...rest }) => {
+const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
     const [value, setValue] = useState(0)
     const [msgText, setMsgText] = useState('');
     const dispatch = useDispatch();
-    const tableMessages = useSelector(state => state.tableMessages);
-    const roomMessages = useSelector(state => state.roomMessages);
     const currentUser = useSelector((state) => state.userReducer);
     const endRef = useRef(null);
 
@@ -26,18 +22,16 @@ const ChatBox = ({ connection, ...rest }) => {
         endRef.current.scrollIntoView();
     }, [value])
 
-    console.log('render')
-
     const handleKeydown = (e) => {
+        console.log(typeof e);
         if (e.key === 'Enter') {
             if (value == 0) {
                 connection.current.socket.emit('table:send-message', msgText);
-                dispatch({ type: TABLEMESSAGES_LOADING })
             }
             if (value == 1) {
                 connection.current.socket.emit('room:send-message', msgText);
-                dispatch({ type: ROOMMESSAGES_LOADING })
             }
+
             setMsgText('');
             endRef.current.scrollIntoView({ behavior: 'smooth' });
         }
@@ -54,15 +48,17 @@ const ChatBox = ({ connection, ...rest }) => {
             </div>
             <div className='h-3/4 overflow-auto'>
                 <div hidden={value != 0}>
-                    {tableMessages.items?.map((m, index) => <Message msgData={m} key={index}
-                        type={currentUser.user._id === m.sender._id ? 0 : 1} />)}
-                    <Waypoint onEnter={() => console.log('enter')} />
+                    <div className='flex flex-col-reverse'>
+                        {tableMessages?.map((m, index) => <Message msgData={m} key={index}
+                            type={currentUser.user._id === m.sender._id ? 0 : 1} />)}
+                        <Waypoint onEnter={() => console.log('enter')} />
+                    </div>
                 </div>
                 <div hidden={value != 1}>
                     <div className='flex flex-col-reverse'>
-                    {roomMessages.items?.map((m, index) => <Message msgData={m} key={index}
-                        type={currentUser.user._id === m.sender._id ? 0 : 1} />)}
-                    <Waypoint onEnter={() => console.log('enter')} />
+                        {roomMessages?.map((m, index) => <Message msgData={m} key={index}
+                            type={currentUser.user._id === m.sender._id ? 0 : 1} />)}
+                        <Waypoint onEnter={() => console.log('enter')} />
                     </div>
                 </div>
                 <div ref={endRef} />

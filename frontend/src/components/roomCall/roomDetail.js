@@ -11,76 +11,126 @@ import Table8 from './tables/table8'
 import Table4 from './tables/tables4'
 import VideoTableContainer, { MyVideo } from './videoTableContainer'
 import ChatBox from './chatBox'
-import { ROOMTABLE_LOADING } from '../../store/reducers/roomTablesReducer'
-import LinearProgress from '@mui/material/LinearProgress';
-import { tableCallClear, tableSetPinStream } from '../../store/actions/tableCallAction'
 import MicOffIcon from "@mui/icons-material/MicOff";
 import MinimizeIcon from '@mui/icons-material/Minimize';
-import MaximizeIcon from '@mui/icons-material/Maximize';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import Avatar from 'react-avatar';
 import { IconButton } from '@mui/material'
+import Connection from '../../services/connection'
+import { SET_SELECTEDVIDEO } from '../../store/reducers/selectVideoReducer'
 
-const RoomDetail = ({ connection }) => {
+const RoomDetail = ({
+    connection,
+    roomTables,
+    roomMessages,
+    tableMessages,
+    streamDatas,
+    myStream }) => {
+
     const roomCall = useSelector(state => state.roomCall);
-    const roomTables = useSelector(state => state.roomTables);
+    const [mediaStatus, setMediaStatus] = useState({ audio: false, video: false });
+    console.log(roomTables)
+
+    useEffect(() => {
+        const media = Connection.getMediaStatus(myStream.stream);
+        setMediaStatus(media)
+        connection.current.replaceStream();
+        connection.current.socket.emit('table:change-media', media);
+    }, [myStream])
 
 
     return (
         <div className='min-h-screen relative bg-gray-100'>
-            <VideoTableContainer className='sticky z-10 justify-center w-full overflow-x-auto top-4 croll-none' />
+            <VideoTableContainer
+                className='sticky z-10 justify-center w-full overflow-x-auto top-4 croll-none'
+                streamDatas={streamDatas}
+                myStream={myStream}
+            />
             <div className='text-xl font-semibold py-4 bg-gray-100 text-gray-500
             '>{connection?.current?.info?.name}</div>
-            <div className='h-2'>
-                {roomTables?.loading && <LinearProgress />}
-            </div>
             <div className='px-4'>
-                <ListTable tables={roomTables.items} connection={connection} />
+                <ListTable
+                    tables={roomTables}
+                    connection={connection}
+                    mediaStatus={mediaStatus} />
             </div>
             <PinVideo />
-            {roomCall?.showChat && <ChatBox connection={connection} className=' fixed h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-full
-            bg-white shadow-md' style={{ left: '98%' }} />}
+            {roomCall?.showChat &&
+                <ChatBox
+                    connection={connection}
+                    roomMessages={roomMessages}
+                    tableMessages={tableMessages}
+                    className=' fixed h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-full bg-white shadow-md'
+                    style={{ left: '98%' }} />}
             <div className='fixed z-30 top-full transform -translate-y-full flex justify-center w-full'>
-                <ToolBar className='bg-white px-8 rounded-lg shadow-inner' connection={connection} />
+                <ToolBar className='bg-white px-8 rounded-lg shadow-inner'
+                    connection={connection}
+                    mediaStatus={mediaStatus} />
             </div>
         </div>
     )
 }
 
 const PinVideo = () => {
+    const selectedVideo = useSelector(state => state.selectedVideo);
+    const [size, setSize] = useState('50%')
     const videoRef = useRef(null)
-    const tableCall = useSelector(state => state.tableCall);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!tableCall) return;
-        const stream = tableCall?.pin?.stream;
+        if (!selectedVideo) return;
+        const stream = selectedVideo.stream;
         if (!stream) return;
-
+        console.log(selectedVideo)
         videoRef.current.muted = true;
         videoRef.current.srcObject = stream;
 
-    }, [tableCall])
+    }, [selectedVideo])
+
+
 
     return (
         <>
-            {tableCall?.pin && <div className='fixed z-20 rounded-md overflow-hidden top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 shadow-lg p-1 bg-gray-500'
-                style={{ width: '800px', minHeight: '400px' }}>
-                <div className='flex justify-between px-3 bg-gray-500 items-center border-b-2'>
+            {selectedVideo && <div className='fixed rounded-md overflow-hidden top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 shadow-lg bg-gray-50'
+                style={{ width: size, minHeight: size, zIndex: '60' }}>
+                <div className='flex justify-between px-3 absolute items-center w-full z-10 bg-black opacity-0 hover:opacity-60 transition-opacity'>
                     <div className='flex gap-2 '>
-                        <div className='text-shadow text-white'> {tableCall.pin.user.name} </div>
-                        <div hidden={tableCall.pin.media.audio}>
+                        <div className='text-shadow text-white'> {selectedVideo.user?.name} </div>
+                        <div hidden={selectedVideo.media.audio}>
                             <MicOffIcon className='text-red-500' />
                         </div>
                     </div>
+
                     <div>
-                        <IconButton onClick={() => dispatch(tableSetPinStream(null))}>
+                        <IconButton onClick={() => {
+                            dispatch({
+                                type: SET_SELECTEDVIDEO,
+                                payload: null
+                            });
+                        }}
+                            variant="contained"
+                        >
                             <MinimizeIcon fontSize='small' className='text-white' />
                         </IconButton>
+                        {size === '50%' ?
+                            <IconButton onClick={() => { setSize('80%') }}
+                                variant="contained"
+                            >
+                                <OpenInFullIcon fontSize='small' className='text-white' />
+                            </IconButton>
+                            :
+                            <IconButton onClick={() => { setSize('50%') }}
+                                variant="contained"
+                            >
+                                <CloseFullscreenIcon fontSize='small' className='text-white' />
+                            </IconButton>
+                        }
                     </div>
                 </div>
-                <video ref={videoRef} autoPlay className='h-full w-full' muted hidden={!tableCall.pin.media.video} />
-                {!tableCall.pin.media.video && <Avatar
-                    name={tableCall.pin.user.name}
+                <video ref={videoRef} autoPlay className='h-full w-full' muted hidden={!selectedVideo.media.video} />
+                {!selectedVideo.media.video && <Avatar
+                    name={selectedVideo.user.name}
                     round
                     className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
                 />}
@@ -89,32 +139,17 @@ const PinVideo = () => {
     )
 }
 
-const ListTable = React.memo(({ tables, connection }) => {
-    const dispatch = useDispatch()
-    const myStream = useSelector(state => state.myStream);
+const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
 
     const joinTable = (id) => {
-        dispatch({ type: ROOMTABLE_LOADING });
         connection.current.clearPeers();
-        dispatch(tableCallClear());
 
-        if (!myStream) return;
-        const stream = myStream.stream;
-        if (!stream) return;
-
-        let media = { video: false, audio: false };
-        stream.getTracks().forEach(track => {
-            if (track.kind === 'audio' && track.readyState === 'live') {
-                media = { ...media, audio: true };
-            }
-            if (track.kind === 'video' && track.readyState === 'live') {
-                media = { ...media, video: true };
-            }
-        })
-
-        connection.current.socket.emit('table:join', id, connection.current.myID, media);
+        connection.current.socket.emit('table:join',
+            id,
+            connection.current.myID,
+            mediaStatus);
     }
-    console.log('render')
+
     return (
         <>
             <div className='grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-2 relative z-0'>

@@ -4,16 +4,16 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import PushPinIcon from '@mui/icons-material/PushPin';
 import Avatar from 'react-avatar';
 import { IconButton } from '@mui/material';
-import { tableSetPinStream } from '../../store/actions/tableCallAction';
+import { SET_SELECTEDVIDEO } from '../../store/reducers/selectVideoReducer';
+import Connection from '../../services/connection';
 
-const VideoTableContainer = ({ ...rest }) => {
-    const tableCall = useSelector(state => state.tableCall);
+const VideoTableContainer = ({ myStream, streamDatas, ...rest }) => {
 
     return (
         <div {...rest}>
             <div className='flex gap-4 justify-center'>
-                <MyVideo className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden' />
-                {tableCall?.streams.map((s, index) => {
+                <MyVideo className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden' myStream={myStream} />
+                {streamDatas && Object.values(streamDatas).map((s, index) => {
                     return <Video className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden'
                         user={s.user}
                         stream={s.stream}
@@ -27,10 +27,10 @@ const VideoTableContainer = ({ ...rest }) => {
 
 
 
-export const MyVideo = React.memo(({ ...rest }) => {
-    const myStream = useSelector(state => state.myStream);
+export const MyVideo = React.memo(({ myStream, ...rest }) => {
     const videoRef = useRef(null)
     const [media, setMedia] = useState({ video: false, audio: false })
+    const dispatch = useDispatch();
 
     useEffect(() => {
 
@@ -38,16 +38,7 @@ export const MyVideo = React.memo(({ ...rest }) => {
         const stream = myStream.stream;
         if (!stream) return;
 
-        let temp = {}
-        stream.getTracks().forEach(track => {
-            if (track.kind === 'audio' && track.readyState === 'live') {
-                temp = { ...temp, audio: true };
-            }
-            if (track.kind === 'video' && track.readyState === 'live') {
-                temp = { ...temp, video: true };
-            }
-        })
-        setMedia(temp)
+        setMedia(Connection.getMediaStatus(stream));
         videoRef.current.muted = true;
         videoRef.current.srcObject = stream;
 
@@ -65,18 +56,26 @@ export const MyVideo = React.memo(({ ...rest }) => {
                         </div>
                     </div>
                     <div>
-                        <IconButton>
+                        <IconButton onClick={() => {
+                            dispatch({
+                                type: SET_SELECTEDVIDEO,
+                                payload: {
+                                    user: null, stream: myStream.stream, media
+                                }
+                            });
+                        }}>
                             <PushPinIcon className=' text-white' fontSize='small' />
                         </IconButton>
                     </div>
                 </div>
                 {!media.video && <Avatar
                     value='You'
+                    color='purple'
                     round
                     className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
                 />}
             </div>
-        </div>
+        </div >
     )
 })
 
@@ -90,12 +89,17 @@ export const Video = ({ user, stream, media, ...rest }) => {
         videoRef.current.muted = true;
         videoRef.current.srcObject = stream;
         audioRef.current.srcObject = stream;
-
     }, [stream])
 
-    const pinStream = () => {
-        dispatch(tableSetPinStream({ user, stream, media }));
+    const onPin = () => {
+        console.log('pin')
+        dispatch({
+            type: SET_SELECTEDVIDEO,
+            payload: { user, stream, media }
+        });
     };
+
+    console.log('media')
 
     return (
         <div {...rest}>
@@ -110,7 +114,7 @@ export const Video = ({ user, stream, media, ...rest }) => {
                         </div>
                     </div>
                     <div>
-                        <IconButton onClick={pinStream}>
+                        <IconButton onClick={onPin}>
                             <PushPinIcon className=' text-gray-100' fontSize='small' />
                         </IconButton>
                     </div>
@@ -125,4 +129,4 @@ export const Video = ({ user, stream, media, ...rest }) => {
     )
 }
 
-export default VideoTableContainer
+export default React.memo(VideoTableContainer)
