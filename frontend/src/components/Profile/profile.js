@@ -16,6 +16,7 @@ import moment from "moment";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import { useCookies } from "react-cookie";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginBottom: "100px", padding: "0 100px" },
@@ -69,6 +70,8 @@ const schema = yup.object().shape({
   phone: yup
     .string()
     .required("Số điện thoại đang trống !")
+    .min(9, "Số điện thoại ít nhất 9 ký tự")
+    .max(12, "Số điện thoại tối đa 12 ký tự")
     .matches(phoneRegExp, "Số điện thoại không đúng định dạng !"),
 });
 
@@ -78,8 +81,8 @@ export default function Profiles() {
     resolver: yupResolver(schema),
   });
   const classes = useStyles();
-  const loginInfo = useSelector(state => state.userReducer?.user);
-  const [cookies] = useCookies(['u_auth']);
+  const loginInfo = useSelector((state) => state.userReducer?.user);
+  const [cookies] = useCookies(["u_auth"]);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [info, setInfo] = useState(null);
@@ -113,15 +116,11 @@ export default function Profiles() {
     };
     setLoading(true);
     axios
-      .put(
-        "http://localhost:3002/api/user/change-infor",
-        data,
-        {
-          headers: {
-            Authorization: `token ${cookies.u_auth.accessToken}`,
-          }
+      .put("http://localhost:3002/api/user/change-infor", data, {
+        headers: {
+          Authorization: `token ${cookies.u_auth.accessToken}`,
         },
-      )
+      })
       .then((res) => {
         setLoading(false);
         setErrorNotify(null);
@@ -138,8 +137,14 @@ export default function Profiles() {
       })
       .catch((error) => {
         setLoading(false);
-        if (error.response.data && error.response) {
-          setErrorNotify(error.response.data);
+        if (error?.response?.data?.msg) {
+          setErrorNotify(error?.response?.data?.msg);
+        }
+        if (error?.response?.data?.errors[0].msg) {
+          setErrorNotify(error?.response?.data?.errors[0].msg);
+        }
+        if (error?.response?.data?.err) {
+          setErrorNotify(error?.response?.data?.err);
         }
       });
   };
@@ -178,12 +183,8 @@ export default function Profiles() {
             id="username"
             label="Username"
             name="username"
-            autoComplete="username"
-            inputRef={register}
-            error={!!errors.username}
-            helperText={errors?.username?.message}
+            disabled
             value={info?.username}
-            onChange={handleInfoChange}
           />
           <TextField
             className={classes.input}
@@ -226,12 +227,8 @@ export default function Profiles() {
             id="email"
             label="Email"
             name="email"
-            autoComplete="email"
-            inputRef={register}
-            error={!!errors.email}
-            helperText={errors?.email?.message}
+            disabled
             value={info?.email}
-            onChange={handleInfoChange}
           />
           <MuiPickersUtilsProvider
             className={classes.input}
@@ -249,7 +246,11 @@ export default function Profiles() {
             />
           </MuiPickersUtilsProvider>
 
-          {errorNotify ? <h5>{errorNotify}</h5> : null}
+          {errorNotify ? (
+            <Alert style={{ marginTop: "15px" }} severity="error">
+              {errorNotify}
+            </Alert>
+          ) : null}
           <Button
             type="submit"
             variant="contained"

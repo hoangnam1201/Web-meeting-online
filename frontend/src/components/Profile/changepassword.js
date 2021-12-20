@@ -8,6 +8,8 @@ import { ScaleLoader } from "react-spinners";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
+import Alert from "@material-ui/lab/Alert";
+import { useCookies } from "react-cookie";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginBottom: "100px", padding: "0 100px" },
@@ -52,7 +54,8 @@ export default function ChangePassword() {
     ? JSON.parse(localStorage.getItem("user"))
     : "";
   const [loading, setLoading] = useState(false);
-
+  const [errorNotify, setErrorNotify] = useState(null);
+  const [cookies] = useCookies(["u_auth"]);
   const [password, setPassword] = useState({
     oldPassword: "",
     password: "",
@@ -80,7 +83,7 @@ export default function ChangePassword() {
         passwordConfirmation: password.passwordConfirmation,
       },
       headers: {
-        Authorization: `token ${accessToken.accessToken}`,
+        Authorization: `token ${cookies.u_auth.accessToken}`,
       },
     })
       .then(() => {
@@ -93,7 +96,16 @@ export default function ChangePassword() {
         });
       })
       .catch((error) => {
-        console.log(error);
+        setLoading(false);
+        if (error?.response?.data?.msg) {
+          setErrorNotify(error?.response?.data?.msg);
+        }
+        if (error?.response?.data?.errors[0].msg) {
+          setErrorNotify(error?.response?.data?.errors[0].msg);
+        }
+        if (error?.response?.data?.err) {
+          setErrorNotify(error?.response?.data?.err);
+        }
       });
   };
   return (
@@ -173,6 +185,11 @@ export default function ChangePassword() {
             value={password.passwordConfirmation}
             onChange={handleInfoChange}
           />
+          {errorNotify ? (
+            <Alert style={{ marginTop: "15px" }} severity="error">
+              {errorNotify}
+            </Alert>
+          ) : null}
           <Button
             type="submit"
             variant="contained"
