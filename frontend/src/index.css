@@ -31,9 +31,24 @@ code {
       height: 0;
     }
 
+    .scroll-sm::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .scroll-sm::-webkit-scrollbar-track {
+      background: #475569;
+      border-radius: 20px;
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 20px;
+    }
+
     body::-webkit-scrollbar {
-      width: 15px;
-      height: 10px;
+      width: 6px;
+      height: 6px;
     }
   
     body::-webkit-scrollbar-track {

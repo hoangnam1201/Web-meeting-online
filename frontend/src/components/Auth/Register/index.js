@@ -224,7 +224,6 @@ function Register(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error.response.data);
         if (error?.response?.data?.msg) {
           setregisterError(error?.response?.data?.msg);
         }

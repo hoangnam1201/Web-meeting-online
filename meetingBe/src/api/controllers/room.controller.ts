@@ -26,9 +26,7 @@ export default class RoomController {
         } catch (err) {
             return res.status(500).json({
                 status: 500,
-                error: [{
-                    mgs: err
-                }]
+                err: 'Internal Server Error'
             })
         }
     }
@@ -40,7 +38,10 @@ export default class RoomController {
             await userModel.updateMany({ _id: { $in: room.members } }, { $pull: { invitedRooms: roomId } });
             return res.status(200).json({ status: 200, data: null });
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ msg: err }] });
+            return res.status(500).json({
+                status: 500,
+                error: 'Internal Server Error'
+            })
         }
     }
 

@@ -96,21 +96,19 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
   );
 };
 
-const Message = ({ msgData, type, ...rest }) => {
+export const Message = ({ nameClass, msgData, type, ...rest }) => {
   return (
     <div {...rest}>
       <div
-        className={`flex flex-col ${
-          type === 0 ? "items-end" : "items-start"
-        } mt-4 mx-2 `}
+        className={`flex flex-col ${type === 0 ? "items-end" : "items-start"
+          } mt-4 mx-2 `}
       >
         {type === 1 && (
-          <div className="text-sm mx-4">{msgData.sender?.name}</div>
+          <div className={`text-sm mx-4 ${nameClass}`}>{msgData.sender?.name}</div>
         )}
         <div
-          className={`w-3/4 h-auto ${
-            type === 0 ? "bg-blue-200" : "bg-gray-200"
-          } rounded-lg px-2 py-1
+          className={`w-3/4 h-auto ${type === 0 ? "bg-blue-200" : "bg-gray-200"
+            } rounded-lg px-2 py-1
                  whitespace-normal break-words`}
         >
           {msgData.message}

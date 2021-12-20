@@ -4,7 +4,7 @@ POST http://localhost:3002/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lamtvu05",
+    "username": "rexno01",
     "password": "123123",
     "passwordConfirmation": "123123",
     "name": "than lam",
@@ -19,7 +19,7 @@ POST http://localhost:3002/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lamtvu01",
+    "username": "lamtvu",
     "password": "123123123"
 }
 
@@ -59,12 +59,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 ###
 POST http://localhost:3002/api/room HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzYzMTI1MTIsImV4cCI6MTYzNjM5ODkxMn0.gTGaJwU9lI9-uWCU8opud77iksJKYaWk46B11uUcy1w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2Mzk5MTQ3NTMsImV4cCI6MTYzOTkyMTk1M30.Q30qPBahQEzQ2-fM3rZt5XyFLt0T244KIfSOMx9rfP8
 
 {
-    "name":"room 100",
+    "name":"r",
     "description": "ta",
-    "roomType": 1,
     "startDate": 123123123123,
     "endDate": 193213123123
 }

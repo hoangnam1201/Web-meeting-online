@@ -15,10 +15,15 @@ export default (io: any) => {
         socket.on('room:join', _roomHandler.joinRoom);
         socket.on('room:send-message', _roomHandler.sendMessage);
         socket.on('room:get-messages', _roomHandler.getMessages);
+        socket.on('room:present', _roomHandler.present)
         socket.on('table:join', _roomHandler.joinTable);
         socket.on('table:send-message', _roomHandler.sendTableMessage);
-        socket.on('table:change-media', _roomHandler.changeMedia);
+        socket.on('change-media', _roomHandler.changeMedia);
         socket.on('disconnecting', _roomHandler.leaveRoom);
+        socket.on('present:join', _roomHandler.joinPresent);
+        socket.on('present:stop', _roomHandler.stopPresenting);
+        socket.on('table:leave', _roomHandler.leaveTable);
+        socket.on('present:pin', _roomHandler.pin);
     }
 
     roomNamespace.on("connection", connection);

@@ -8,6 +8,7 @@ export class Room {
     startDate: number;
     endDate: number;
     owner: ObjectId | User;
+    isPresent: boolean;
     requests: ObjectId[] | User[];
     members: ObjectId[] | User[];
     joiners: ObjectId[] | User[];
@@ -18,6 +19,7 @@ const RoomSchema = new Schema<Room>({
     description: String,
     startDate: Number,
     endDate: Number,
+    isPresent: Boolean,
     owner: { type: SchemaTypes.ObjectId, ref: 'user' },
     requests: [{ type: SchemaTypes.ObjectId, ref: 'user' }],
     members: [{ type: SchemaTypes.ObjectId, ref: 'user' }],

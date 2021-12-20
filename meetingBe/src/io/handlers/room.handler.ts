@@ -26,15 +26,20 @@ export default (ioRoom: any, io: any) => {
                 const room = await roomModel.findOneAndUpdate({ _id: roomId }, { $addToSet: { joiners: userId } }, { timestamps: true, new: true }).populate('joiners')
                 if (!room) return socket.emit('error:bad-request', 'not found room');
 
-                socket.emit('room:joined', RoomReadDetailDto.fromRoom(room));
+
+                socket.emit('room:info', RoomReadDetailDto.fromRoom(room));
                 ioRoom.to(roomId).emit('room:user-joined', UserReadDto.fromArrayUser(room.joiners as User[]));
 
                 const tables = await tableModel.find({ room: room._id }).populate('users');
                 socket.emit('room:tables', TableReadDto.fromArray(tables));
 
+                if (room.isPresent)
+                    ioRoom.to(roomId).emit('room:present', { time: 1, tables });
+
                 const messages = await messageModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }).populate('sender')
                     .sort({ createdAt: -1 }).skip(0).limit(20);
                 socket.emit('room:messages', MessageReadDto.fromArray(messages));
+
 
             } else {
                 socket.emit('room:join-err', 'You are not a class member, Please wait for the room owner to accept');
@@ -44,7 +49,6 @@ export default (ioRoom: any, io: any) => {
             }
 
         } catch (err) {
-            console.log(err);
             socket.emit('room:err', { err });
         }
     }
@@ -62,14 +66,29 @@ export default (ioRoom: any, io: any) => {
         });
 
         const tableId = socket.data.tableId;
-        if (!tableId) return;
+        if (tableId) {
+            try {
+                await tableModel.updateOne({ _id: tableId }, { $pull: { users: userId } });
+                const tables = await tableModel.find({ room: roomId }).populate('users');
+                io.of('/socket/rooms').to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
+                ioRoom.to(tableId).emit('table:user-leave', { userId, peerId });
+            } catch (err) {
+                socket.emit('table:err', err)
+            }
+
+        }
+
         try {
-            await tableModel.updateOne({ _id: tableId }, { $pull: { users: userId } });
-            const tables = await tableModel.find({ room: roomId }).populate('users');
-            io.of('/socket/rooms').to(roomId).emit('room:tables', TableReadDto.fromArray(tables))
-            ioRoom.to(tableId).emit('table:user-leave', { userId, peerId });
+            const room = await roomModel.findById(roomId);
+            if (room.isPresent === false) return;
+            if (room.owner.toString() === userId) {
+                const roomInfo = await roomModel.findByIdAndUpdate(roomId, { isPresent: false }, { new: true });
+                ioRoom.to(roomId).emit('room:info', RoomReadDetailDto.fromRoom(roomInfo));
+                ioRoom.to(roomId).emit('present:close');
+            }
+            ioRoom.to(roomId).emit('present:user-leave', { userId, peerId });
         } catch (err) {
-            socket.emit('table:err', err)
+            socket.emit('room:err', err)
         }
     }
 
@@ -112,6 +131,7 @@ export default (ioRoom: any, io: any) => {
                 socket.emit('table:join-err', 'the table is full');
                 return
             }
+
             const tableIdTemp = socket.data.tableId;
             if (tableIdTemp) {
                 socket.leave(tableIdTemp);
@@ -133,7 +153,6 @@ export default (ioRoom: any, io: any) => {
             socket.data.peerId = peerId;
             socket.emit('table:join-success', tableId);
         } catch (err) {
-            console.log(err)
             socket.emit('table:err', err)
         }
     }
@@ -147,27 +166,130 @@ export default (ioRoom: any, io: any) => {
             const message = { sender: UserReadDto.fromUser(sender), message: msgString, createAt: new Date() };
             ioRoom.to(tableId).emit('table:message', message);
         } catch (err) {
-            console.log(err)
             socket.emit('table:err', err)
         }
     }
 
-    const changeMedia = async function (media: { audio: boolean, video: boolean }) {
+    const changeMedia = async function (media: { audio: boolean, video: boolean }, type: string) {
         const socket: Socket = this;
         const tableId = socket.data.tableId;
         const userId = socket.data.userData.userId;
         const peerId = socket.data.peerId;
+        const roomId = socket.data.roomId;
 
+        if (type.toLowerCase() === 'present') {
+            ioRoom.to(roomId).emit('present:media', { peerId: peerId, userId: userId, media });
+            return
+        }
         ioRoom.to(tableId).emit('table:media', { peerId: peerId, userId: userId, media });
+
     }
+
+    const present = async function (time: number) {
+        const socket: Socket = this;
+        const roomId = socket.data.roomId;
+        const userId = socket.data.userData.userId;
+
+        if (!roomId) return;
+        try {
+            const checkRoom = await roomModel.findById(roomId);
+            if (checkRoom.owner.toString() !== userId) return socket.emit('room:err', 'You do not have permission to present')
+
+            const room = await roomModel.findByIdAndUpdate(roomId, { isPresent: true }, { new: true });
+
+            await tableModel.updateMany({ room: roomId }, { users: [] });
+            const tables = await tableModel.find({ room: roomId }).populate('users');
+            ioRoom.to(roomId).emit('room:present', { time, tables });
+
+            setTimeout(() => {
+                ioRoom.to(roomId).emit('room:info', RoomReadDetailDto.fromRoom(room));
+            }, 1000 * time)
+        } catch (err) {
+            return socket.emit('room:err', 'Internal Server Error');
+        }
+    }
+
+    const joinPresent = async function (peerId: string, media: { audio: boolean, video: boolean }) {
+        const socket: Socket = this;
+        const roomId = socket.data.roomId;
+        const userId = socket.data.userData.userId;
+        socket.data.peerId = peerId;
+
+        try {
+
+            const tableIdTemp = socket.data.tableId;
+            if (tableIdTemp) {
+                socket.leave(tableIdTemp);
+            }
+
+            const room = await roomModel.findById(roomId);
+            if (room.isPresent !== true) return;
+            const user = await userModel.findById(userId);
+            ioRoom.to(roomId).emit('present:user-joined', { user: UserReadDto.fromUser(user), peerId, media });
+        } catch (err) {
+            return socket.emit('room:err', 'Internal Server Error');
+        }
+    }
+
+    const stopPresenting = async function () {
+        const socket: Socket = this;
+        const roomId = socket.data.roomId;
+        const userId = socket.data.userData.userId;
+
+        try {
+            const room = await roomModel.findById(roomId);
+            if (room.isPresent === false) return;
+
+            if (room.owner.toString() !== userId)
+                return socket.emit('room:err', 'You do not have permission to present')
+
+            const roomInfo = await roomModel.findByIdAndUpdate(roomId, { isPresent: false }, { new: true });
+            ioRoom.to(roomId).emit('room:info', RoomReadDetailDto.fromRoom(roomInfo));
+            ioRoom.to(roomId).emit('present:close')
+
+        } catch (err) {
+            return socket.emit('room:err', 'Internal Server Error');
+        }
+    }
+
+    const leaveTable = async function name(peerId: string) {
+        const socket: Socket = this;
+        const userId = socket.data.userData.userId;
+
+        try {
+            const tableIdTemp = socket.data.tableId;
+            if (tableIdTemp) {
+                socket.leave(tableIdTemp);
+                await tableModel.findByIdAndUpdate(tableIdTemp, { $pull: { users: userId } }, { new: true }).populate('users');
+                ioRoom.to(tableIdTemp).emit('table:user-leave', { userId, peerId });
+            }
+        } catch (err) {
+            socket.emit('table:err', err)
+        }
+    }
+
+    const pin = async function name() {
+        const socket: Socket = this;
+        const userId = socket.data.userData.userId;
+        const roomId = socket.data.roomId;
+        const peerId = socket.data.peerId;
+        ioRoom.to(roomId).emit('present:pin', { userId, peerId });
+    }
+
+
     return {
         joinRoom,
         leaveRoom,
+        leaveTable,
         sendMessage,
+        present,
         getMessages,
         sendTableMessage,
         joinTable,
-        changeMedia
+        joinPresent,
+        stopPresenting,
+        changeMedia,
+        pin,
     }
 
 }

@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux';
 import Connection from '../../services/connection';
 import CheckMedia from './checkMedia'
 import RoomDetail from './roomDetail';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const RoomCall = () => {
-    const roomCall = useSelector(state => state.roomCall);
     const connection = useRef(null);
     const [roomMessages, setRoomMessage] = useState([]);
     const [tableMessages, setTableMessage] = useState([]);
@@ -14,9 +13,11 @@ const RoomCall = () => {
     const [canAccess, setCanAccess] = useState(false);
     const [access, setAccess] = useState(false);
     const [roomTables, setRoomTables] = useState([]);
+    const [roomInfo, setRoomInfo] = useState(null);
+    const history = useHistory();
 
     useEffect(() => {
-        connection.current = new Connection({ updateInstance });
+        connection.current = new Connection({ updateInstance, history });
         connection.current.initMyStream();
         return () => {
             connection.current.destoryDisconnect();
@@ -29,7 +30,7 @@ const RoomCall = () => {
                 return setRoomMessage(data);
             case 'table:messages':
                 return setTableMessage(data);
-            case 'table:streamDatas':
+            case 'streamDatas':
                 return setStreamDatas(data);
             case 'myStream':
                 return setMyStream(data);
@@ -39,6 +40,8 @@ const RoomCall = () => {
                 return setAccess(data);
             case 'tables':
                 return setRoomTables(data);
+            case 'info':
+                return setRoomInfo(data);
             default:
                 return;
         }
@@ -53,6 +56,7 @@ const RoomCall = () => {
                     canAccess={canAccess}
                     myStream={myStream} /> :
                 <RoomDetail connection={connection}
+                    roomInfo={roomInfo}
                     streamDatas={streamDatas}
                     roomMessages={roomMessages}
                     myStream={myStream}

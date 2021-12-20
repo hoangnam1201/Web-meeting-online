@@ -17,6 +17,5 @@ export const addMembersAPI = (roomId, userIds) => {
 }
 
 export const removeMemberAPI = (roomId, userId) => {
-    console.log(userId)
     return instance.delete('/room/members/remove-member/' + roomId, { params: { userId } })
 }

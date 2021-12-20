@@ -7,17 +7,16 @@ import { IconButton } from '@mui/material';
 import { SET_SELECTEDVIDEO } from '../../store/reducers/selectVideoReducer';
 import Connection from '../../services/connection';
 
-const VideoTableContainer = ({ myStream, streamDatas, ...rest }) => {
+const VideoTableContainer = ({ connection, myStream, streamDatas, ...rest }) => {
 
     return (
         <div {...rest}>
             <div className='flex gap-4 justify-center'>
                 <MyVideo className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden' myStream={myStream} />
                 {streamDatas && Object.values(streamDatas).map((s, index) => {
-                    return <Video className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden'
-                        user={s.user}
-                        stream={s.stream}
-                        media={s.media}
+                    return <Video className='w-44 h-32 bg-black rounded-md overflow-hidden'
+                        isPin={false}
+                        streamData={s}
                         key={index} />
                 })}
             </div>
@@ -27,7 +26,7 @@ const VideoTableContainer = ({ myStream, streamDatas, ...rest }) => {
 
 
 
-export const MyVideo = React.memo(({ myStream, ...rest }) => {
+export const MyVideo = React.memo(({ connection, myStream, ...rest }) => {
     const videoRef = useRef(null)
     const [media, setMedia] = useState({ video: false, audio: false })
     const dispatch = useDispatch();
@@ -44,10 +43,11 @@ export const MyVideo = React.memo(({ myStream, ...rest }) => {
 
     }, [myStream])
 
+    console.log(connection?.current.myID)
     return (
         <div {...rest}>
-            <div className='h-full w-full relative' >
-                <video ref={videoRef} autoPlay className='h-full w-full' muted hidden={!media.video} />
+            <div className='h-full w-full relative rounded-md overflow-hidden bg-black' >
+                <video ref={videoRef} autoPlay className='h-full w-full' muted hidden={!media.video} style={{ maxHeight: '100%' }} />
                 <div className='absolute top-1 left-1 z-10 w-full px-2 flex justify-between items-center'>
                     <div className='flex gap-2'>
                         <div className='text-shadow text-white'> You </div>
@@ -60,8 +60,10 @@ export const MyVideo = React.memo(({ myStream, ...rest }) => {
                             dispatch({
                                 type: SET_SELECTEDVIDEO,
                                 payload: {
-                                    user: null, stream: myStream.stream, media
-                                }
+                                    user: { you: true }, stream: myStream.stream,
+                                    media,
+                                    peerId: connection.current.myID
+                                },
                             });
                         }}>
                             <PushPinIcon className=' text-white' fontSize='small' />
@@ -79,10 +81,11 @@ export const MyVideo = React.memo(({ myStream, ...rest }) => {
     )
 })
 
-export const Video = ({ user, stream, media, ...rest }) => {
+export const Video = ({ streamData, isPin, ...rest }) => {
     const videoRef = useRef(null);
     const audioRef = useRef(null);
     const dispatch = useDispatch();
+    const { stream, user, peerId, media } = streamData
 
     useEffect(() => {
         if (!stream) return;
@@ -92,14 +95,18 @@ export const Video = ({ user, stream, media, ...rest }) => {
     }, [stream])
 
     const onPin = () => {
-        console.log('pin')
-        dispatch({
+        if (!isPin)
+            return dispatch({
+                type: SET_SELECTEDVIDEO,
+                payload: streamData,
+            });
+        return dispatch({
             type: SET_SELECTEDVIDEO,
-            payload: { user, stream, media }
+            payload: null
         });
+
     };
 
-    console.log('media')
 
     return (
         <div {...rest}>
@@ -115,12 +122,17 @@ export const Video = ({ user, stream, media, ...rest }) => {
                     </div>
                     <div>
                         <IconButton onClick={onPin}>
-                            <PushPinIcon className=' text-gray-100' fontSize='small' />
+                            <PushPinIcon className={isPin ? 'text-blue-500' : 'text-white'} fontSize='small' />
                         </IconButton>
                     </div>
                 </div>
-                {!media.video && <Avatar
+                {!media.video && !user.you && <Avatar
                     name={user.name}
+                    round
+                    className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
+                />}
+                {!media.video && user.you && <Avatar
+                    value={'you'}
                     round
                     className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
                 />}

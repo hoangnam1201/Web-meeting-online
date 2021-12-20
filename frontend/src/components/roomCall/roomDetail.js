@@ -9,7 +9,7 @@ import Table6 from './tables/table6'
 import Table7 from './tables/table7'
 import Table8 from './tables/table8'
 import Table4 from './tables/tables4'
-import VideoTableContainer, { MyVideo } from './videoTableContainer'
+import VideoTableContainer from './videoTableContainer'
 import ChatBox from './chatBox'
 import MicOffIcon from "@mui/icons-material/MicOff";
 import MinimizeIcon from '@mui/icons-material/Minimize';
@@ -19,6 +19,7 @@ import Avatar from 'react-avatar';
 import { IconButton } from '@mui/material'
 import Connection from '../../services/connection'
 import { SET_SELECTEDVIDEO } from '../../store/reducers/selectVideoReducer'
+import Present from './present'
 
 const RoomDetail = ({
     connection,
@@ -26,27 +27,39 @@ const RoomDetail = ({
     roomMessages,
     tableMessages,
     streamDatas,
+    roomInfo,
     myStream }) => {
 
     const roomCall = useSelector(state => state.roomCall);
     const [mediaStatus, setMediaStatus] = useState({ audio: false, video: false });
-    console.log(roomTables)
 
     useEffect(() => {
         const media = Connection.getMediaStatus(myStream.stream);
         setMediaStatus(media)
         connection.current.replaceStream();
-        connection.current.socket.emit('table:change-media', media);
+        connection.current.socket.emit('change-media',
+            media,
+            roomInfo?.isPresent === true
+                ? 'present'
+                : 'table');
+
     }, [myStream])
+
+
 
 
     return (
         <div className='min-h-screen relative bg-gray-100'>
-            <VideoTableContainer
-                className='sticky z-10 justify-center w-full overflow-x-auto top-4 croll-none'
-                streamDatas={streamDatas}
-                myStream={myStream}
-            />
+            {!roomInfo?.isPresent && (
+                <>
+                    <VideoTableContainer
+                        className='sticky z-10 justify-center w-full overflow-x-auto top-4 croll-none'
+                        streamDatas={streamDatas}
+                        myStream={myStream}
+                    />
+                    <PinVideo />
+                </>
+            )}
             <div className='text-xl font-semibold py-4 bg-gray-100 text-gray-500
             '>{connection?.current?.info?.name}</div>
             <div className='px-4'>
@@ -55,7 +68,6 @@ const RoomDetail = ({
                     connection={connection}
                     mediaStatus={mediaStatus} />
             </div>
-            <PinVideo />
             {roomCall?.showChat &&
                 <ChatBox
                     connection={connection}
@@ -64,10 +76,21 @@ const RoomDetail = ({
                     className=' fixed h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-full bg-white shadow-md'
                     style={{ left: '98%' }} />}
             <div className='fixed z-30 top-full transform -translate-y-full flex justify-center w-full'>
-                <ToolBar className='bg-white px-8 rounded-lg shadow-inner'
+                <ToolBar className='bg-white rounded-lg shadow-inner'
+                    roomInfo={roomInfo
+                    }
                     connection={connection}
                     mediaStatus={mediaStatus} />
             </div>
+            <Present
+                mediaStatus={mediaStatus}
+                open={roomInfo?.isPresent}
+                connection={connection}
+                streamDatas={streamDatas}
+                roomMessages={roomMessages}
+                myStream={myStream}
+                roomInfo={roomInfo}
+            />
         </div>
     )
 }
@@ -82,9 +105,14 @@ const PinVideo = () => {
         if (!selectedVideo) return;
         const stream = selectedVideo.stream;
         if (!stream) return;
-        console.log(selectedVideo)
+        document.body.style.overflow = 'hidden';
+
         videoRef.current.muted = true;
         videoRef.current.srcObject = stream;
+
+        return () => {
+            document.body.style.overflow = 'auto';
+        }
 
     }, [selectedVideo])
 
@@ -92,8 +120,8 @@ const PinVideo = () => {
 
     return (
         <>
-            {selectedVideo && <div className='fixed rounded-md overflow-hidden top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 shadow-lg bg-gray-50'
-                style={{ width: size, minHeight: size, zIndex: '60' }}>
+            {selectedVideo && <div className='fixed rounded-md overflow-auto top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 shadow-lg bg-black'
+                style={{ width: size, height: size, zIndex: '60' }}>
                 <div className='flex justify-between px-3 absolute items-center w-full z-10 bg-black opacity-0 hover:opacity-60 transition-opacity'>
                     <div className='flex gap-2 '>
                         <div className='text-shadow text-white'> {selectedVideo.user?.name} </div>
@@ -128,12 +156,20 @@ const PinVideo = () => {
                         }
                     </div>
                 </div>
-                <video ref={videoRef} autoPlay className='h-full w-full' muted hidden={!selectedVideo.media.video} />
-                {!selectedVideo.media.video && <Avatar
-                    name={selectedVideo.user.name}
-                    round
-                    className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
-                />}
+                <video ref={videoRef} autoPlay className='h-full ml-auto mr-auto' muted hidden={!selectedVideo.media.video} />
+                {!selectedVideo.media.video && (
+                    selectedVideo.user ?
+                        <Avatar
+                            name={selectedVideo.user.name}
+                            round
+                            className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
+                        /> :
+                        <Avatar
+                            value='You'
+                            color='purple'
+                            round
+                            className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
+                        />)}
             </div>}
         </>
     )
@@ -152,7 +188,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
 
     return (
         <>
-            <div className='grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-2 relative z-0'>
+            <div className='grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-2 relative z-0 grid-flow-row-dense'>
                 {tables?.map(t => {
                     switch (t.numberOfSeat) {
                         case 1:

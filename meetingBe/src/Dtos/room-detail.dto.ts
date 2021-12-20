@@ -9,6 +9,7 @@ export class RoomReadDetailDto {
     description: string;
     startDate: number;
     endDate: number;
+    isPresent: boolean;
     owner: UserReadDto;
     members: UserReadDto[];
     requests: UserReadDto[];
@@ -21,6 +22,7 @@ export class RoomReadDetailDto {
         roomRead.description = room.description;
         roomRead.startDate = room.startDate;
         roomRead.endDate = room.endDate;
+        roomRead.isPresent = room.isPresent;
         roomRead.members = [];
         room.members.forEach(user => {
             roomRead.members = [...roomRead.members, UserReadDto.fromUser(user as User)];
