@@ -11,7 +11,7 @@ import LogoutSharpIcon from "@mui/icons-material/LogoutSharp";
 import sound from "../../sounds/meet-message-sound-1.mp3";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import { useDispatch, useSelector } from "react-redux";
-import { roomShowChatAction } from "../../store/actions/roomCallAction";
+import { roomShowChatAction, roomShowLobbyAction } from "../../store/actions/roomCallAction";
 import { sendMessageAction } from "../../store/actions/messageAction";
 import { confirmPresent, confirmSwal } from "../../services/swalServier";
 import { useHistory } from "react-router-dom";
@@ -32,7 +32,7 @@ const Toolbar = ({
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
   );
-  const [openLobby, setOpenLobby] = useState(false);
+  // const [openLobby, setOpenLobby] = useState(false);
 
   const notifySound = useRef(new Audio(sound));
 
@@ -68,7 +68,6 @@ const Toolbar = ({
 
   return (
     <div {...rest}>
-      <LobbyUser openLobby={openLobby} userJoined={userJoined} />
       <div className="flex py-2 text-gray-500">
         {roomInfo?.owner._id === currentUser?.user._id && (
           <div className="border-r-2 border-gray-400 px-3">
@@ -129,12 +128,12 @@ const Toolbar = ({
               <ChatIcon fontSize="large" />
             )}
           </IconButton>
-          {openLobby ? (
-            <IconButton onClick={() => setOpenLobby(false)}>
+          {roomCall?.showLobby ? (
+            <IconButton onClick={() => dispatch(roomShowLobbyAction(false))}>
               <PeopleIcon className="text-blue-500" fontSize="large" />
             </IconButton>
           ) : (
-            <IconButton onClick={() => setOpenLobby(true)}>
+            <IconButton onClick={() => dispatch(roomShowLobbyAction(true))}>
               <PeopleIcon fontSize="large" />
             </IconButton>
           )}

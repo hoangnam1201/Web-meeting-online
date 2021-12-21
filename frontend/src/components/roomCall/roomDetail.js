@@ -20,6 +20,7 @@ import { IconButton } from "@mui/material";
 import Connection from "../../services/connection";
 import { SET_SELECTEDVIDEO } from "../../store/reducers/selectVideoReducer";
 import Present from "./present";
+import LobbyUser from "../Lobby";
 
 const RoomDetail = ({
   connection,
@@ -30,6 +31,7 @@ const RoomDetail = ({
   roomInfo,
   myStream,
   userJoined,
+  userRequests
 }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const [mediaStatus, setMediaStatus] = useState({
@@ -82,6 +84,12 @@ const RoomDetail = ({
           style={{ left: "98%" }}
         />
       )}
+      <LobbyUser
+        openLobby={roomCall?.showLobby}
+        userJoined={userJoined}
+        userRequests={userRequests}
+        roomInfo={roomInfo}
+        connection={connection} />
       <div className="fixed z-30 top-full transform -translate-y-full flex justify-center w-full">
         <ToolBar
           className="bg-white rounded-lg shadow-inner"

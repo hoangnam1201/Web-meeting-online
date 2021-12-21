@@ -15,7 +15,8 @@ export default (io: any) => {
         socket.on('room:join', _roomHandler.joinRoom);
         socket.on('room:send-message', _roomHandler.sendMessage);
         socket.on('room:get-messages', _roomHandler.getMessages);
-        socket.on('room:present', _roomHandler.present)
+        socket.on('room:present', _roomHandler.present);
+        socket.on('room:access-request', _roomHandler.acceptRequest);
         socket.on('table:join', _roomHandler.joinTable);
         socket.on('table:send-message', _roomHandler.sendTableMessage);
         socket.on('change-media', _roomHandler.changeMedia);

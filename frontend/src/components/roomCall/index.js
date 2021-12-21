@@ -16,7 +16,7 @@ const RoomCall = () => {
   const [roomInfo, setRoomInfo] = useState(null);
   const history = useHistory();
   const [userJoined, setUserJoined] = useState([]);
-  const [userRequest, setUserRequest] = useState([]);
+  const [userRequests, setUserRequests] = useState({});
   const [joinError, setJoinError] = useState(null);
 
   useEffect(() => {
@@ -49,6 +49,8 @@ const RoomCall = () => {
         return setUserJoined(data);
       case "join-err":
         return setJoinError(data);
+      case 'requests':
+        return setUserRequests(data);
       default:
         return;
     }
@@ -73,6 +75,7 @@ const RoomCall = () => {
           roomTables={roomTables}
           tableMessages={tableMessages}
           userJoined={userJoined}
+          userRequests={userRequests}
         />
       )}
     </div>

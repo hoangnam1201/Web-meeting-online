@@ -53,7 +53,7 @@ class Connection {
   //tables
   tables = [];
   //requests
-  requests = [];
+  requests = {};
   //stateMessage
   messageState;
   //join err
@@ -80,8 +80,9 @@ class Connection {
       );
     });
 
-    this.socket.on("room:user-request", (user) => {
-      console.log("user request", user);
+    this.socket.on("room:user-request", (request) => {
+      this.requests[request.user._id] = request
+      this.setting.updateInstance("requests", { ...this.requests });
     });
 
     this.socket.on("room:user-joined", (users) => {
@@ -113,9 +114,9 @@ class Connection {
       store.dispatch(receiveMessageAction());
     });
 
-    this.socket.on("room:join-err", (str) => {
-      this.joinErr = str;
-      this.setting.updateInstance("join-err", this.joinErr);
+    this.socket.on("room:join-err", (err) => {
+      this.joinErr = err;
+      this.setting.updateInstance("join-err", { ...this.joinErr });
     });
 
     this.socket.on("table:user-leave", (data) => {
@@ -287,9 +288,9 @@ class Connection {
     });
 
     this.socket.on("disconnect", () => {
-      disconnectSwal(() => {
-        window.location.reload();
-      });
+      // disconnectSwal(() => {
+      //   window.location.reload();
+      // });
     });
 
     this.socket.on("error", (err) => {
@@ -311,9 +312,9 @@ class Connection {
     });
 
     this.myPeer.on("disconnected", () => {
-      disconnectSwal(() => {
-        window.location.reload();
-      });
+      // disconnectSwal(() => {
+      //   window.location.reload();
+      // });
     });
   };
 
@@ -525,14 +526,23 @@ class Connection {
     return myNavigator({
       video: video
         ? {
-            frameRate: quality,
-            width: { min: 640, ideal: 1280, max: 1920 },
-            height: { min: 480, ideal: 720, max: 1080 },
-          }
+          frameRate: quality,
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 },
+        }
         : false,
       audio: audio,
     });
   };
+
+  replyRequest = (request, isAccess) => {
+    this.socket.emit('room:access-request',
+      request.socketId,
+      request.user._id,
+      isAccess);
+    delete this.requests[request.user._id];
+    this.setting.updateInstance("requests", { ...this.requests });
+  }
 
   static getMediaStatus = (stream) => {
     let media = { video: false, audio: false };

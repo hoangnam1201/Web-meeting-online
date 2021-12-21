@@ -14,7 +14,7 @@ import userModel, { User } from "../../models/user.model";
 export default (ioRoom: any, io: any) => {
 
     const joinRoom = async function (roomId: string) {
-        const socket = this;
+        const socket: Socket = this;
         const userId = socket.data.userData.userId;
         try {
             const check = await roomModel.exists({ $or: [{ _id: roomId, members: userId }, { _id: roomId, owner: userId }] })
@@ -40,16 +40,55 @@ export default (ioRoom: any, io: any) => {
                     .sort({ createdAt: -1 }).skip(0).limit(20);
                 socket.emit('room:messages', MessageReadDto.fromArray(messages));
 
-
             } else {
-                socket.emit('room:join-err', 'You are not a class member, Please wait for the room owner to accept');
+                socket.emit('room:join-err', {
+                    msg: 'You are not a class member, Please wait for the room owner to accept',
+                    type: 'REQUEST'
+                });
+
                 const user = await userModel.findById(userId);
                 const room = await roomModel.findById(roomId);
-                if (user) ioRoom.to(room.owner).emit('room:user-request', UserReadDto.fromUser(user));
+                if (user) ioRoom.to(room.owner.toString()).emit('room:user-request',
+                    {
+                        user: UserReadDto.fromUser(user),
+                        socketId: socket.id
+                    });
             }
 
         } catch (err) {
             socket.emit('room:err', { err });
+        }
+    }
+
+    const acceptRequest = async function (socketId: string, userId: string, accept: string) {
+        const socket = this;
+        const roomId = socket.data.roomId;
+
+        if (!accept)
+            return ioRoom.to(socketId).emit('room:join-err', { msg: 'Your request has been declined', type: 'REFUSE' });
+
+        try {
+            const room = await roomModel.findOneAndUpdate({ _id: roomId }, { $addToSet: { joiners: userId } }, { timestamps: true, new: true }).populate('joiners')
+            if (!room) return socket.emit('error:bad-request', 'not found room');
+            const clientSocket = ioRoom.sockets.get(socketId);
+            clientSocket.join(roomId);
+            clientSocket.data.roomId = roomId;
+
+            ioRoom.to(socketId).emit('room:info', RoomReadDetailDto.fromRoom(room));
+            ioRoom.to(roomId).emit('room:user-joined', UserReadDto.fromArrayUser(room.joiners as User[]));
+
+            const tables = await tableModel.find({ room: room._id }).populate('users');
+            ioRoom.to(socketId).emit('room:tables', TableReadDto.fromArray(tables));
+
+            if (room.isPresent)
+                ioRoom.to(roomId).emit('room:present', { time: 1, tables });
+
+            const messages = await messageModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }).populate('sender')
+                .sort({ createdAt: -1 }).skip(0).limit(20);
+            ioRoom.to(socketId).emit('room:messages', MessageReadDto.fromArray(messages));
+        } catch (err) {
+            console.log(err);
+            socket.emit('room:err', 'Internal Server Error');
         }
     }
 
@@ -289,6 +328,7 @@ export default (ioRoom: any, io: any) => {
         joinPresent,
         stopPresenting,
         changeMedia,
+        acceptRequest,
         pin,
     }
 
