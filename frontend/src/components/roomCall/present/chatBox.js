@@ -8,8 +8,15 @@ import { Waypoint } from "react-waypoint";
 import { useSelector } from "react-redux";
 import Avatar from "react-avatar";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import BasicPopover from "../../Popover";
 
-const ChatBox = ({ connection, roomMessages, userJoined }) => {
+const ChatBox = ({
+  connection,
+  roomMessages,
+  userJoined,
+  userRequests,
+  roomInfo,
+}) => {
   const [tab, setTab] = useState(0);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer);
@@ -27,12 +34,25 @@ const ChatBox = ({ connection, roomMessages, userJoined }) => {
     <div className="overflow-auto h-full flex flex-col">
       <div className="flex justify-between" style={{ flexBasis: 0 }}>
         <Tabs value={tab} onChange={(e, tabValue) => setTab(tabValue)}>
-          <Tab label="Chat" style={{ color: "white" }} className="text-white" />
           <Tab
-            label="Participants"
-            style={{ color: "white" }}
+            label="Chat"
+            style={{ color: "white", padding: "10px" }}
             className="text-white"
           />
+          <Tab
+            label="Participants"
+            style={{ color: "white", padding: "10px" }}
+            className="text-white"
+          />
+          {roomInfo?.owner._id === currentUser?.user._id ? (
+            <Tab
+              label="Requests"
+              style={{ color: "white", padding: "10px" }}
+              className="text-white"
+            />
+          ) : (
+            ""
+          )}
         </Tabs>
         <IconButton onClick={() => dispatch(roomShowChatAction(false))}>
           <ArrowRightAltIcon fontSize="large" style={{ color: "white" }} />
@@ -86,6 +106,73 @@ const ChatBox = ({ connection, roomMessages, userJoined }) => {
               </div>
             );
           })}
+        </div>
+      )}
+      {tab !== 1 && tab !== 0 && (
+        <div className="h-0 flex-grow overflow-y-auto">
+          {Object.values(userRequests).length > 0 && (
+            <div className="flex flex-col">
+              <div className="px-4 flex justify-start my-2">
+                <button className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100">
+                  ACCEPT ALL
+                </button>
+              </div>
+              <div className="flex-grow h-0">
+                {Object.values(userRequests).map((request, index) => {
+                  return (
+                    <div
+                      className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 px-2"
+                      key={index}
+                    >
+                      <div className="flex items-center gap-4 w-0 flex-grow">
+                        <Avatar
+                          name={request.user?.name}
+                          size="40"
+                          round={true}
+                          className="cursor-pointer"
+                        />
+                        <div className="w-0 flex-grow overflow-x-hidden">
+                          <p className="whitespace-nowrap text-left font-semibold text-gray-500">
+                            {request.user?.name.length < 15
+                              ? request.user?.name
+                              : `${request.user?.name.slice(0, 15)}...`}
+                          </p>
+                          <p className=" whitespace-nowrap text-left text-sm text-gray-400">
+                            {" "}
+                            {request.user?.email.length < 18
+                              ? request.user?.email
+                              : `${request.user?.email.slice(0, 15)}...`}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <BasicPopover>
+                          <div className="flex flex-col text-gray-500">
+                            <button
+                              className="text-sm hover:bg-gray-100 px-4 py-2"
+                              onClick={() =>
+                                connection.current.replyRequest(request, true)
+                              }
+                            >
+                              access
+                            </button>
+                            <button
+                              className="text-sm hover:bg-gray-100 px-4 py-2"
+                              onClick={() =>
+                                connection.current.replyRequest(request, false)
+                              }
+                            >
+                              refuse
+                            </button>
+                          </div>
+                        </BasicPopover>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

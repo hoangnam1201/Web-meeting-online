@@ -42,8 +42,8 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
     <div {...rest}>
       <div className="shadow-md flex justify-between">
         <Tabs value={value} onChange={handleChange}>
-          <Tab label="Table" />
           <Tab label="Room" />
+          <Tab label="Table" />
         </Tabs>
         <Button
           onClick={() => {
@@ -55,7 +55,7 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
         </Button>
       </div>
       <div className="h-3/4 overflow-auto">
-        <div hidden={value != 0}>
+        <div hidden={value != 1}>
           <div className="flex flex-col-reverse">
             {tableMessages?.map((m, index) => (
               <Message
@@ -67,7 +67,7 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
             <Waypoint onEnter={() => console.log("enter")} />
           </div>
         </div>
-        <div hidden={value != 1}>
+        <div hidden={value != 0}>
           <div className="flex flex-col-reverse">
             {roomMessages?.map((m, index) => (
               <Message
@@ -100,15 +100,19 @@ export const Message = ({ nameClass, msgData, type, ...rest }) => {
   return (
     <div {...rest}>
       <div
-        className={`flex flex-col ${type === 0 ? "items-end" : "items-start"
-          } mt-4 mx-2 `}
+        className={`flex flex-col ${
+          type === 0 ? "items-end" : "items-start"
+        } mt-4 mx-2 `}
       >
         {type === 1 && (
-          <div className={`text-sm mx-4 ${nameClass}`}>{msgData.sender?.name}</div>
+          <div className={`text-sm mx-4 ${nameClass}`}>
+            {msgData.sender?.name}
+          </div>
         )}
         <div
-          className={`w-3/4 h-auto ${type === 0 ? "bg-blue-200" : "bg-gray-200"
-            } rounded-lg px-2 py-1
+          className={`w-3/4 h-auto ${
+            type === 0 ? "bg-blue-200" : "bg-gray-200"
+          } rounded-lg px-2 py-1
                  whitespace-normal break-words`}
         >
           {msgData.message}

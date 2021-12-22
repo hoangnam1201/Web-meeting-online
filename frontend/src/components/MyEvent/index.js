@@ -15,7 +15,7 @@ import ManageDialog from "./ManageDialog";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,18 +70,18 @@ const useStyles = makeStyles({
     left: 0,
     textAlign: "center",
     visibility: "hidden",
-    display: 'block',
+    display: "block",
     opacity: 0,
     transition: "all .3s",
   },
   groupButton: {
     display: "flex",
-    alignItems: 'center'
+    alignItems: "center",
   },
 });
 const MyEvent = (props) => {
   const classes = useStyles();
-  const [cookies, setCookies] = useCookies(['u_auth'])
+  const [cookies, setCookies] = useCookies(["u_auth"]);
   const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
 
   const dispatch = useDispatch();
@@ -176,7 +176,6 @@ const MyEvent = (props) => {
     });
   };
 
-
   return (
     <div className={classes.root}>
       <Helmet>
@@ -248,29 +247,23 @@ const MyEvent = (props) => {
                         {new Date(room?.endDate).toDateString()}
                       </Typography>
                       <div className={classes.groupButton}>
-                        <div className={classes.roomButton} >
-                          <IconButton
-                            onClick={() => handleUpdate(room)}
-                          >
+                        <div className={classes.roomButton}>
+                          <IconButton onClick={() => handleUpdate(room)}>
                             <EditIcon fontSize="medium" />
                           </IconButton>
                         </div>
-                        <div className={classes.roomButton} >
-                          <IconButton
-                            onClick={() => deleteRoom(room?._id)}
-                          >
+                        <div className={classes.roomButton}>
+                          <IconButton onClick={() => deleteRoom(room?._id)}>
                             <DeleteIcon fontSize="medium" />
                           </IconButton>
-
                         </div>
-                        <div
-                          className={classes.roomButton} >
+                        <div className={classes.roomButton}>
                           <Button>
                             <Link
-                              className='block w-full h-full'
+                              className="block w-full h-full"
                               to={`/user/update-event/${room?._id}`}
                             >
-                              <MoreVertIcon fontSize='medium' />
+                              <MoreVertIcon fontSize="medium" />
                             </Link>
                           </Button>
                         </div>
@@ -280,7 +273,6 @@ const MyEvent = (props) => {
                       <Button size="small" startIcon={<PersonIcon />}>
                         0/50
                       </Button>
-                      <Button size="small">0 sponsor</Button>
                       <Button size="small">1 floor</Button>
                     </CardActions>
                   </Card>
@@ -369,7 +361,7 @@ const MyEvent = (props) => {
           </div>
         </Container>
       </section>
-    </div >
+    </div>
   );
 };
 

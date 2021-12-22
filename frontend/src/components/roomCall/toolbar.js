@@ -8,15 +8,17 @@ import VideocamOff from "@mui/icons-material/VideocamOff";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import LogoutSharpIcon from "@mui/icons-material/LogoutSharp";
-import sound from "../../sounds/meet-message-sound-1.mp3";
+
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import { useDispatch, useSelector } from "react-redux";
-import { roomShowChatAction, roomShowLobbyAction } from "../../store/actions/roomCallAction";
+import {
+  roomShowChatAction,
+  roomShowLobbyAction,
+} from "../../store/actions/roomCallAction";
 import { sendMessageAction } from "../../store/actions/messageAction";
 import { confirmPresent, confirmSwal } from "../../services/swalServier";
 import { useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
-import LobbyUser from "../Lobby";
 
 const Toolbar = ({
   connection,
@@ -33,8 +35,6 @@ const Toolbar = ({
     (state) => state.notifyMessageReducer.isReceive
   );
   // const [openLobby, setOpenLobby] = useState(false);
-
-  const notifySound = useRef(new Audio(sound));
 
   const turnOffAudio = () => {
     connection.current.turnOffAudio();
@@ -54,10 +54,6 @@ const Toolbar = ({
 
   const shareScreen = async () => {
     connection.current.getDisplayMediaStream();
-  };
-
-  const soundMessage = () => {
-    notifySound.current && notifySound.current.cloneNode(true).play();
   };
 
   const onPresent = () => {
@@ -119,7 +115,6 @@ const Toolbar = ({
               dispatch(sendMessageAction());
             }}
           >
-            {stateMessage && !roomCall.showChat ? soundMessage() : undefined}
             {stateMessage && !roomCall.showChat ? (
               <Badge color="primary" variant="dot">
                 <ChatIcon fontSize="large" />

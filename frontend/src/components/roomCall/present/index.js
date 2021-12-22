@@ -14,6 +14,7 @@ const Present = ({
   streamDatas,
   roomMessages,
   userJoined,
+  userRequests,
   ...rest
 }) => {
   const roomCall = useSelector((state) => state.roomCall);
@@ -59,6 +60,8 @@ const Present = ({
                     roomMessages={roomMessages}
                     connection={connection}
                     userJoined={userJoined}
+                    userRequests={userRequests}
+                    roomInfo={roomInfo}
                   />
                 </div>
               )}

@@ -31,7 +31,7 @@ const RoomDetail = ({
   roomInfo,
   myStream,
   userJoined,
-  userRequests
+  userRequests,
 }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const [mediaStatus, setMediaStatus] = useState({
@@ -89,7 +89,8 @@ const RoomDetail = ({
         userJoined={userJoined}
         userRequests={userRequests}
         roomInfo={roomInfo}
-        connection={connection} />
+        connection={connection}
+      />
       <div className="fixed z-30 top-full transform -translate-y-full flex justify-center w-full">
         <ToolBar
           className="bg-white rounded-lg shadow-inner"
@@ -108,6 +109,7 @@ const RoomDetail = ({
         myStream={myStream}
         roomInfo={roomInfo}
         userJoined={userJoined}
+        userRequests={userRequests}
       />
     </div>
   );
@@ -299,7 +301,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table8
                   key={t._id}
-                  className="h-full col-span-2 overflow-hidden shadoq"
+                  className="h-full col-span-2 overflow-hidden shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />

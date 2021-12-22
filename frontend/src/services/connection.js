@@ -7,7 +7,12 @@ import { useSelector } from "react-redux";
 import { receiveMessageAction } from "../store/actions/messageAction";
 import { countTime, disconnectSwal } from "./swalServier";
 import { SET_SELECTEDVIDEO } from "../store/reducers/selectVideoReducer";
+import React from "react";
+import sound from "../sounds/join-permission.mp3";
+import sound1 from "../sounds/meet-message-sound-1.mp3";
 
+var soundJoin = new Audio(sound);
+var soundMessage = new Audio(sound1);
 const peerEndPoint = {
   host: "localhost",
   path: "/peerjs/meeting",
@@ -81,8 +86,9 @@ class Connection {
     });
 
     this.socket.on("room:user-request", (request) => {
-      this.requests[request.user._id] = request
+      this.requests[request.user._id] = request;
       this.setting.updateInstance("requests", { ...this.requests });
+      soundJoin.play();
     });
 
     this.socket.on("room:user-joined", (users) => {
@@ -112,6 +118,10 @@ class Connection {
       this.roomMessages = [message, ...this.roomMessages];
       this.setting.updateInstance("room:messages", this.roomMessages);
       store.dispatch(receiveMessageAction());
+      const showChat = store.getState().roomCall.showChat;
+      if (!showChat) {
+        soundMessage.play();
+      }
     });
 
     this.socket.on("room:join-err", (err) => {
@@ -203,6 +213,10 @@ class Connection {
       this.tableMessages = [msg, ...this.tableMessages];
       this.setting.updateInstance("table:messages", [...this.tableMessages]);
       store.dispatch(receiveMessageAction());
+      const showChat = store.getState().roomCall.showChat;
+      if (!showChat) {
+        soundMessage.play();
+      }
     });
 
     this.socket.on("room:present", ({ time, tables }) => {
@@ -526,23 +540,25 @@ class Connection {
     return myNavigator({
       video: video
         ? {
-          frameRate: quality,
-          width: { min: 640, ideal: 1280, max: 1920 },
-          height: { min: 480, ideal: 720, max: 1080 },
-        }
+            frameRate: quality,
+            width: { min: 640, ideal: 1280, max: 1920 },
+            height: { min: 480, ideal: 720, max: 1080 },
+          }
         : false,
       audio: audio,
     });
   };
 
   replyRequest = (request, isAccess) => {
-    this.socket.emit('room:access-request',
+    this.socket.emit(
+      "room:access-request",
       request.socketId,
       request.user._id,
-      isAccess);
+      isAccess
+    );
     delete this.requests[request.user._id];
     this.setting.updateInstance("requests", { ...this.requests });
-  }
+  };
 
   static getMediaStatus = (stream) => {
     let media = { video: false, audio: false };
