@@ -58,6 +58,7 @@ const RoomDetail = ({
             className="sticky z-10 justify-center w-full overflow-x-auto top-4 croll-none"
             streamDatas={streamDatas}
             myStream={myStream}
+            connection={connection}
           />
           <PinVideo />
         </>
@@ -130,9 +131,12 @@ const PinVideo = () => {
     videoRef.current.muted = true;
     videoRef.current.srcObject = stream;
 
+    console.log(selectedVideo.media)
+
     return () => {
       document.body.style.overflow = "auto";
     };
+
   }, [selectedVideo]);
 
   return (
@@ -197,7 +201,7 @@ const PinVideo = () => {
             hidden={!selectedVideo.media.video}
           />
           {!selectedVideo.media.video &&
-            (selectedVideo.user ? (
+            (selectedVideo.user.name ? (
               <Avatar
                 name={selectedVideo.user.name}
                 round
@@ -205,7 +209,7 @@ const PinVideo = () => {
               />
             ) : (
               <Avatar
-                value="You"
+                value="you"
                 color="purple"
                 round
                 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"

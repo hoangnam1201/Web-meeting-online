@@ -1,10 +1,10 @@
 import Swal from "sweetalert2";
 
-export const countTime = (time, callback) => {
+export const countTime = (title, html, time, callback) => {
     let timerInterval;
     Swal.fire({
-        title: 'participate presentation',
-        html: 'You will participate in presentation <b></b> seconds',
+        title: title,
+        html: html,
         allowOutsideClick: false,
         allowEscapeKey: false,
         timer: time * 1000,
@@ -33,7 +33,7 @@ export const confirmPresent = (callback) => {
         confirmButtonText: 'yes, present'
     }).then((result) => {
         if (result.isConfirmed) {
-            callback();
+            callback && callback();
         }
     })
 }
@@ -44,18 +44,19 @@ export const disconnectSwal = (callback) => {
         allowOutsideClick: false,
         allowEscapeKey: false,
     }).then((result) => {
-        callback();
+        callback && callback();
     })
 }
 
 
-export const confirmSwal = (title, callback) => {
+export const confirmSwal = (title, text = '', callback) => {
     Swal.fire({
         title: title,
+        text: text,
         showCancelButton: true,
         confirmButtonText: 'yes'
     }).then((result) => {
         if (result.isConfirmed)
-            callback();
+            callback && callback();
     })
 }

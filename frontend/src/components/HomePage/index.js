@@ -7,24 +7,6 @@ import { useEffect } from "react";
 import { useCookies } from "react-cookie";
 const LayoutHome = (props) => {
   const [cookies] = useCookies(['u_auth'])
-  const getInfoUser = async () => {
-    try {
-      const fetch = {
-        url: "http://localhost:3002/api/user/get-detail",
-        method: "GET",
-        headers: {
-          Authorization: `token ${cookies.u_auth.accessToken}`,
-        },
-      };
-      const res = await axios(fetch);
-      localStorage.setItem("loginInfo", JSON.stringify(res.data.data));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    getInfoUser();
-  }, [getInfoUser]);
 
   return (
     <>

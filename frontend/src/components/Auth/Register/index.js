@@ -30,6 +30,7 @@ import { ScaleLoader } from "react-spinners";
 import { Box } from "@material-ui/core";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { Helmet } from "react-helmet";
+import { registerAPI } from "../../../api/user.api";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -207,11 +208,7 @@ function Register(props) {
   const onSubmit = (data) => {
     data["dob"] = moment(selectedDate).format("yyyy-MM-DD");
     setLoading(true);
-    axios({
-      url: `http://localhost:3002/api/user/register`,
-      method: "POST",
-      data,
-    })
+    registerAPI(data)
       .then((result) => {
         setLoading(false);
         setregisterError(null);
@@ -255,9 +252,8 @@ function Register(props) {
       <div className={`${classes.root} ${loading ? classes.loaderRoot : null}`}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
-          className={`${classes.containerMobile} ${
-            matches ? classes.containerDesktop : null
-          }`}
+          className={`${classes.containerMobile} ${matches ? classes.containerDesktop : null
+            }`}
           component="main"
           maxWidth="xs"
         >

@@ -89,7 +89,7 @@ const Toolbar = ({ roomInfo, connection, mediaStatus, ...rest }) => {
                 </div>
                 <div className='border-l-2 border-gray-400 px-3 flex gap-4'>
                     <button className='p-2 text-white focus:outline-none text-sm'
-                        onClick={() => confirmSwal('Are you sure?', () => {
+                        onClick={() => confirmSwal('Are you sure?', '', () => {
                             history.push('/user/my-event')
                         })}>
                         <div>

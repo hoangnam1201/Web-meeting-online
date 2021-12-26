@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom } from "./modules/action";
 import { useCookies } from "react-cookie";
+import { deleteRoomAPI, getInvitedRoomAPI } from "../../api/room.api";
 
 const useStyles = makeStyles({
   root: {
@@ -96,15 +97,8 @@ const MyEvent = (props) => {
 
   const getInvitedRoom = async () => {
     try {
-      const fetch = {
-        url: "http://localhost:3002/api/room/invited-room",
-        method: "GET",
-        headers: {
-          Authorization: `token ${cookies.u_auth.accessToken}`,
-        },
-      };
-      const res = await axios(fetch);
-      setInvitedRoom(res?.data?.data);
+      const res = await getInvitedRoomAPI();
+      setInvitedRoom(res?.data);
     } catch (err) {
       console.log(err);
     }
@@ -147,13 +141,7 @@ const MyEvent = (props) => {
       cancelButtonText: "Hủy",
     }).then((swalRes) => {
       if (swalRes.isConfirmed) {
-        axios({
-          url: `http://localhost:3002/api/room/${roomID}`,
-          method: "DELETE",
-          headers: {
-            Authorization: `token ${cookies.u_auth.accessToken}`,
-          },
-        })
+        deleteRoomAPI(roomID)
           .then((result) => {
             Swal.fire({
               icon: "success",

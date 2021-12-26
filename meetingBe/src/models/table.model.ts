@@ -6,6 +6,7 @@ export class Table {
     room: ObjectId;
     name: string;
     users: [ObjectId] | User[];
+    members: [ObjectId] | User[];
     numberOfSeat: number
 }
 
@@ -13,6 +14,7 @@ const tableSchema = new Schema<Table>({
     room: { type: SchemaTypes.ObjectId, ref: 'room' },
     name: String,
     users: [{ type: SchemaTypes.ObjectId, ref: 'user' }],
+    members: [{ type: SchemaTypes.ObjectId, ref: 'user' }],
     numberOfSeat: Number
 })
 

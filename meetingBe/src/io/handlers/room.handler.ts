@@ -294,6 +294,7 @@ export default (ioRoom: any, io: any) => {
     const leaveTable = async function name(peerId: string) {
         const socket: Socket = this;
         const userId = socket.data.userData.userId;
+        const roomId = socket.data.roomId;
 
         try {
             const tableIdTemp = socket.data.tableId;
@@ -301,6 +302,10 @@ export default (ioRoom: any, io: any) => {
                 socket.leave(tableIdTemp);
                 await tableModel.findByIdAndUpdate(tableIdTemp, { $pull: { users: userId } }, { new: true }).populate('users');
                 ioRoom.to(tableIdTemp).emit('table:user-leave', { userId, peerId });
+
+                const tables = await tableModel.find({ room: roomId })
+                    .populate({ path: 'users', select: 'name _id username email' })
+                ioRoom.to(roomId).emit('room:tables', tables);
             }
         } catch (err) {
             socket.emit('table:err', err)
@@ -315,6 +320,19 @@ export default (ioRoom: any, io: any) => {
         ioRoom.to(roomId).emit('present:pin', { userId, peerId });
     }
 
+    const divideTables = async function () {
+        const socket: Socket = this;
+        const roomId = socket.data.roomId;
+
+        try {
+            await tableModel.updateMany({ room: roomId }, { users: [] });
+            const tables = await tableModel.find({ room: roomId })
+                .populate({ path: 'users', select: 'name _id username email' })
+            ioRoom.to(roomId).emit('room:divide-tables', tables);
+        } catch {
+            return socket.emit('room:err', 'Internal Server Error');
+        }
+    }
 
     return {
         joinRoom,
@@ -330,6 +348,7 @@ export default (ioRoom: any, io: any) => {
         changeMedia,
         acceptRequest,
         pin,
+        divideTables
     }
 
 }

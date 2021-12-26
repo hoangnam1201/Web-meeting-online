@@ -2,17 +2,15 @@ import openSocket from "socket.io-client";
 import { Cookies } from "react-cookie";
 import { store } from "../store";
 import Peer from "peerjs";
-
-import { useSelector } from "react-redux";
 import { receiveMessageAction } from "../store/actions/messageAction";
-import { countTime, disconnectSwal } from "./swalServier";
+import { confirmSwal, countTime, disconnectSwal } from "./swalServier";
 import { SET_SELECTEDVIDEO } from "../store/reducers/selectVideoReducer";
-import React from "react";
 import sound from "../sounds/join-permission.mp3";
 import sound1 from "../sounds/meet-message-sound-1.mp3";
 
 var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
+
 const peerEndPoint = {
   host: "localhost",
   path: "/peerjs/meeting",
@@ -40,6 +38,7 @@ class Connection {
   myID = null;
   canAccess = false;
   access = false;
+  isMeetting = true;
   //peers
   peers = {};
   //room
@@ -63,6 +62,7 @@ class Connection {
   messageState;
   //join err
   joinErr;
+
 
   constructor(setting) {
     this.setting = setting;
@@ -129,10 +129,60 @@ class Connection {
       this.setting.updateInstance("join-err", { ...this.joinErr });
     });
 
+    this.socket.on("room:divide-tables", (tables) => {
+      this.tables = tables;
+      this.clearPeers();
+      store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
+      this.setting.updateInstance("tables", [...this.tables]);
+
+      this.myStream.stream.getTracks().forEach((tr) => {
+        tr.stop();
+      });
+
+      this.setting.updateInstance("myStream", { ...this.myStream });
+
+
+      const currentUser = store.getState().userReducer?.user;
+
+      const table = tables.find(t => {
+        return t.members.find(m => m === currentUser._id)
+      })
+
+      if (!table) {
+        return confirmSwal('Error to join table',
+          'You are not a member of any tables');
+      };
+
+      countTime(
+        'Divide into tables',
+        'You will join your table <b></b> seconds',
+        5, () => {
+          this.socket.emit(
+            "table:join",
+            table._id,
+            this.myID,
+            { audio: false, video: false }
+          );
+        });
+
+    });
+
+
     this.socket.on("table:user-leave", (data) => {
-      this.peers[data.peerId]?.close();
-      delete this.streamDatas[data.peerId];
+      console.log(data);
+      const { peerId } = data;
+      this.peers[peerId]?.close();
+      delete this.streamDatas[peerId];
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
+
+      const videoSelected = store.getState().selectedVideo;
+      if (videoSelected) {
+        if (videoSelected.peerId === peerId)
+          return store.dispatch({
+            type: SET_SELECTEDVIDEO,
+            payload: null
+          });
+      }
     });
 
     this.socket.on("table:user-joined", (data) => {
@@ -153,7 +203,7 @@ class Connection {
       const call = this.myPeer.call(peerId, this.myStream.stream, options);
 
       call.on("stream", (userStream) => {
-        this.streamDatas[call.peer] = { user, stream: userStream, media };
+        this.streamDatas[call.peer] = { user, stream: userStream, media, peerId };
         this.setting.updateInstance("streamDatas", {
           ...this.streamDatas,
         });
@@ -183,6 +233,23 @@ class Connection {
     this.socket.on("table:media", ({ userId, media, peerId }) => {
       if (this.streamDatas[peerId]) this.streamDatas[peerId].media = media;
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
+
+      const videoSelected = store.getState().selectedVideo;
+      console.log('table', videoSelected, peerId)
+      if (videoSelected && videoSelected.peerId === peerId) {
+        if (this.myID === peerId) {
+          return store.dispatch({
+            type: SET_SELECTEDVIDEO,
+            payload: { ...videoSelected, media: media },
+          });
+        }
+
+        return store.dispatch({
+          type: SET_SELECTEDVIDEO,
+          payload: { ...this.streamDatas[peerId] },
+        });
+
+      }
     });
 
     this.socket.on("present:media", ({ userId, media, peerId }) => {
@@ -190,7 +257,7 @@ class Connection {
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
 
       const videoSelected = store.getState().selectedVideo;
-
+      console.log('present', videoSelected)
       if (videoSelected) {
         if (this.streamDatas[peerId] && videoSelected.peerId === peerId)
           return store.dispatch({
@@ -222,16 +289,25 @@ class Connection {
     this.socket.on("room:present", ({ time, tables }) => {
       this.tables = tables;
       this.clearPeers();
+      this.streamDatas = {};
       store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
       this.setting.updateInstance("tables", [...this.tables]);
 
-      countTime(time, () => {
-        this.socket.emit(
-          "present:join",
-          this.myID,
-          Connection.getMediaStatus(this.myStream.stream)
-        );
+      this.myStream.stream.getTracks().forEach((tr) => {
+        tr.stop();
       });
+      this.setting.updateInstance("myStream", { ...this.myStream });
+
+      countTime(
+        'Participate Presentation',
+        'You will participate in presentation <b></b> seconds',
+        time, () => {
+          this.socket.emit(
+            "present:join",
+            this.myID,
+            { audio: false, video: false }
+          );
+        });
     });
 
     this.socket.on("present:close", () => {
@@ -241,12 +317,20 @@ class Connection {
     });
 
     this.socket.on("present:user-leave", (data) => {
-      console.log(data);
-      this.peers[data.peerId]?.close();
-      delete this.streamDatas[data.peerId];
+      const { peerId } = data
+      this.peers[peerId]?.close();
+      delete this.streamDatas[peerId];
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
-    });
 
+      const videoSelected = store.getState().selectedVideo;
+      if (videoSelected) {
+        if (videoSelected.peerId === peerId)
+          return store.dispatch({
+            type: SET_SELECTEDVIDEO,
+            payload: null
+          });
+      }
+    });
     this.socket.on("present:pin", (data) => {
       console.log("pin");
       store.dispatch({
@@ -302,9 +386,10 @@ class Connection {
     });
 
     this.socket.on("disconnect", () => {
-      // disconnectSwal(() => {
-      //   window.location.reload();
-      // });
+      if (this.isMeetting)
+        disconnectSwal(() => {
+          window.location.reload();
+        });
     });
 
     this.socket.on("error", (err) => {
@@ -326,9 +411,10 @@ class Connection {
     });
 
     this.myPeer.on("disconnected", () => {
-      // disconnectSwal(() => {
-      //   window.location.reload();
-      // });
+      if (this.isMeetting)
+        disconnectSwal(() => {
+          window.location.reload();
+        });
     });
   };
 
@@ -387,6 +473,7 @@ class Connection {
   };
 
   destoryDisconnect = () => {
+    this.isMeetting = false;
     this.socket?.offAny();
     this.socket?.disconnect();
     this.myPeer?.destroy();
@@ -395,56 +482,14 @@ class Connection {
     });
   };
 
-  shareScreen = () => {
-    const myNavigator = navigator.mediaDevices.getDisplayMedia();
-    myNavigator
-      .then((stream) => {
-        const peerScreen = initializePeerConnection();
+  leaveTable = () => {
+    this.clearPeers();
+    store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
+    this.tableMessages = [];
+    this.setting.updateInstance("table:messages", [...this.tableMessages]);
+    this.socket.emit('table:leave', this.myID);
 
-        peerScreen.on("open", (id) => {
-          console.log(id, this.myPeer.id);
-          peerScreen.on("call", (call) => {
-            call.answer(stream);
-            call.on("close", () => {
-              // this.peers[call.peer]?.close();
-              // delete this.streamDatas[call.peer];
-              // this.setting.updateInstance("streamDatas", this.streamDatas);
-            });
-          });
-
-          const displayTrack = stream.getVideoTracks()[0];
-          displayTrack.addEventListener("ended", () => {
-            peerScreen.destroy();
-            console.log(peerScreen);
-            this.socket.emit("present:stop-peer", id);
-          });
-
-          this.socket.emit(
-            "present:join",
-            id,
-            Connection.getMediaStatus(stream)
-          );
-
-          const user = store.getState().userReducer.user;
-
-          this.streamDatas[id] = {
-            user: {
-              _id: user._id,
-              name: user.name,
-            },
-            stream: stream,
-            media: { video: true, audio: false },
-          };
-
-          this.setting.updateInstance("streamDatas", {
-            ...this.streamDatas,
-          });
-        });
-      })
-      .catch(() => {
-        return;
-      });
-  };
+  }
 
   getDisplayMediaStream = () => {
     if (this.isShare) {
@@ -540,10 +585,10 @@ class Connection {
     return myNavigator({
       video: video
         ? {
-            frameRate: quality,
-            width: { min: 640, ideal: 1280, max: 1920 },
-            height: { min: 480, ideal: 720, max: 1080 },
-          }
+          frameRate: quality,
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 },
+        }
         : false,
       audio: audio,
     });

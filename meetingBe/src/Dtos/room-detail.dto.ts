@@ -12,7 +12,6 @@ export class RoomReadDetailDto {
     isPresent: boolean;
     owner: UserReadDto;
     members: UserReadDto[];
-    requests: UserReadDto[];
 
     static fromRoom(room: Room) {
         const roomRead = new RoomReadDetailDto();
@@ -26,10 +25,6 @@ export class RoomReadDetailDto {
         roomRead.members = [];
         room.members.forEach(user => {
             roomRead.members = [...roomRead.members, UserReadDto.fromUser(user as User)];
-        })
-        roomRead.requests = [];
-        room.requests.forEach(user => {
-            roomRead.requests = [...roomRead.requests, UserReadDto.fromUser(user as User)];
         })
         return roomRead;
     }

@@ -15,3 +15,7 @@ export const deleteTableAPI = (id) => {
 export const updateTableAPI = (id, data) => {
     return instance.put('/table/' + id, data);
 }
+
+export const saveTableMembersAPI = (roomId) => {
+    return instance.put('/table/save-members/' + roomId);
+}

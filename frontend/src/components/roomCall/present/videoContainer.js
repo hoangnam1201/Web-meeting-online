@@ -14,6 +14,8 @@ const VideoContainer = ({ connection, myStream, streamDatas }) => {
                 return 'grid-cols-2 grid gap-2  ';
             case 2:
                 return 'grid-cols-3 grid gap-2 ';
+            case 3:
+                return 'grid-cols-2 grid gap-2 ';
             default:
                 return 'grid-cols-4 grid gap-2 ';
         }

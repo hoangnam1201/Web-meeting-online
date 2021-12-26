@@ -12,7 +12,10 @@ const VideoTableContainer = ({ connection, myStream, streamDatas, ...rest }) => 
     return (
         <div {...rest}>
             <div className='flex gap-4 justify-center'>
-                <MyVideo className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden' myStream={myStream} />
+                <MyVideo className='w-44 h-32 bg-gray-600 rounded-md overflow-hidden'
+                    myStream={myStream}
+                    connection={connection}
+                />
                 {streamDatas && Object.values(streamDatas).map((s, index) => {
                     return <Video className='w-44 h-32 bg-black rounded-md overflow-hidden'
                         isPin={false}
@@ -57,10 +60,11 @@ export const MyVideo = React.memo(({ connection, myStream, ...rest }) => {
                     </div>
                     <div>
                         <IconButton onClick={() => {
+                            console.log(connection.current.myID)
                             dispatch({
                                 type: SET_SELECTEDVIDEO,
                                 payload: {
-                                    user: { you: true }, stream: myStream.stream,
+                                    user: { you: 'you' }, stream: myStream.stream,
                                     media,
                                     peerId: connection.current.myID
                                 },
@@ -95,6 +99,7 @@ export const Video = ({ streamData, isPin, ...rest }) => {
     }, [stream])
 
     const onPin = () => {
+        console.log(streamData, peerId)
         if (!isPin)
             return dispatch({
                 type: SET_SELECTEDVIDEO,

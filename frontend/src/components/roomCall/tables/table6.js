@@ -10,7 +10,7 @@ const Table6 = ({ data, ...rest }) => {
             <div className='bg-blue-200 h-full relative hover:border-blue-300 border-4' style={{ minWidth: '100px' }}>
                 <div className='absolute z-50 text-white text-shadow'>{data?.name}</div>
                 <div className='z-10 relative'>
-                    <Seat3top users={data?.users.slice(0, 2)} />
+                    <Seat3top users={data?.users.slice(0, 3)} />
                     <div className='flex justify-around'>
                         <Seat1Left user={data?.users[3]} />
                         <div className='inline-block relative h-28'>

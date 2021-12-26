@@ -1,20 +1,13 @@
 import * as actionTypes from "./constant";
 import axios from "axios";
-import { Cookies } from 'react-cookie';
+import { getOwnerRoomAPI } from "../../../api/room.api";
 
 export const actGetRoom = () => {
-  const accessToken = new Cookies().get('u_auth');
   return (dispatch) => {
     dispatch(actGetRoomRequest());
-    axios({
-      url: `http://localhost:3002/api/room/owned-room`,
-      method: "GET",
-      headers: {
-        Authorization: `token ${accessToken.accessToken}`,
-      },
-    })
+    getOwnerRoomAPI()
       .then((result) => {
-        dispatch(actGetRoomSuccess(result.data));
+        dispatch(actGetRoomSuccess(result));
       })
       .catch((error) => {
         dispatch(actGetRoomFailed(error));

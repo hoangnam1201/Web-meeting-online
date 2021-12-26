@@ -135,113 +135,122 @@ function UpdateEvent() {
         </Link>
         Update Event
       </div>
-      {tables?.loading && <LinearProgress />}
-      <div className="grid grid-cols-3 p-4 border-b-2" hidden={notFound}>
-        <div className="text-xl font-semibold col-span-3 text-left p-4">
-          Tables
-        </div>
-        <div className="col-span-2 p-4 shadow-md" style={{ height: "700px" }}>
-          <div className="grid grid-cols-3 px-4 py-2 bg-gray-200 rounded-full">
-            <div className="col-span-2 text-left border-r-2 border-gray-500">
-              name
-            </div>
-            <div className="text-left pl-3">number of seats</div>
-          </div>
-          {tables?.items?.map((s) => (
-            <div
-              className="grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-full mt-4"
-              key={s._id}
-            >
-              <div className="col-span-2 text-left border-r-2 border-gray-500">
-                {s.name}
-              </div>
-              <div className="text-left pl-3 flex justify-between">
-                {s.numberOfSeat}
-                <Button onClick={() => onDelete(s._id)}>
-                  <RemoveIcon fontSize="small" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="p-4">
-          <div className="text-left text-md text-gray-500 font-semibold">
-            Table
-          </div>
-          <form
-            ref={formRef}
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit(createTable)}
-            noValidate
-          >
-            <TextField
-              fullWidth
-              variant="outlined"
-              type="text"
-              name="name"
-              label="name"
-              inputRef={register}
-              error={!!errors.name}
-              helperText={errors?.name?.message}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              type="number"
-              name="numberOfSeat"
-              label="number of seats"
-              inputRef={register}
-              error={!!errors.numberOfSeat}
-              helperText={errors?.numberOfSeat?.message}
-            />
-            <Button variant="contained" type="submit">
-              Add
-            </Button>
-          </form>
-        </div>
+      <div className="py-4">
+        <p className="text-left">Share link</p>
       </div>
-
-      <div className="grid grid-cols-3 p-4 border-b-2" hidden={notFound}>
-        <div className="text-xl font-semibold col-span-3 text-left p-4">
-          Members
-        </div>
-        <div className="col-span-2 p-4 shadow-md" style={{ height: "700px" }}>
-          <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-full">
-            <div className="text-left border-r-2 border-gray-500">username</div>
-            <div className="text-left pl-3">email</div>
+      {tables?.loading && <LinearProgress />}
+      <div hidden={notFound} className="px-6 xl:px-16">
+        <div className="grid grid-cols-3border-b-2">
+          <div className="text-xl font-semibold col-span-3 text-left p-4">
+            Tables
           </div>
-
-          {room &&
-            room.members.map((u) => {
-              return (
-                <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-full mt-4">
-                  <div className="text-left border-r-2 border-gray-500">
-                    {u.username}
+          <div className="flex flex-col col-span-2 p-4 shadow-md" style={{ height: "700px" }}>
+            <div className="grid grid-cols-3 px-4 py-2 bg-gray-200 rounded-full">
+              <div className="col-span-2 text-left border-r-2 border-gray-500">
+                name
+              </div>
+              <div className="text-left pl-3">number of seats</div>
+            </div>
+            <div className="flex-grow h-0 overflow-y-auto scroll-sm">
+              {tables?.items?.map((s) => (
+                <div
+                  className="grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-full mt-4"
+                  key={s._id}
+                >
+                  <div className="col-span-2 text-left border-r-2 border-gray-500">
+                    {s.name}
                   </div>
                   <div className="text-left pl-3 flex justify-between">
-                    {u.email}
-                    <Button onClick={() => onRemoveMember(u._id)}>
+                    {s.numberOfSeat}
+                    <Button onClick={() => onDelete(s._id)}>
                       <RemoveIcon fontSize="small" />
                     </Button>
                   </div>
                 </div>
-              );
-            })}
-        </div>
-        <div className="p-4">
-          <div className="text-left text-md text-gray-500 font-semibold">
-            Table
+              ))}
+            </div>
           </div>
-          <div className=" flex flex-col gap-4">
-            <AsyncSelect
-              isMulti={true}
-              loadOptions={searchUser}
-              value={selected}
-              onChange={onSelectChange}
-            />
-            <Button variant="contained" onClick={onAddMember}>
-              Add
-            </Button>
+          <div className="p-4">
+            <div className="text-left text-md text-gray-500 font-semibold">
+              Table
+            </div>
+            <form
+              ref={formRef}
+              className="flex flex-col gap-4"
+              onSubmit={handleSubmit(createTable)}
+              noValidate
+            >
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="text"
+                name="name"
+                label="name"
+                inputRef={register}
+                error={!!errors.name}
+                helperText={errors?.name?.message}
+              />
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="number"
+                name="numberOfSeat"
+                label="number of seats"
+                inputRef={register}
+                error={!!errors.numberOfSeat}
+                helperText={errors?.numberOfSeat?.message}
+              />
+              <Button variant="contained" type="submit">
+                Add
+              </Button>
+            </form>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 mt-4 border-b-2">
+          <div className="text-xl font-semibold col-span-3 text-left p-4">
+            Members
+          </div>
+          <div className="flex flex-col col-span-2 p-4 shadow-md" style={{ height: "700px" }}>
+            <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-full">
+              <div className="text-left border-r-2 border-gray-500">username</div>
+              <div className="text-left pl-3">email</div>
+            </div>
+
+            <div className="flex-grow h-0 overflow-y-auto scroll-sm">
+              {room &&
+                room.members.map((u) => {
+                  return (
+                    <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-full mt-4">
+                      <div className="text-left border-r-2 border-gray-500">
+                        {u.username}
+                      </div>
+                      <div className="text-left pl-3 flex justify-between">
+                        {u.email}
+                        <Button onClick={() => onRemoveMember(u._id)}>
+                          <RemoveIcon fontSize="small" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="text-left text-md text-gray-500 font-semibold">
+              Table
+            </div>
+            <div className=" flex flex-col gap-4">
+              <AsyncSelect
+                isMulti={true}
+                loadOptions={searchUser}
+                value={selected}
+                onChange={onSelectChange}
+              />
+              <Button variant="contained" onClick={onAddMember}>
+                Add
+              </Button>
+            </div>
           </div>
         </div>
       </div>

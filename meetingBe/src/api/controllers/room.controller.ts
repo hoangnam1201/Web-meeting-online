@@ -53,7 +53,7 @@ export default class RoomController {
             await roomModel.updateOne({ _id: roomId }, { ...roomChange });
             return res.status(200).json({ status: 200, data: null });
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ msg: err }] });
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
     }
 
@@ -61,13 +61,13 @@ export default class RoomController {
         const roomId = req.params.roomId;
         try {
             const room = await roomModel.findById(roomId)
-                .populate('requests')
                 .populate('members')
                 .populate('owner');
             const roomDetail = RoomReadDetailDto.fromRoom(room)
             return res.status(200).json({ status: 200, data: roomDetail });
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ msg: err }] });
+            console.log(err)
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
 
     }
@@ -93,7 +93,7 @@ export default class RoomController {
             const pageData = PageDataService.getPageData(roomDataReads, roomCount, pageIndex, pageSize);
             return res.status(200).json({ status: 200, data: pageData });
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ mgs: err }] });
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
     }
 
@@ -130,7 +130,7 @@ export default class RoomController {
             const pageData = PageDataService.getPageData(roomReads, userCount.invitedRooms.length, pageIndex, pageSize);
             return res.status(200).json({ status: 200, data: pageData });
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ mgs: err }] });
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
     }
 
@@ -150,7 +150,7 @@ export default class RoomController {
             req.app.io.to(userId).emit('notification', notification);
 
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ mgs: err }] });
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
 
     }
@@ -175,7 +175,7 @@ export default class RoomController {
             res.status(200).json({ status: 200, data: null });
 
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ msg: err }] });
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
 
     }
@@ -198,7 +198,7 @@ export default class RoomController {
             })
             return res.status(200).json({ status: 200, data: null });
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ msg: err }] });
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
 
     }
@@ -211,7 +211,7 @@ export default class RoomController {
             await userModel.updateOne({ _id: userId }, { $pull: { invitedRooms: roomId } });
             return res.status(200).json({ status: 200, data: null });
         } catch (err) {
-            return res.status(500).json({ status: 500, errors: [{ msg: err }] });
+            return res.status(500).json({ status: 500, error: 'Internal Server Error'});
         }
     }
 }

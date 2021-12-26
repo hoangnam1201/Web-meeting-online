@@ -1,5 +1,17 @@
 import instance from "./instanceAxios";
 
+export const getInvitedRoomAPI = () => {
+    return instance.get("/room/invited-room");
+}
+
+export const getOwnerRoomAPI = () => {
+    return instance.get("/room/owned-room");
+}
+
+export const deleteRoomAPI = (roomId) => {
+    return instance.delete(`room/${roomId}`);
+}
+
 export const createRoomApi = (data) => {
     return instance.post('/room', data);
 }

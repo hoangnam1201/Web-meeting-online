@@ -2,7 +2,14 @@ import { IconButton, Popover } from '@mui/material'
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import React from 'react'
 
-const BasicPopover = ({ children, ...rest }) => {
+const BasicPopover = ({
+    children,
+    avertical = 'center',
+    ahorizontal = 'center',
+    tvertical = 'center',
+    thorizontal = 'center',
+    ...rest }) => {
+
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -27,9 +34,14 @@ const BasicPopover = ({ children, ...rest }) => {
                 anchorEl={anchorEl}
                 onClose={handleClose}
                 anchorOrigin={{
-                    vertical: 'center',
-                    horizontal: 'center',
+                    vertical: avertical,
+                    horizontal: ahorizontal
                 }}
+                transformOrigin={{
+                    vertical: tvertical,
+                    horizontal: thorizontal
+                }}
+
             >
                 <div>
                     {children}

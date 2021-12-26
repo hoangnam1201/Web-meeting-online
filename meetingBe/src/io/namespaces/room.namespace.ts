@@ -17,6 +17,7 @@ export default (io: any) => {
         socket.on('room:get-messages', _roomHandler.getMessages);
         socket.on('room:present', _roomHandler.present);
         socket.on('room:access-request', _roomHandler.acceptRequest);
+        socket.on('room:divide-tables', _roomHandler.divideTables);
         socket.on('table:join', _roomHandler.joinTable);
         socket.on('table:send-message', _roomHandler.sendTableMessage);
         socket.on('change-media', _roomHandler.changeMedia);
@@ -26,7 +27,5 @@ export default (io: any) => {
         socket.on('table:leave', _roomHandler.leaveTable);
         socket.on('present:pin', _roomHandler.pin);
     }
-
     roomNamespace.on("connection", connection);
-
 }

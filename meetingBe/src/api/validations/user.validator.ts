@@ -8,11 +8,11 @@ export default class UserValidator {
         return [
             body('username')
                 .exists().withMessage('required username').bail()
-                .isLength({ min: 6, max: 50 }).withMessage('min length is 5 and max length is 50').bail()
+                .isLength({ min: 5, max: 50 }).withMessage('min length is 5 and max length is 50').bail()
                 .custom(checkUsernameExist).withMessage('username already exist'),
             body('password', 'invalid password')
                 .exists().withMessage('required password').bail()
-                .isLength({ min: 6 }).withMessage('min length of password is 6'),
+                .isLength({ min: 8 }).withMessage('min length of password is 6'),
             body('passwordConfirmation', 'Confirmation is invalid')
                 .exists().withMessage('required ConfirmPassword').bail()
                 .custom((value, { req }) => value === req.body.password),
@@ -37,7 +37,7 @@ export default class UserValidator {
                 .custom(checkOldPassword),
             body('password', 'invalid password')
                 .exists().withMessage('required password').bail()
-                .isLength({ min: 6 }).withMessage('min length of password is 6'),
+                .isLength({ min: 8 }).withMessage('min length of password is 6'),
             body('passwordConfirmation', 'Confirmation is invalid')
                 .exists().withMessage('required ConfirmPassword').bail()
                 .custom((value, { req }) => value === req.body.password)

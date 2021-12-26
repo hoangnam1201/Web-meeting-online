@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { roomRoute, userRoute, homeRoute, authRoute } from "./routes";
 import UserAuth from "./routes/helper/userAuth";
+import UnAuth from "./routes/helper/unAuth";
 import Error from "./components/Error";
 import DefautLayout from './layouts/defautLayout';
 
@@ -11,14 +12,16 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/auth">
-            <Switch>
-              {authRoute.map((route, index) => (
-                <Route path={route.path} exact={route.exact} component={route.component} key={index} />
-              ))}
-              <Route path="*">
-                <Error type={0} />
-              </Route>
-            </Switch>
+            <UnAuth>
+              <Switch>
+                {authRoute.map((route, index) => (
+                  <Route path={route.path} exact={route.exact} component={route.component} key={index} />
+                ))}
+                <Route path="*">
+                  <Error type={0} />
+                </Route>
+              </Switch>
+            </UnAuth>
           </Route>
           <UserAuth path="/user">
             <DefautLayout logged={true}>
@@ -40,17 +43,19 @@ function App() {
               </Switch>
             </DefautLayout>
           </UserAuth>
-          <DefautLayout logged={false}>
-            <Switch>
-              {homeRoute.map((route, index) => (
-                <Route path={route.path} exact={route.exact} component={route.component} Key={index} />
-              ))}
-              <Route path="*" component={Error} />
-            </Switch>
-          </DefautLayout>
+          <UnAuth>
+            <DefautLayout logged={false}>
+              <Switch>
+                {homeRoute.map((route, index) => (
+                  <Route path={route.path} exact={route.exact} component={route.component} Key={index} />
+                ))}
+                <Route path="*" component={Error} />
+              </Switch>
+            </DefautLayout>
+          </UnAuth>
         </Switch>
       </BrowserRouter>
-    </div>
+    </div >
   );
 }
 

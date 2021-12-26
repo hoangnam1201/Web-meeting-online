@@ -26,10 +26,10 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
   const handleKeydown = (e) => {
     console.log(typeof e);
     if (e.key === "Enter") {
-      if (value == 0) {
+      if (value == 1) {
         connection.current.socket.emit("table:send-message", msgText);
       }
-      if (value == 1) {
+      if (value == 0) {
         connection.current.socket.emit("room:send-message", msgText);
       }
 

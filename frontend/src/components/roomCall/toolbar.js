@@ -8,7 +8,7 @@ import VideocamOff from "@mui/icons-material/VideocamOff";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import LogoutSharpIcon from "@mui/icons-material/LogoutSharp";
-
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,6 +19,8 @@ import { sendMessageAction } from "../../store/actions/messageAction";
 import { confirmPresent, confirmSwal } from "../../services/swalServier";
 import { useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
+import Swal from "sweetalert2";
+import { saveTableMembersAPI } from "../../api/table.api";
 
 const Toolbar = ({
   connection,
@@ -34,7 +36,6 @@ const Toolbar = ({
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
   );
-  // const [openLobby, setOpenLobby] = useState(false);
 
   const turnOffAudio = () => {
     connection.current.turnOffAudio();
@@ -62,11 +63,45 @@ const Toolbar = ({
     });
   };
 
+  const onSaveTableMember = () => {
+    confirmSwal('save table members'
+      , 'save the people sitting at the tables as members of that table',
+      () => {
+        saveTableMembersAPI(roomInfo._id)
+          .then(() => {
+            Swal.fire({
+              icon: 'success'
+            })
+          });
+      })
+  }
+
   return (
     <div {...rest}>
       <div className="flex py-2 text-gray-500">
         {roomInfo?.owner._id === currentUser?.user._id && (
-          <div className="border-r-2 border-gray-400 px-3">
+          <div className="border-r-2 border-gray-400 px-3 flex items-center">
+            <div className=" relative group px-2 py-2">
+              <MoreVertIcon />
+              <div className="hidden flex-col absolute z-10 top-0 left-0 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md">
+                <button
+                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                  onClick={() => {
+                    confirmSwal('Divide Into Tables', '', () => {
+                      connection.current.socket.emit('room:divide-tables')
+                    })
+                  }}
+                >
+                  divide into tables
+                </button>
+                <button
+                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                  onClick={onSaveTableMember}
+                >
+                  save table members
+                </button>
+              </div>
+            </div>
             <button
               className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
               onClick={onPresent}
@@ -136,9 +171,7 @@ const Toolbar = ({
             <button
               className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
               onClick={() =>
-                confirmSwal("Are you sure?", () => {
-                  history.push("/user/my-event");
-                })
+                connection.current.leaveTable()
               }
             >
               <div>
@@ -149,7 +182,7 @@ const Toolbar = ({
             <button
               className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
               onClick={() =>
-                confirmSwal("Are you sure?", () => {
+                confirmSwal("Are you sure?", '', () => {
                   history.push("/user/my-event");
                 })
               }

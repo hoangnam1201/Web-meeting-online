@@ -6,6 +6,7 @@ body {
     font-family: "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    padding-right: 0 !important ;
 }
 
 code {
@@ -37,12 +38,12 @@ code {
     }
 
     .scroll-sm::-webkit-scrollbar-track {
-      background: #475569;
+      background: #d1d5db;
       border-radius: 20px;
     }
 
     .scroll-sm::-webkit-scrollbar-thumb {
-      background: #d1d5db;
+      background: #6b7280;
       border-radius: 20px;
     }
 

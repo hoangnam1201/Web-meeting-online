@@ -10,8 +10,6 @@ export class User {
     phone: string;
     dob: Date;
     email: string;
-    peerId: string;
-    isLook: boolean;
     invitedRooms: ObjectId[] | Room[];
     createdAt: Date;
     updatedAt: Date;

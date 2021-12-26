@@ -13,6 +13,7 @@ const getTableById = (id: string, res: Response) => {
 }
 
 export default class TablerController {
+
     createTable(req: Request, res: Response) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -27,9 +28,20 @@ export default class TablerController {
         })
     }
 
+    saveMember(req: Request, res: Response) {
+        const { roomId } = req.params;
+        tableModel.updateMany({ room: new mongoose.Types.ObjectId(roomId) as any }, [{
+            $set: { members: '$users' }
+        }]).then(() => {
+            return res.status(200).json({ status: 200, data: null });
+        }).catch((err: any) => {
+            console.log(err);
+            return res.status(500).json({ status: 500, data: 'Internal Server Error' });
+        })
+    }
+
     deleteTable(req: Request, res: Response) {
         const tableId = req.params.tableId;
-        console.log(tableId);
         tableModel.deleteOne({ _id: tableId }, {}, (err) => {
             if (err) {
                 return res.status(400).json({ status: 400, errors: [{ msg: err }] })

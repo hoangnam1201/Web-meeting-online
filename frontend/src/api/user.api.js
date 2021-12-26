@@ -11,3 +11,15 @@ export const getInfoAPI = () => {
 export const searchUserAPI = (str) => {
   return instance.get("/user/search", { params: { searchValue: str } });
 };
+
+export const changeUserInfoAPI = (data) => {
+  return instance.put("/user/change-infor", data);
+}
+
+export const changePasswordAPI = (data) => {
+  return instance.put('/user/change-password', data);
+}
+
+export const registerAPI = (data) => {
+  return instance.post('/user/register', data);
+}

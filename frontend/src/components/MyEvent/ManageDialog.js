@@ -24,6 +24,7 @@ import { useDispatch } from "react-redux";
 import { actGetRoom } from "./modules/action";
 import { useCookies } from "react-cookie";
 import Alert from "@material-ui/lab/Alert";
+import { createRoomApi, updateRoomApi } from "../../api/room.api";
 const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%",
@@ -117,21 +118,13 @@ const ManageDialog = (props) => {
     setEndDate(date.getTime());
   };
   const onAddSubmit = () => {
-    // data["startDate"] = moment(startDate).format("yyyy-MM-DD");
-    // data["endDate"] = moment(endDate).format("yyyy-MM-DD");
-    axios({
-      url: `http://localhost:3002/api/room`,
-      method: "POST",
-      data: {
-        name: roomEvent.name,
-        description: roomEvent.description,
-        startDate: startDate,
-        endDate: endDate,
-      },
-      headers: {
-        Authorization: `token ${cookies.u_auth.accessToken}`,
-      },
-    })
+    const data = {
+      name: roomEvent.name,
+      description: roomEvent.description,
+      startDate: startDate,
+      endDate: endDate,
+    }
+    createRoomApi(data)
       .then(() => {
         setOpenDialog(false);
         Swal.fire({
@@ -158,19 +151,13 @@ const ManageDialog = (props) => {
       });
   };
   const onUpdateSubmit = () => {
-    axios({
-      url: `http://localhost:3002/api/room/${roomEvent._id}`,
-      method: "PUT",
-      data: {
-        name: roomEvent.name,
-        description: roomEvent.description,
-        startDate: startDate,
-        endDate: endDate,
-      },
-      headers: {
-        Authorization: `token ${cookies.u_auth.accessToken}`,
-      },
-    })
+    const data = {
+      name: roomEvent.name,
+      description: roomEvent.description,
+      startDate: startDate,
+      endDate: endDate,
+    }
+    updateRoomApi(roomEvent._id, data)
       .then(() => {
         setOpenDialog(false);
         Swal.fire({

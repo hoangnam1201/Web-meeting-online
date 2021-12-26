@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
 import Alert from "@material-ui/lab/Alert";
 import { useCookies } from "react-cookie";
+import { changePasswordAPI } from "../../api/user.api";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginBottom: "100px", padding: "0 100px" },
@@ -41,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
 const schema = yup.object().shape({
   oldPassword: yup.string().required("Vui lòng nhập lại password cũ !"),
   password: yup.string().required("Vui lòng nhập password mới !"),
-  passwordConfirmation: yup.string().required("Vui lòng nhập lại password !"),
+  passwordConfirmation: yup.string().required("Vui lòng nhập lại password !")
+    .oneOf([yup.ref("password")], "Mật khẩu không khớp !"),
 });
 
 export default function ChangePassword() {
@@ -74,18 +76,13 @@ export default function ChangePassword() {
 
   const onPasswordSubmit = () => {
     setLoading(true);
-    axios({
-      url: `http://localhost:3002/api/user/change-password`,
-      method: "PUT",
-      data: {
-        oldPassword: password.oldPassword,
-        password: password.password,
-        passwordConfirmation: password.passwordConfirmation,
-      },
-      headers: {
-        Authorization: `token ${cookies.u_auth.accessToken}`,
-      },
-    })
+
+    const data = {
+      oldPassword: password.oldPassword,
+      password: password.password,
+      passwordConfirmation: password.passwordConfirmation,
+    }
+    changePasswordAPI(data)
       .then(() => {
         setLoading(false);
         Swal.fire({

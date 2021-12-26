@@ -17,6 +17,7 @@ import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import { useCookies } from "react-cookie";
 import Alert from "@material-ui/lab/Alert";
+import { changeUserInfoAPI } from "../../api/user.api";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginBottom: "100px", padding: "0 100px" },
@@ -66,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 const schema = yup.object().shape({
-  name: yup.string().required("Name đang trống !"),
+  name: yup.string().min(5).required("Name đang trống !"),
   phone: yup
     .string()
     .required("Số điện thoại đang trống !")
@@ -82,7 +83,6 @@ export default function Profiles() {
   });
   const classes = useStyles();
   const loginInfo = useSelector((state) => state.userReducer?.user);
-  const [cookies] = useCookies(["u_auth"]);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [info, setInfo] = useState(null);
@@ -115,12 +115,7 @@ export default function Profiles() {
       phone: info.phone,
     };
     setLoading(true);
-    axios
-      .put("http://localhost:3002/api/user/change-infor", data, {
-        headers: {
-          Authorization: `token ${cookies.u_auth.accessToken}`,
-        },
-      })
+    changeUserInfoAPI(data)
       .then((res) => {
         setLoading(false);
         setErrorNotify(null);
@@ -130,10 +125,9 @@ export default function Profiles() {
           timer: 1500,
           showConfirmButton: false,
         });
-        loginInfo.name = res.data.data.name;
-        loginInfo.dob = res.data.data.dob;
-        loginInfo.phone = res.data.data.phone;
-        localStorage.setItem("loginInfo", JSON.stringify(loginInfo));
+        loginInfo.name = res.data.name;
+        loginInfo.dob = res.data.dob;
+        loginInfo.phone = res.data.phone;
       })
       .catch((error) => {
         setLoading(false);
