@@ -34,21 +34,21 @@ FB: https://www.facebook.com/hoangnam22
 
 - clone project
 
----
+```
 
 git clone https://github.com/hoangnam1201/Web-meeting-online.git
 
----
+```
 
 ### BACK-END
 
 - project backend nằm trong thư mục meetingbe
 
----
+```
 
 cd meetingbe
 
----
+```
 
 - khi mở file .env bạn sẽ thấy các thông tin \
   PORT: cổng sẽ chạy project be \
@@ -57,61 +57,61 @@ cd meetingbe
   ACCESS_TOKEN_LIFE: Thời gian sống của token \
 - Chạy các lệnh sau để run project ở local
 
----
+```
 
 npm install
 npm start
 
----
+```
 
 - Nếu muốn build docker image thì chạy lênh sau
 
----
+```
 
 docker build -t <username>/<imagename>:<tag> .
 
----
+```
 
 - Run docker image
 
----
+```
 
 docker run -p 3002:3002 <username>/<imagename>:<tag>
 
----
+```
 
 ### FRONT_END
 
 - project backend nằm trong thư mục fe
 
----
+```
 
 cd fe
 
----
+```
 
 - Ở trong các file /src/api/instaceAxios.js và /src/serices/connection.js, sẽ thấy các địa chỉ của backend bạn có thể thay đổi nếu khác địa chỉ backend. Trong trường hợp backend chạy ở local ở port 3002 thì không cần thay đổi.
 - Chạy các lệnh sau để run project ở local
 
----
+```
 
 npm install
 npm start
 
----
+```
 
 - Nếu muốn build docker image thì chạy lênh sau
 
----
+```
 
 docker build -t <username>/<imagename>:<tag> .
 
----
+```
 
 - Run docker image
 
----
+```
 
 docker run -p 3000:3000 <username>/<imagename>:<tag>
 
----
+```
