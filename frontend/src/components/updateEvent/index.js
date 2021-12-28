@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import RemoveIcon from "@mui/icons-material/Remove";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Link, useParams } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import * as yup from "yup";
@@ -18,6 +19,7 @@ import AsyncSelect from "react-select/async";
 import Swal from "sweetalert2";
 import { searchUserAPI } from "../../api/user.api";
 import { addMembersAPI, getRoomAPI, removeMemberAPI } from "../../api/room.api";
+import { setGlobalNotification } from "../../store/reducers/globalNotificationReducer";
 
 const roomSchema = yup.object().shape({
   name: yup.string().min(5).required(),
@@ -116,7 +118,7 @@ function UpdateEvent() {
 
   return (
     <div>
-      <div className="text-xl text-left p-4 font-semibold text-gray-500 flex items-center gap-4">
+      <div className="text-xl text-left p-4 font-semibold text-gray-500 flex items-center gap-4 border-b-2">
         <Link to="/user/my-event">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -135,18 +137,40 @@ function UpdateEvent() {
         </Link>
         Update Event
       </div>
-      <div className="py-4">
-        <p className="text-left">Share link</p>
-      </div>
-      {tables?.loading && <LinearProgress />}
       <div hidden={notFound} className="px-6 xl:px-16">
-        <div className="grid grid-cols-3border-b-2">
-          <div className="text-xl font-semibold col-span-3 text-left p-4">
-            Tables
+        <div className="py-4 shadow-md p-4">
+          <div className="py-4 text-left">
+            <p className="text-md font-semibold">
+              Share link
+            </p>
+            <p className="text-gray-400 font-thin text-sm">
+              The link is used to share for members to join the room
+            </p>
           </div>
-          <div className="flex flex-col col-span-2 p-4 shadow-md" style={{ height: "700px" }}>
-            <div className="grid grid-cols-3 px-4 py-2 bg-gray-200 rounded-full">
-              <div className="col-span-2 text-left border-r-2 border-gray-500">
+          <div className=" bg-gray-100 py-2 rounded-sm tracking-widest text-left px-3 text-gray-500 flex justify-between">
+            <p>{`${window.location.origin.toString()}/room/${id}`}</p>
+            <button onClick={() => {
+              navigator.clipboard.writeText(`${window.location.origin.toString()}/room/${id}`);
+              dispatch(
+                setGlobalNotification('success', 'copied')
+              )
+            }}>
+              <ContentCopyIcon></ContentCopyIcon>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 shadow-md p-4 mt-4">
+          <div className="text-md col-span-3 text-left">
+            {tables?.loading && <LinearProgress />}
+            <p className=" font-semibold text-md">Tables</p>
+            <p className="text-gray-400 font-thin text-sm">
+              The tables in the room are used by the members to sit and divide the group
+            </p>
+          </div>
+          <div className="flex flex-col col-span-2 p-4" style={{ height: "700px" }}>
+            <div className="grid grid-cols-3 px-4 py-1 bg-gray-200 rounded-md">
+              <div className="col-span-2 text-left border-r-2 border-gray-300">
                 name
               </div>
               <div className="text-left pl-3">number of seats</div>
@@ -154,17 +178,17 @@ function UpdateEvent() {
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
               {tables?.items?.map((s) => (
                 <div
-                  className="grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-full mt-4"
+                  className="grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm"
                   key={s._id}
                 >
-                  <div className="col-span-2 text-left border-r-2 border-gray-500">
+                  <div className="col-span-2 text-left border-r-2 border-gray-300">
                     {s.name}
                   </div>
                   <div className="text-left pl-3 flex justify-between">
                     {s.numberOfSeat}
-                    <Button onClick={() => onDelete(s._id)}>
+                    <button onClick={() => onDelete(s._id)}>
                       <RemoveIcon fontSize="small" />
-                    </Button>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -207,29 +231,49 @@ function UpdateEvent() {
           </div>
         </div>
 
+        <div className="shadow-md p-4 mt-4">
+          <div className="py-4 text-left">
+            <p className="text-md font-semibold">
+              Groups
+            </p>
+            <p className="text-gray-400 font-thin text-sm">
+              Contains the permanent members of each table
+            </p>
+          </div>
+          <div className="flex justify-start">
+            <Link to={`/room/groups/${id}`} target='_blank'>
+              <Button variant="contained" type="submit">
+                Manage groups
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         <div className="grid grid-cols-3 mt-4 border-b-2">
           <div className="text-xl font-semibold col-span-3 text-left p-4">
-            Members
+            <p className=" font-semibold text-md"> Members </p>
+            <p className="text-gray-400 font-thin text-sm">
+              Users can join the room without sending a request
+            </p>
           </div>
           <div className="flex flex-col col-span-2 p-4 shadow-md" style={{ height: "700px" }}>
-            <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-full">
+            <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-md">
               <div className="text-left border-r-2 border-gray-500">username</div>
               <div className="text-left pl-3">email</div>
             </div>
-
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
               {room &&
-                room.members.map((u) => {
+                room.members.map((u, index) => {
                   return (
-                    <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-full mt-4">
-                      <div className="text-left border-r-2 border-gray-500">
+                    <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-md mt-4 text-sm text-gray-500" key={index}>
+                      <div className="text-left border-r-2 border-gray-300">
                         {u.username}
                       </div>
                       <div className="text-left pl-3 flex justify-between">
                         {u.email}
-                        <Button onClick={() => onRemoveMember(u._id)}>
+                        <button onClick={() => onRemoveMember(u._id)}>
                           <RemoveIcon fontSize="small" />
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   );
@@ -238,7 +282,7 @@ function UpdateEvent() {
           </div>
           <div className="p-4">
             <div className="text-left text-md text-gray-500 font-semibold">
-              Table
+              user
             </div>
             <div className=" flex flex-col gap-4">
               <AsyncSelect
@@ -253,8 +297,9 @@ function UpdateEvent() {
             </div>
           </div>
         </div>
+
       </div>
-    </div>
+    </div >
   );
 }
 

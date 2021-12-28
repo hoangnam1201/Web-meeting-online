@@ -6,7 +6,6 @@ import Seat3Bottom from '../seats/seat3bottom'
 import Seat3top from '../seats/seat3top'
 
 const Table8 = ({ data, ...rest }) => {
-    console.log(data?.users)
     return (
         <div {...rest}>
             <div className='bg-blue-200 h-full relative hover:border-blue-300 border-4' style={{ minWidth: '100px' }}>

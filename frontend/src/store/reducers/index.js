@@ -5,6 +5,7 @@ import { roomCallReducer } from "./roomCallReducer";
 import { selectedVideoReducer } from "./selectVideoReducer";
 import { notifyMessageReducer } from "./notifyMessageReducer";
 import { TablesReducer } from "./tablesReducer";
+import { globalnofificationReducer } from "./globalNotificationReducer";
 
 export const rootReducer = combineReducers({
   userReducer,
@@ -12,5 +13,7 @@ export const rootReducer = combineReducers({
   roomCall: roomCallReducer,
   selectedVideo: selectedVideoReducer,
   tables: TablesReducer,
+  globalNofification: globalnofificationReducer,
   notifyMessageReducer,
+
 });

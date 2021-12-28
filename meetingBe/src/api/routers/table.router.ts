@@ -22,7 +22,7 @@ tableRoute.put('/add-user/:tableId',
     AuthMiddlesware.verifyToken,
     tableController.addUser);
 
-tableRoute.put('/reomve-user/:tableId',
+tableRoute.put('/remove-user/:tableId',
     AuthMiddlesware.verifyToken,
     tableController.removeUser);
 
@@ -33,5 +33,12 @@ tableRoute.get('/:tableId',
 tableRoute.get('/get-by-room/:roomId',
     AuthMiddlesware.verifyToken,
     tableController.getTablesInRoom);
+
+tableRoute.get('/members/search/:roomId',
+    tableController.searchMember);
+
+tableRoute.get('/members/:roomId',
+    AuthMiddlesware.verifyToken,
+    tableController.getMemberTables);
 
 export default tableRoute;

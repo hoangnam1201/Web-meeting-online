@@ -3,15 +3,8 @@ import { validationResult } from "express-validator";
 import mongoose from "mongoose";
 import { TableCreateDto } from "../../Dtos/table-create.dto";
 import tableModel, { Table } from "../../models/table.model";
-
-const getTableById = (id: string, res: Response) => {
-    tableModel.findById(id).populate('users').then((table: Table) => {
-        return res.status(200).json({ status: 200, data: table })
-    }).catch((err: Error) => {
-        return res.status(400).json({ status: 400, errors: [{ msg: err }] })
-    })
-}
-
+import roomModel from "../../models/room.model";
+import { match } from "assert";
 export default class TablerController {
 
     createTable(req: Request, res: Response) {
@@ -53,7 +46,7 @@ export default class TablerController {
     addUser(req: Request, res: Response) {
         const tableId = req.params.tableId;
         const userId = req.body.userId;
-        tableModel.updateOne({ _id: tableId }, { $push: { users: userId } }, {}, (err: Error) => {
+        tableModel.updateOne({ _id: tableId }, { $addToSet: { members: userId } }, {}, (err: Error) => {
             if (err) {
                 return res.status(400).json({ status: 400, errors: [{ msg: err }] })
             }
@@ -65,7 +58,7 @@ export default class TablerController {
         const tableId = req.params.tableId;
         const userId = req.body.userId;
 
-        tableModel.updateOne({ _id: tableId }, { $pull: { users: userId } }, {}, (err: Error) => {
+        tableModel.updateOne({ _id: tableId }, { $pull: { members: userId } }, {}, (err: Error) => {
             if (err) {
                 return res.status(400).json({ status: 400, errors: [{ msg: err }] })
             }
@@ -75,7 +68,12 @@ export default class TablerController {
 
     getTable(req: Request, res: Response) {
         const tableId = req.params.tableId;
-        return getTableById(tableId, res);
+        tableModel.findById(tableId).populate({ path: 'members', select: 'name username _id email' })
+            .then((table: Table) => {
+                return res.status(200).json({ status: 200, data: table })
+            }).catch((err: Error) => {
+                return res.status(400).json({ status: 400, errors: [{ msg: err }] })
+            })
     }
 
     getTablesInRoom(req: Request, res: Response) {
@@ -87,4 +85,68 @@ export default class TablerController {
             return res.status(200).json({ status: 200, data: tables });
         })
     }
+
+    searchMember(req: Request, res: Response) {
+        const roomId = req.params.roomId;
+        roomModel.aggregate()
+            .match({ _id: new mongoose.Types.ObjectId(roomId) as any })
+            .lookup({
+                from: 'tables',
+                let: { id: '$_id' },
+                pipeline: [
+                    { $match: { $expr: { $eq: ['$$id', '$room'] } } },
+                    { $unwind: '$members' },
+                    { $group: { _id: '$room', members: { $addToSet: '$members' } } }
+                ],
+                as: 'table',
+            })
+            .unwind('table', 'members')
+            .match({ $expr: { $not: { $in: ['$members', '$table.members'] } } })
+            .group({ _id: '$_id', members: { $addToSet: '$members' } })
+            .lookup({
+                from: 'users',
+                let: { mb: '$members' },
+                pipeline: [
+                    { $match: { $expr: { $in: ['$_id', '$$mb'] } } },
+                    { $project: { '_id': 1, 'name': 1, 'username': 1, 'email': 1 } }
+                ],
+                as: 'members'
+            })
+            .then((items: any) => {
+                res.status(200).json({ data: items[0] ? items[0].members : [] })
+            })
+    }
+
+    getMemberTables(req: Request, res: Response) {
+        const roomId = req.params.roomId;
+        const { limit = '10', page = '0' } = req.query;
+        const ltemp = parseInt(limit as string);
+        const ptemp = parseInt(page as string);
+
+        tableModel.aggregate()
+            .match({ room: new mongoose.Types.ObjectId(roomId) as any })
+            .lookup({
+                from: 'users',
+                let: { mb: '$members' },
+                pipeline: [
+                    { $match: { $expr: { $in: ['$_id', '$$mb'] } } },
+                    { $project: { '_id': 1, 'name': 1, 'username': 1, 'email': 1 } }
+                ],
+                as: 'members'
+            })
+            .facet({
+                count: [{ $count: 'count' }],
+                results: [{ $skip: ltemp * ptemp }, { $limit: ltemp }]
+            })
+            .addFields({
+                count: { $arrayElemAt: ['$count.count', 0] }
+            })
+            .then(items => {
+                res.status(200).json({ data: items[0], status: 200 })
+            })
+            .catch(err => {
+                res.status(500).json({ error: 'Interal Server Error', status: 200 })
+            })
+    }
+
 }

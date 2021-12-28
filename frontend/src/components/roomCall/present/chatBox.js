@@ -23,7 +23,6 @@ const ChatBox = ({
   const [msgText, setMsgText] = useState("");
 
   const handleKeydown = (e) => {
-    console.log(typeof e);
     if (e.key === "Enter") {
       setMsgText("");
       connection.current.socket.emit("room:send-message", msgText);

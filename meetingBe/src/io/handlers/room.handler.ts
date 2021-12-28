@@ -300,7 +300,7 @@ export default (ioRoom: any, io: any) => {
             const tableIdTemp = socket.data.tableId;
             if (tableIdTemp) {
                 socket.leave(tableIdTemp);
-                await tableModel.findByIdAndUpdate(tableIdTemp, { $pull: { users: userId } }, { new: true }).populate('users');
+                await tableModel.updateOne({ _id: tableIdTemp }, { $pull: { users: userId } }, { new: true });
                 ioRoom.to(tableIdTemp).emit('table:user-leave', { userId, peerId });
 
                 const tables = await tableModel.find({ room: roomId })

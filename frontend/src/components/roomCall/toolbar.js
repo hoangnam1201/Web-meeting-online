@@ -17,7 +17,7 @@ import {
 } from "../../store/actions/roomCallAction";
 import { sendMessageAction } from "../../store/actions/messageAction";
 import { confirmPresent, confirmSwal } from "../../services/swalServier";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
 import Swal from "sweetalert2";
 import { saveTableMembersAPI } from "../../api/table.api";
@@ -94,12 +94,14 @@ const Toolbar = ({
                 >
                   divide into tables
                 </button>
-                <button
-                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                  onClick={onSaveTableMember}
-                >
-                  save table members
-                </button>
+                <Link to={`/room/groups/${roomInfo._id}`}
+                  target='_blank' className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap">
+                  Groups management
+                </Link>
+                <Link to={`/user/update-event/${roomInfo._id}`}
+                  target='_blank' className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap">
+                  Room Setting
+                </Link>
               </div>
             </div>
             <button

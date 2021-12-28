@@ -205,7 +205,7 @@ const MyEvent = (props) => {
               {listRoom?.map((room, index) => (
                 <Grid item lg={3} md={4} sm={6} xs={12} key={index}>
                   <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
-                    <Link to={`/room/id/${room._id}`}>
+                    <Link to={`/room/${room._id}`}>
                       <CardMedia
                         component="img"
                         height="140"
@@ -286,7 +286,7 @@ const MyEvent = (props) => {
                 invitedRoom?.map((room, index) => (
                   <Grid item lg={3} md={4} sm={6} xs={12} key={index}>
                     <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
-                      <Link to={`/room/id/${room._id}`}>
+                      <Link to={`/room/${room._id}`}>
                         <CardMedia
                           component="img"
                           height="140"

@@ -46,7 +46,6 @@ export const MyVideo = React.memo(({ connection, myStream, ...rest }) => {
 
     }, [myStream])
 
-    console.log(connection?.current.myID)
     return (
         <div {...rest}>
             <div className='h-full w-full relative rounded-md overflow-hidden bg-black' >
@@ -60,7 +59,6 @@ export const MyVideo = React.memo(({ connection, myStream, ...rest }) => {
                     </div>
                     <div>
                         <IconButton onClick={() => {
-                            console.log(connection.current.myID)
                             dispatch({
                                 type: SET_SELECTEDVIDEO,
                                 payload: {
@@ -99,7 +97,6 @@ export const Video = ({ streamData, isPin, ...rest }) => {
     }, [stream])
 
     const onPin = () => {
-        console.log(streamData, peerId)
         if (!isPin)
             return dispatch({
                 type: SET_SELECTEDVIDEO,

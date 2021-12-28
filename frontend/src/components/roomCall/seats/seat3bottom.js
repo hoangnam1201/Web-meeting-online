@@ -2,7 +2,6 @@ import React from 'react'
 import Avatar from 'react-avatar'
 
 const Seat3Bottom = ({ users = [] }) => {
-    console.log(users);
     return (
         <div>
             <div className='relative inline-block'>

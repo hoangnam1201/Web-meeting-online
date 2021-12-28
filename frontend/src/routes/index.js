@@ -6,6 +6,7 @@ import MyEvent from "../components/MyEvent";
 import Presentation from "../components/Present";
 import UpdateEvent from "../components/updateEvent";
 import RoomCall from "../components/roomCall";
+import GroupManagement from "../components/groupManagement";
 
 export const userRoute = [
   {
@@ -28,10 +29,14 @@ export const userRoute = [
 export const roomRoute = [
   {
     exact: true,
-    path: "/room/id/:id",
-    component: RoomCall,
+    path: "/room/groups/:roomId",
+    component: GroupManagement,
   },
-  { exact: true, path: "/room/present", component: Presentation },
+  {
+    exact: true,
+    path: "/room/:id",
+    component: RoomCall,
+  }
 ];
 
 export const authRoute = [

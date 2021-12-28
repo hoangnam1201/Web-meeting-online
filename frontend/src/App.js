@@ -5,10 +5,30 @@ import UserAuth from "./routes/helper/userAuth";
 import UnAuth from "./routes/helper/unAuth";
 import Error from "./components/Error";
 import DefautLayout from './layouts/defautLayout';
+import Alert from "@material-ui/lab/Alert";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 function App() {
+  const [showNotification, setShowNotification] = useState(false);
+  const notification = useSelector(state => state.globalNofification);
+
+  useEffect(() => {
+    if (!notification) return;
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+    }, 2000)
+  }, [notification])
+
   return (
     <div className="App">
+      <div className="fixed top-24 transform -translate-x-full w-56" style={{ zIndex: 100, left: '90%' }} hidden={!showNotification}>
+        {notification && <Alert severity={notification.icon}>
+          {notification.msg}
+        </Alert>}
+      </div>
+
       <BrowserRouter>
         <Switch>
           <Route path="/auth">

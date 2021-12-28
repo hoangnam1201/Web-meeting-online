@@ -131,8 +131,6 @@ const PinVideo = () => {
     videoRef.current.muted = true;
     videoRef.current.srcObject = stream;
 
-    console.log(selectedVideo.media)
-
     return () => {
       document.body.style.overflow = "auto";
     };

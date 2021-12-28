@@ -114,7 +114,6 @@ class Connection {
     });
 
     this.socket.on("room:message", (message) => {
-      console.log(message);
       this.roomMessages = [message, ...this.roomMessages];
       this.setting.updateInstance("room:messages", this.roomMessages);
       store.dispatch(receiveMessageAction());
@@ -169,7 +168,6 @@ class Connection {
 
 
     this.socket.on("table:user-leave", (data) => {
-      console.log(data);
       const { peerId } = data;
       this.peers[peerId]?.close();
       delete this.streamDatas[peerId];
@@ -235,7 +233,6 @@ class Connection {
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
 
       const videoSelected = store.getState().selectedVideo;
-      console.log('table', videoSelected, peerId)
       if (videoSelected && videoSelected.peerId === peerId) {
         if (this.myID === peerId) {
           return store.dispatch({
@@ -257,7 +254,6 @@ class Connection {
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
 
       const videoSelected = store.getState().selectedVideo;
-      console.log('present', videoSelected)
       if (videoSelected) {
         if (this.streamDatas[peerId] && videoSelected.peerId === peerId)
           return store.dispatch({
@@ -265,7 +261,6 @@ class Connection {
             payload: { ...this.streamDatas[peerId] },
           });
 
-        console.log(videoSelected.peerId, peerId, this.myID);
         if (this.myID === peerId && videoSelected.peerId === peerId) {
           return store.dispatch({
             type: SET_SELECTEDVIDEO,
@@ -276,7 +271,6 @@ class Connection {
     });
 
     this.socket.on("table:message", (msg) => {
-      console.log("table:message", msg);
       this.tableMessages = [msg, ...this.tableMessages];
       this.setting.updateInstance("table:messages", [...this.tableMessages]);
       store.dispatch(receiveMessageAction());
@@ -332,7 +326,6 @@ class Connection {
       }
     });
     this.socket.on("present:pin", (data) => {
-      console.log("pin");
       store.dispatch({
         type: SET_SELECTEDVIDEO,
         payload: this.streamDatas[data.peerId],
@@ -370,7 +363,6 @@ class Connection {
       });
 
       call.on("close", () => {
-        console.log("close");
         this.peers[call.peer]?.close();
         delete this.streamDatas[call.peer];
         this.setting.updateInstance("streamDatas", {
