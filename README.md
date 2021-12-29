@@ -2,8 +2,9 @@
 
 # TIỂU LUẬN CHUYÊN NGÀNH (HK 1 năm 2021-2022)
 
-**Đề tài**: Tìm hiểu website remo.co và xây dựng website họp nhóm, học tập và làm việc trực tuyến
-Công nghệ sử dụng: MERN Stack
+**Đề tài**: Tìm hiểu website remo.co và xây dựng website họp nhóm, học tập và làm việc trực tuyến \
+
+**Công nghệ sử dụng**: MERN Stack
 
 **Các chức năng chính**:
 
