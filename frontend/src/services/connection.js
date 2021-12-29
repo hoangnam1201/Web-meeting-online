@@ -12,11 +12,11 @@ var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
 
 const peerEndPoint = {
-  host: "localhost",
+  host: "utemeeting.online",
   path: "/peerjs/meeting",
-  port: 3002,
+  port: 443,
 };
-const socketRoomEndPoint = "http://localhost:3002/socket/rooms";
+const socketRoomEndPoint = "https://utemeeting.online/socket/rooms";
 
 const initializePeerConnection = () => {
   return new Peer("", peerEndPoint);
