@@ -202,7 +202,7 @@ server {
         }
 
          location /api {
-            proxy_pass http://localhost:3001;
+            proxy_pass http://<backendAddress>:3002;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
@@ -234,7 +234,7 @@ khởi động lại nginx
 
 ```
 sudo ln -s /etc/nginx/sites-available/sanjeev.xyz /etc/nginx/sites-enabled/
-systemctl restart ngin
+systemctl restart nginx
 ```
 
 #### Enable Firewall
