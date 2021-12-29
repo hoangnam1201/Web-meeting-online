@@ -157,8 +157,33 @@ docker run -p 3002:3002 <username>/<image-name>:<tag>
 
 ### FRONTEND
 
-- mở file connectionService trong folder fe
-  đổi các địa
+- mở các file connectionService, axiosInstance  trong folder frontend
+  đổi các địa chỉ baseURL, socketRoomEndPoint,  peerjsEndPoint thành địa chỉ của máy chủ be
+ Build docker image:
+
+```
+  docker build -t <username>/<image-name>:<tag> .
+```
+
+Push docker image lên docker hub:
+
+```
+  docker push <username>/<image-name>:<tag>
+```
+
+Kết nối vào máy ảo chứa frontend
+Pull frontend project image:
+
+```
+docker pull <username>/<image-name>:<tag>
+
+```
+
+Chạy image backend (port bằng 3000):
+
+```
+docker run -p 3000:3000 <username>/<image-name>:<tag>
+```
 
 #### cài đặt và cấu hình nginx
 
@@ -178,17 +203,15 @@ cd /etc/nginx/sites-available
 Copy file default sang một file mới
 
 ```
-sudo cp default mydomain
+sudo cp default utemeeting
 ```
 
-ghi nội dung sau vào file mydomain
+ghi nội dung sau vào file utemeeting
 
 ```
 server {
         listen 80;
         listen [::]:80;
-
-        root /home/ubuntu/apps/yelp-app/client/build
 
         server_name utemeeting.online www.utemeeting.online;
 
@@ -233,7 +256,8 @@ server {
 khởi động lại nginx
 
 ```
-sudo ln -s /etc/nginx/sites-available/sanjeev.xyz /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
+sudo ln -s /etc/nginx/sites-available/utemeeting /etc/nginx/sites-enabled/
 systemctl restart nginx
 ```
 
