@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Cookies } from 'react-cookie';
 
-const baseURL = process.env.baseURL || 'https://utemeeting.online/api/'
+const baseURL = process.env.baseURL || 'http://localhost:3002/api/'
 
 const instance = axios.create({ baseURL });
 const cookies = new Cookies();

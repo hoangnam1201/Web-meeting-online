@@ -1,6 +1,6 @@
 
 //Register
-POST http://ec2-34-202-165-46.compute-1.amazonaws.com:3002/api/user/register HTTP/1.1
+POST https://utemeeting.online/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {

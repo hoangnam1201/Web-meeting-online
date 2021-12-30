@@ -6,7 +6,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Link, useParams } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import * as yup from "yup";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import {

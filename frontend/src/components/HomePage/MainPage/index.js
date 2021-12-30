@@ -1,8 +1,9 @@
 import React from "react";
-import { Container, Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import iconCheck from "../../../assets/iconcheck.png";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import imgMeeting from "../../../assets/imagemeeting.png";
 const useStyles = makeStyles({
   root: {

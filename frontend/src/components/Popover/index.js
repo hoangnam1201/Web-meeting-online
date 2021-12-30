@@ -1,4 +1,5 @@
-import { IconButton, Popover } from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import Popover from '@mui/material/Popover'
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import React from 'react'
 

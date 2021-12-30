@@ -157,10 +157,7 @@ docker run -p 3002:3002 <username>/<image-name>:<tag>
 
 ### FRONTEND
 
-- mở file connectionService trong folder fe
-  đổi các địa
-
-#### cài đặt và cấu hình nginx
+#### Cài đặt và cấu hình nginx
 
 Install and enable NGINX
 

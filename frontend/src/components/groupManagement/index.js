@@ -1,8 +1,11 @@
-import { IconButton, LinearProgress, Pagination } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import LinearProgress from '@mui/material/LinearProgress';
+import Pagination from '@mui/material/Pagination';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-import { getMemberTablesAPI, removeMemberTableAPI, saveTableMembersAPI, searchMemberAPI } from '../../api/table.api';
-import { Remove, PersonAddAlt } from '@mui/icons-material'
+import { getMemberTablesAPI, removeMemberTableAPI, saveTableMembersAPI } from '../../api/table.api';
+import Remove from '@mui/icons-material/Remove'
+import PersonAddAlt from '@mui/icons-material/PersonAddAlt'
 import { confirmSwal } from '../../services/swalServier';
 import Swal from "sweetalert2";
 import AddUserDialog from './addUserDialog';
