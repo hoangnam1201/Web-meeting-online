@@ -6,6 +6,9 @@ import iconCheck from "../../../assets/iconcheck.png";
 import Button from "@mui/material/Button";
 import imgMeeting from "../../../assets/imagemeeting.png";
 import Footer from "../Footer";
+import table1 from "../../../assets/tablelayout.jpeg";
+import table2 from "../../../assets/tablelayout2.jpg";
+import table3 from "../../../assets/tablelayout3.jpeg";
 const useStyles = makeStyles({
   root: {
     background: "#FFC1C1",
@@ -46,6 +49,22 @@ const MainPage = () => {
   const classes = useStyles();
   return (
     <>
+      <div className="flex justify-center bg-red-200">
+        <div className="p-5">
+          <h1 className={classes.title}>Giao diện đẹp mắt</h1>
+          <div className="flex justify-between items-center my-6">
+            <div className="border-solid border-8 border-white">
+              <img src={table1} alt="table1" />
+            </div>
+            <div className="border-solid border-8 border-white">
+              <img src={table2} alt="table2" />
+            </div>
+            <div className="border-solid border-8 border-white">
+              <img src={table3} alt="table3" />
+            </div>
+          </div>
+        </div>
+      </div>
       <Container
         id="service"
         className={classes.root}

@@ -146,6 +146,7 @@ export default class TablerController {
             })
             .catch(err => {
                 res.status(500).json({ error: 'Interal Server Error', status: 200 })
+                console.log(err)
             })
     }
 
