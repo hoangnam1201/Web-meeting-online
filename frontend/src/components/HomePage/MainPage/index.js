@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import iconCheck from "../../../assets/iconcheck.png";
 import { Button } from "@mui/material";
 import imgMeeting from "../../../assets/imagemeeting.png";
+import Footer from "../Footer";
 const useStyles = makeStyles({
   root: {
     background: "#FFC1C1",
@@ -44,7 +45,12 @@ const MainPage = () => {
   const classes = useStyles();
   return (
     <>
-      <Container className={classes.root} component="div" maxWidth={false}>
+      <Container
+        id="service"
+        className={classes.root}
+        component="div"
+        maxWidth={false}
+      >
         <h1 className={classes.title}>Thiết lập cho các nhóm hiện đại</h1>
         <Grid
           container
@@ -128,6 +134,7 @@ const MainPage = () => {
         </Grid>
       </Container>
       <Container
+        id="about"
         className={classes.container2}
         component="div"
         maxWidth={false}
@@ -164,6 +171,7 @@ const MainPage = () => {
           </Grid>
         </Grid>
       </Container>
+      <Footer />
     </>
   );
 };

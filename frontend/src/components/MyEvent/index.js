@@ -258,9 +258,6 @@ const MyEvent = (props) => {
                       </div>
                     </CardContent>
                     <CardActions>
-                      <Button size="small" startIcon={<PersonIcon />}>
-                        0/50
-                      </Button>
                       <Button size="small">1 floor</Button>
                     </CardActions>
                   </Card>
@@ -331,10 +328,6 @@ const MyEvent = (props) => {
                         </div> */}
                       </CardContent>
                       <CardActions>
-                        <Button size="small" startIcon={<PersonIcon />}>
-                          0/50
-                        </Button>
-                        <Button size="small">0 sponsor</Button>
                         <Button size="small">1 floor</Button>
                       </CardActions>
                     </Card>

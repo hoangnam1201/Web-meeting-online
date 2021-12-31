@@ -49,7 +49,7 @@ export default function Footer() {
   const classes = useStyles();
   return (
     <>
-      <div className={classes.root}>
+      <div className={classes.root} id="contact">
         <Container className={classes.container}>
           <Grid container spacing={4} className={classes.grid}>
             <Grid item xs={12} sm={2} className={classes.infoList}>

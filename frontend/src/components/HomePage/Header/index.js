@@ -11,7 +11,8 @@ import { useDispatch } from "react-redux";
 import {
   actionRemoveUserInfo,
   actionSetUserInfo,
-} from '../../../store/actions/userInfoAction';
+} from "../../../store/actions/userInfoAction";
+import Scroll from "react-scroll";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
@@ -19,6 +20,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   const dispatch = useDispatch();
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
   const [cookies, setCookies, removeCookies] = useCookies(["u_auth"]);
+  let LinkScroll = Scroll.Link;
 
   useEffect(() => {
     if (type === 1 && currentUser) {
@@ -63,19 +65,19 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                       </Link>
                     </li>
                     <li className="nav-item ">
-                      <Link className="nav-link" to="/">
+                      <LinkScroll className="nav-link" to="service">
                         Service
-                      </Link>
+                      </LinkScroll>
                     </li>
                     <li className="nav-item ">
-                      <Link className="nav-link" to="/">
+                      <LinkScroll className="nav-link" to="about">
                         About
-                      </Link>
+                      </LinkScroll>
                     </li>
                     <li className="nav-item ">
-                      <Link className="nav-link" to="/">
+                      <LinkScroll className="nav-link" to="contact">
                         Contact
-                      </Link>
+                      </LinkScroll>
                     </li>
                   </ul>
                 ) : (
