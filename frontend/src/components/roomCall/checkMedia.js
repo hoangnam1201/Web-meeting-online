@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Connection from "../../services/connection";
-import { IconButton, Button, CircularProgress } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import MicIcon from "@mui/icons-material/Mic";
 import VideoIcon from "@mui/icons-material/PhotoCameraFront";
 import MicOffIcon from "@mui/icons-material/MicOff";

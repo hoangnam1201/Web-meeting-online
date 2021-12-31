@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Connection from "../../services/connection";
 import CheckMedia from "./checkMedia";
 import RoomDetail from "./roomDetail";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const RoomCall = () => {
   const connection = useRef(null);

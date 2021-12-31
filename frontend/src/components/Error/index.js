@@ -1,8 +1,7 @@
 import React from "react";
-import { Box, Container, Typography, makeStyles } from "@material-ui/core";
-// import Page from "../../components/Page";
+import { makeStyles } from "@material-ui/core";
 import errorImage from "../../assets/undraw_page_not_found_su7k.svg";
-import { Link } from "react-router-dom";
+import Link from "react-router-dom/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {

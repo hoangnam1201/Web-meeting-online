@@ -33,7 +33,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   }, [type]);
 
   const handleLogout = () => {
-    removeCookies("u_auth");
+    removeCookies("u_auth", { path: '/' });
     dispatch(actionRemoveUserInfo());
     Swal.fire({
       icon: "success",

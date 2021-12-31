@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
-import { Button, Container, Grid } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import ImgMeeting from "../../assets/meeting.jpg";
 import PersonIcon from "@mui/icons-material/Person";
-import { Link } from "react-router-dom";
+import Link from "react-router-dom/Link";
 import { Helmet } from "react-helmet";
 import ManageDialog from "./ManageDialog";
-import { IconButton } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom } from "./modules/action";
@@ -82,7 +83,6 @@ const useStyles = makeStyles({
 });
 const MyEvent = (props) => {
   const classes = useStyles();
-  const [cookies, setCookies] = useCookies(["u_auth"]);
   const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
 
   const dispatch = useDispatch();

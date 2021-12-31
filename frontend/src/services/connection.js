@@ -134,7 +134,7 @@ class Connection {
       store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
       this.setting.updateInstance("tables", [...this.tables]);
 
-      this.myStream.stream.getTracks().forEach((tr) => {
+      this.myStream.stream?.getTracks().forEach((tr) => {
         tr.stop();
       });
 
@@ -469,7 +469,7 @@ class Connection {
     this.socket?.offAny();
     this.socket?.disconnect();
     this.myPeer?.destroy();
-    this.myStream.stream.getTracks().forEach((tr) => {
+    this.myStream?.stream?.getTracks()?.forEach((tr) => {
       tr.stop();
     });
   };
@@ -599,7 +599,7 @@ class Connection {
 
   static getMediaStatus = (stream) => {
     let media = { video: false, audio: false };
-    stream.getTracks().forEach((track) => {
+    stream?.getTracks().forEach((track) => {
       if (track.kind === "audio" && track.readyState === "live") {
         media = { ...media, audio: true };
       }

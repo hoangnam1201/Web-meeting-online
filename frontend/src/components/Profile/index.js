@@ -2,7 +2,8 @@ import React from "react";
 import { Route, Switch, NavLink, Redirect } from "react-router-dom";
 import ChangePassword from "./changepassword";
 import Profiles from "./profile";
-import { makeStyles, Container } from "@material-ui/core";
+import Container from "@material-ui/core/Container";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles({
   root: {

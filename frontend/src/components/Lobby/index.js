@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { IconButton } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
 import Avatar from "react-avatar";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Button, Tab, Tabs } from "@mui/material";
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import BasicPopover from "../Popover";
 import { useSelector } from "react-redux";
 
@@ -50,7 +51,12 @@ const LobbyUser = (props) => {
           {Object.values(userRequests).length > 0 && (
             <div className="flex flex-col">
               <div className="px-4 flex justify-start my-2">
-                <button className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100">
+                <button className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100"
+                  onClick={() => {
+                    Object.values(userRequests).forEach(request => {
+                      connection.current.replyRequest(request, true)
+                    })
+                  }}>
                   ACCEPT ALL
                 </button>
               </div>

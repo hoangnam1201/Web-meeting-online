@@ -1,5 +1,6 @@
-import React, { useRef, useState } from "react";
-import { IconButton, Badge } from "@mui/material";
+import React from "react";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -19,8 +20,6 @@ import { sendMessageAction } from "../../store/actions/messageAction";
 import { confirmPresent, confirmSwal } from "../../services/swalServier";
 import { Link, useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
-import Swal from "sweetalert2";
-import { saveTableMembersAPI } from "../../api/table.api";
 
 const Toolbar = ({
   connection,
@@ -63,18 +62,6 @@ const Toolbar = ({
     });
   };
 
-  const onSaveTableMember = () => {
-    confirmSwal('save table members'
-      , 'save the people sitting at the tables as members of that table',
-      () => {
-        saveTableMembersAPI(roomInfo._id)
-          .then(() => {
-            Swal.fire({
-              icon: 'success'
-            })
-          });
-      })
-  }
 
   return (
     <div {...rest}>

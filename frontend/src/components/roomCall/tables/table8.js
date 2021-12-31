@@ -1,5 +1,4 @@
 import React from 'react'
-import Seat1Bottom from '../seats/seat1bottom'
 import Seat1Left from '../seats/seat1left'
 import Seat1Right from '../seats/seat1right'
 import Seat3Bottom from '../seats/seat3bottom'

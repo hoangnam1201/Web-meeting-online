@@ -1,7 +1,7 @@
 import React from "react";
 import "./banner.css";
 import imgBanner from "../../../assets/banner.png";
-import { Button } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
 const Banner = () => {
   return (
     <>

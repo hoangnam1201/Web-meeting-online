@@ -1,9 +1,11 @@
-import { Container, Grid, Link } from "@material-ui/core";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
 import React from "react";
 import Logo from "../../../assets/logomeeting.png";
 import PhoneIcon from "@material-ui/icons/Phone";
 import EmailIcon from "@material-ui/icons/Email";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 const useStyles = makeStyles((theme) => ({

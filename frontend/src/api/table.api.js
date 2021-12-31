@@ -34,5 +34,5 @@ export const addMemberTableAPI = (tableId, userId) => {
 }
 
 export const removeMemberTableAPI = (tableId, userId) => {
-    return instance.put('/table/add-user/' + tableId, { userId })
+    return instance.put('/table/remove-user/' + tableId, { userId })
 }

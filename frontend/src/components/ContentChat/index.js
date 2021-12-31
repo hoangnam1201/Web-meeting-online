@@ -5,11 +5,10 @@ import Tab from "@material-ui/core/Tab";
 import TabContext from "@material-ui/lab/TabContext";
 import TabList from "@material-ui/lab/TabList";
 import TabPanel from "@material-ui/lab/TabPanel";
-import { makeStyles } from "@material-ui/core";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import TextField from "@material-ui/core/TextField";
 import SendIcon from "@mui/icons-material/Send";
-import { IconButton } from "@mui/material";
-import { fontSize } from "@mui/system";
+import IconButton from "@mui/material/IconButton";
 
 const useStyles = makeStyles({
   messages: {

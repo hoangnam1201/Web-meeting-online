@@ -3,7 +3,6 @@ import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
 import Profile from "../components/Profile/index";
 import MyEvent from "../components/MyEvent";
-import Presentation from "../components/Present";
 import UpdateEvent from "../components/updateEvent";
 import RoomCall from "../components/roomCall";
 import GroupManagement from "../components/groupManagement";

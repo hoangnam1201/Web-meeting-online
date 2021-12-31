@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import ChatBox from "./chatBox";
 import Toolbar from "./toolbar";
 import { useSelector } from "react-redux";
 import VideoContainer from "./videoContainer";
-import Connection from "../../../services/connection";
 
 const Present = ({
   roomInfo,
