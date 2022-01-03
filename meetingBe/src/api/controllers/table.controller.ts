@@ -95,14 +95,28 @@ export default class TablerController {
                 let: { id: '$_id' },
                 pipeline: [
                     { $match: { $expr: { $eq: ['$$id', '$room'] } } },
-                    { $unwind: '$members' },
+                    {
+                        $unwind: {
+                            path: '$members',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
                     { $group: { _id: '$room', members: { $addToSet: '$members' } } }
                 ],
                 as: 'table',
             })
-            .unwind('table', 'members')
+            .unwind(
+                {
+                    path: '$table',
+                    preserveNullAndEmptyArrays: true
+                },
+                {
+                    path: '$members',
+                    preserveNullAndEmptyArrays: true
+                }
+            )
             .match({ $expr: { $not: { $in: ['$members', '$table.members'] } } })
-            .group({ _id: '$_id', members: { $addToSet: '$members' } })
+            .group({ _id: '$_id', members: { $addToSet: '$members' }, table: { $push: '$table' } })
             .lookup({
                 from: 'users',
                 let: { mb: '$members' },
@@ -146,7 +160,6 @@ export default class TablerController {
             })
             .catch(err => {
                 res.status(500).json({ error: 'Interal Server Error', status: 200 })
-                console.log(err)
             })
     }
 
