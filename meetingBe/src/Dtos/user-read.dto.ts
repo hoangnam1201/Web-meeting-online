@@ -4,9 +4,7 @@ export class UserReadDto {
     _id: string;
     username: string;
     name: string;
-    role: number;
     phone: string;
-    dob: Date;
     email: string;
     createdAt: Date;
 
@@ -15,9 +13,7 @@ export class UserReadDto {
         userRead._id = user._id.toString();
         userRead.username = user.username;
         userRead.name = user.name;
-        userRead.role = user.role;
         userRead.phone = user.phone;
-        userRead.dob = user.dob;
         userRead.email = user.email;
         userRead.createdAt = user.createdAt;
         return userRead;

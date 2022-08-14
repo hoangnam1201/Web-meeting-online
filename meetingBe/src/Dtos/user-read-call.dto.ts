@@ -11,7 +11,6 @@ export class UserReadCallDto {
         userRead._id = user._id.toString();
         userRead.username = user.username;
         userRead.name = user.name;
-        userRead.peerId = user.peerId;
         return userRead;
     }
 

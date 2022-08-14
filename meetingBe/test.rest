@@ -1,6 +1,6 @@
 
 //Register
-POST https://utemeeting.online/api/user/register HTTP/1.1
+POST http://localhost:3002/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {
@@ -9,8 +9,7 @@ Content-Type: application/json
     "passwordConfirmation": "123123",
     "name": "than lam",
     "phone":"0123123123",
-    "dob": "2012-04-23",
-    "email": "latu45@gmail.com"
+    "email": "lamtvu1903@gmail.com"
 }
 
 //Login
@@ -27,7 +26,7 @@ Content-Type: application/json
 ###
 GET http://localhost:3002/api/user/get-detail  HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTQ4NzlkNmM4Y2VlZjYxOThlNWFiMGIiLCJpYXQiOjE2MzM3NTc5NjcsImV4cCI6MTYzMzg0NDM2N30.e5zJt9jk9fib02cFaDqieWmdSivtPchDLzl0cXUAqNE
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImZkYTEwNjY0NTNkYzlkYzNkZDkzM2E0MWVhNTdkYTNlZjI0MmIwZjciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiODI1NjU5OTQ2MTUzLXFrNHY4Y2t2bnZlODBuOGpvbmMzMTBvbnIyanVhMXFxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiODI1NjU5OTQ2MTUzLXFrNHY4Y2t2bnZlODBuOGpvbmMzMTBvbnIyanVhMXFxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTE2MjIzMzQ1MTk4Nzc2NDc4MDM4IiwiZW1haWwiOiJsYW10dnUxOTAzQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiazF3NXNzb3BpOW1sM0lKZ3VzQzNkQSIsIm5hbWUiOiJMYW0gVnUiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUl0YnZtbXFqNHMwVlFGbUJZUTVlbXJtMFA1c09CN3N3QVhjUUtwUWRHYz1zOTYtYyIsImdpdmVuX25hbWUiOiJMYW0iLCJmYW1pbHlfbmFtZSI6IlZ1IiwibG9jYWxlIjoidmkiLCJpYXQiOjE2NjA0ODAxNDAsImV4cCI6MTY2MDQ4Mzc0MCwianRpIjoiODYxNTIyZTY0M2FlMWQzZmM0NzQ4YTY5MmNkMzliZmNiMGQ4NzRlZSJ9.VMZMCaIj15r9UrWYmVjKaqY5nI1YypjK0tjWQ9KqSoFVgMB7xg6BlwjuyYQRWVjFFatoRcbn2f3uj0GwOKnEeeKzJBeDdZIM9Xe92PhOc4HzEUqB_aRZvi5tfs3gIzDD7gvxjUm1q_gKJE6mCUBSKMcfWsuRe_e9xm0bS9qV7ttfWnWUePtXFXrc9FG09BhDNWNPGUmLoTOcSswuhILSsAZeU6DMN1pVHqCPIaMmF2K5LOgjrBN1D9TMtLDH4kRz9E6Rh2EwmNz0lFBh_muUCxfJ9h1uGXHYRuD-xE2oA-dPzo-sG_i3vV7StKD2WjGsN5yOoXk3Na7bHmJ4osM2uA
 
 //change infor (name, dob, phone)
 ###
