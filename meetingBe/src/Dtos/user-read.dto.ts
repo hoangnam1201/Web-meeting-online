@@ -6,6 +6,7 @@ export class UserReadDto {
     name: string;
     phone: string;
     email: string;
+    picture: string;
     createdAt: Date;
 
     static fromUser(user: User): UserReadDto {
@@ -15,6 +16,7 @@ export class UserReadDto {
         userRead.name = user.name;
         userRead.phone = user.phone;
         userRead.email = user.email;
+        userRead.picture = user.picture;
         userRead.createdAt = user.createdAt;
         return userRead;
     }

@@ -11,8 +11,11 @@ import table2 from "../../../assets/tablelayout2.jpg";
 import table3 from "../../../assets/tablelayout3.jpeg";
 const useStyles = makeStyles({
   root: {
-    background: "#FFC1C1",
+    marginTop: "-100px",
+    background: "blue-light",
     paddingTop: "10px",
+    color: "black",
+    borderBottom: "1px solid white",
   },
   textIntro: {
     paddingTop: "10px",
@@ -23,6 +26,7 @@ const useStyles = makeStyles({
   title: {
     fontWeight: "bold",
     fontSize: "30px",
+    color: "black",
   },
   title2: {
     fontWeight: "bold",
@@ -38,7 +42,8 @@ const useStyles = makeStyles({
   },
   container2: {
     marginTop: "15px",
-    background: "#FF9999",
+    background: "#f7cea3",
+    color: "black",
   },
   ul: {
     listStyleType: "square",
@@ -49,17 +54,17 @@ const MainPage = () => {
   const classes = useStyles();
   return (
     <>
-      <div className="flex justify-center bg-red-200">
-        <div className="p-5">
+      <div className="flex justify-center bg-blue-light  transform -translate-y-24  ">
+        <div className="p-5 mt-24">
           <h1 className={classes.title}>Giao diện đẹp mắt</h1>
           <div className="flex justify-between items-center my-6">
-            <div className="border-solid border-8 border-white">
+            <div className="border-solid border-8 border-white shadow-2xl">
               <img src={table1} alt="table1" />
             </div>
-            <div className="border-solid border-8 border-white">
+            <div className="border-solid border-8 border-white shadow-2xl">
               <img src={table2} alt="table2" />
             </div>
-            <div className="border-solid border-8 border-white">
+            <div className="border-solid border-8 border-white shadow-2xl">
               <img src={table3} alt="table3" />
             </div>
           </div>

@@ -2,7 +2,7 @@
     position: sticky;
     z-index: 100;
     width: 100%;
-    background: rgb(248, 229, 229);
+    background: #FEF1E5;
 }
 
 .navbar {
@@ -13,7 +13,7 @@
     font-weight: bold;
     font-size: 1.5rem;
     text-transform: uppercase;
-    color: #ccc !important
+    color: black !important;
 }
 
 .navbar-item {
@@ -23,11 +23,11 @@
 }
 
 .nav-link {
-    color: rgb(10, 10, 10) !important;
     letter-spacing: 2px;
     font-size: 1em;
     font-weight: 700;
     margin: 0 10px;
+    color: black;
 }
 
 .nav-link:hover {
@@ -35,4 +35,18 @@
     color: #262626;
     border-radius: 5px;
     transition: all 0.6s ease 0s;
+}
+.nav-link-signup {
+    letter-spacing: 2px;
+    font-size: 1em;
+    font-weight: 700;
+    margin: 0 10px;
+    color: black;
+    background: #dcdde1 !important;
+    border-radius: 5px;
+}
+.btn-header {
+    border: 2px;
+    border-color: #232A4E;
+    border-radius: 10px;
 }

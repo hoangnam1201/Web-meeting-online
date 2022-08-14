@@ -265,7 +265,7 @@ const MyEvent = (props) => {
                   </Grid>
                 ))
               ) : (
-                <Grid item>
+                <Grid item md={9}>
                   <div className="flex justify-center flex-col items-center">
                     <img src={meetingIcon} width={100} height={100} />
                     <h2 className="font-bold">Bạn không có sự kiện nào !!!</h2>
@@ -343,7 +343,7 @@ const MyEvent = (props) => {
                   </Grid>
                 ))
               ) : (
-                <Grid item>
+                <Grid item md={9}>
                   <div className="flex justify-center flex-col items-center">
                     <img src={meetingIcon} width={100} height={100} />
                     <h2 className="font-bold">

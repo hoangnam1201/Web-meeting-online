@@ -13,6 +13,7 @@ import {
   actionSetUserInfo,
 } from "../../../store/actions/userInfoAction";
 import Scroll from "react-scroll";
+import { Button } from "@mui/material";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
@@ -33,7 +34,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   }, [type]);
 
   const handleLogout = () => {
-    removeCookies("u_auth", { path: '/' });
+    removeCookies("u_auth", { path: "/" });
     dispatch(actionRemoveUserInfo());
     Swal.fire({
       icon: "success",
@@ -93,13 +94,23 @@ const Header = React.memo(({ type = 0, ...rest }) => {
               {type === 1 ? (
                 <div className="collapse navbar-collapse mr-10">
                   <div className="relative">
-                    <Avatar
-                      name={currentUser?.user?.name}
-                      size="50"
-                      round={true}
-                      className="cursor-pointer"
-                      onClick={() => setShowAvatarMenu(!showAvatarMenu)}
-                    ></Avatar>
+                    {currentUser?.user?.picture ? (
+                      <img
+                        src={currentUser?.user?.picture}
+                        alt=""
+                        className="cursor-pointer rounded-full w-12"
+                        onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+                      ></img>
+                    ) : (
+                      <Avatar
+                        name={currentUser?.user?.name}
+                        size="50"
+                        round={true}
+                        className="cursor-pointer"
+                        onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+                      ></Avatar>
+                    )}
+
                     {showAvatarMenu && (
                       <div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">
                         <ul className="p-1">
@@ -127,18 +138,22 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                 </div>
               ) : (
                 <div className="collapse navbar-collapse mr-10">
-                  <ul className="navbar-nav ml-auto flex justify-center">
-                    <li className="nav-item active">
-                      <Link className="nav-link" to="/auth/login">
-                        Login
-                      </Link>
-                    </li>
-                    <li className="nav-item ">
-                      <Link className="nav-link" to="/auth/register">
-                        SignUp
-                      </Link>
-                    </li>
-                  </ul>
+                  <Link to="/auth/login">
+                    <Button
+                      variant="outlined"
+                      className="mr-10 border-2 border-black text-black"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/auth/register">
+                    <Button
+                      variant="outlined"
+                      className="border-2 border-black text-black bg-gray-100"
+                    >
+                      SignUp
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>

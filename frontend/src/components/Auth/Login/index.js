@@ -28,6 +28,7 @@ import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
 import { loginAPI } from "../../../api/user.api";
 import Alert from "@material-ui/lab/Alert";
+import jwtDecode from "jwt-decode";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -141,6 +142,7 @@ function Login(props) {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [loginError, setLoginError] = useState(null);
+
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -211,7 +213,26 @@ function Login(props) {
         }
       });
   };
+  // Login with google
+  const handleLoginGoogle = (googleData) => {
+    const token = { accessToken: googleData.credential };
+    console.log(googleData.credential);
+    setCookies("u_auth", token, { path: "/" });
+  };
 
+  useEffect(() => {
+    // eslint-disable-next-line no-undef
+    google.accounts.id.initialize({
+      client_id: process.env.REACT_APP_CLIENT_ID,
+      callback: handleLoginGoogle,
+      auto_select: false,
+    });
+    // eslint-disable-next-line no-undef
+    google.accounts.id.renderButton(document.getElementById("googleLogin"), {
+      theme: "outline",
+      size: "large",
+    });
+  }, []);
   return (
     <>
       <Helmet>
@@ -231,8 +252,9 @@ function Login(props) {
       <div className={classes.root}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
-          className={`${classes.containerMobile} ${matches ? classes.containerDesktop : null
-            }`}
+          className={`${classes.containerMobile} ${
+            matches ? classes.containerDesktop : null
+          }`}
           component="main"
           maxWidth="xs"
         >
@@ -342,6 +364,13 @@ function Login(props) {
             <Link to="/home" className={classes.closeBox}>
               <CloseRoundedIcon />
             </Link>
+            <div className="flex justify-center flex-col items-center">
+              <h2 className="font-bold mt-3 border-b-2 border-black w-40">
+                Or
+              </h2>
+
+              <div id="googleLogin"></div>
+            </div>
           </div>
         </Container>
       </div>

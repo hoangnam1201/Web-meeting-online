@@ -31,7 +31,7 @@ export default class AuthMiddlesware {
       next();
     } catch (err) {
       //check google token
-      // try {
+      try {
       const tiket = await client.verifyIdToken({
         idToken: token,
         audience: clientId,
@@ -52,9 +52,9 @@ export default class AuthMiddlesware {
         req.userData = { userId: user._id };
         next();
       }
-      // } catch (err) {
-      //   return res.status(401).json({ status: 401, msg: "Invalid Token" });
-      // }
+      } catch (err) {
+        return res.status(401).json({ status: 401, msg: "Invalid Token" });
+      }
     }
   };
 
