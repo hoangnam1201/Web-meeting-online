@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from "react";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import TextField from "@material-ui/core/TextField";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
+import { makeStyles } from "@mui/styles";
+import { TextField, Box, Button, Container, Alert } from "@mui/material";
+
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ScaleLoader } from "react-spinners";
 import Swal from "sweetalert2";
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
+import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DateFnsUtils from "@date-io/date-fns";
 import moment from "moment";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
-import Alert from "@material-ui/lab/Alert";
 import { changeUserInfoAPI } from "../../api/user.api";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: { marginBottom: "100px", padding: "0 100px" },
   loaderRoot: {
     opacity: 0.5,
@@ -35,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabRoot: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: "white",
     display: "flex",
     height: 224,
     width: "100%",
@@ -43,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 100,
   },
   tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
+    borderRight: `1px solid black`,
   },
   button: {
     marginTop: 10,
@@ -170,6 +165,7 @@ export default function Profiles() {
           onSubmit={handleSubmit(onInfoSubmit)}
         >
           <TextField
+            focused
             className={classes.input}
             variant="outlined"
             margin="dense"
@@ -182,6 +178,7 @@ export default function Profiles() {
             value={info?.username}
           />
           <TextField
+            focused
             className={classes.input}
             variant="outlined"
             margin="dense"
@@ -198,6 +195,7 @@ export default function Profiles() {
             onChange={handleInfoChange}
           />
           <TextField
+            focused
             className={classes.input}
             variant="outlined"
             margin="dense"
@@ -214,6 +212,7 @@ export default function Profiles() {
             onChange={handleInfoChange}
           />
           <TextField
+            focused
             className={classes.input}
             variant="outlined"
             margin="dense"
@@ -225,21 +224,21 @@ export default function Profiles() {
             disabled
             value={info?.email}
           />
-          <MuiPickersUtilsProvider
+          <LocalizationProvider
             className={classes.input}
-            utils={DateFnsUtils}
+            dateAdapter={DateFnsUtils}
           >
-            <KeyboardDatePicker
+            <DesktopDatePicker
               margin="dense"
               id="date-picker-dialog-register"
               label="Ngày tháng năm sinh"
-              format="MM/dd/yyyy"
+              inputFormat="MM/dd/yyyy"
               name="dob"
               value={selectedDate}
               onChange={handleDateChange}
               className={classes.datePicker}
             />
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
 
           {errorNotify ? (
             <Alert style={{ marginTop: "15px" }} severity="error">

@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
+import { makeStyles } from "@mui/styles";
+import {
+  Typography,
+  Button,
+  Container,
+  Grid,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  IconButton,
+} from "@mui/material";
 import ImgMeeting from "../../assets/meeting.jpg";
-import PersonIcon from "@mui/icons-material/Person";
-import Link from "react-router-dom/Link";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import ManageDialog from "./ManageDialog";
-import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -31,7 +32,6 @@ const useStyles = makeStyles({
   },
   title: {
     display: "inline-block",
-
     fontSize: "24px",
     marginBottom: "20px",
 
@@ -190,7 +190,7 @@ const MyEvent = (props) => {
           <Grid container>
             <Grid item>
               <Typography
-                variant="h2"
+                variant="h4"
                 color="primary"
                 component="p"
                 className={classes.title}
@@ -200,7 +200,7 @@ const MyEvent = (props) => {
             </Grid>
           </Grid>
 
-          <div>
+          <div className="mt-5">
             <Grid container spacing={4} className={classes.courseListContainer}>
               {listRoom?.length > 0 ? (
                 listRoom?.map((room, index) => (
@@ -277,7 +277,7 @@ const MyEvent = (props) => {
           <Grid className="mt-5" container>
             <Grid item>
               <Typography
-                variant="h2"
+                variant="h4"
                 color="primary"
                 component="p"
                 className={classes.title}
@@ -286,7 +286,7 @@ const MyEvent = (props) => {
               </Typography>
             </Grid>
           </Grid>
-          <div>
+          <div className="mt-5">
             <Grid container spacing={4} className={classes.courseListContainer}>
               {invitedRoom.length > 0 ? (
                 invitedRoom?.map((room, index) => (

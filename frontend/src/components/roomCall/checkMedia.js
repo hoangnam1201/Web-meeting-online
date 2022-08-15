@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import Connection from "../../services/connection";
-import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
+import { IconButton, Button, CircularProgress, Alert } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import VideoIcon from "@mui/icons-material/PhotoCameraFront";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { useParams } from "react-router";
-import Alert from "@material-ui/lab/Alert";
-import { getRoomAPI } from '../../api/room.api';
+import { getRoomAPI } from "../../api/room.api";
 
 const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
   const myVideo = useRef(null);
@@ -34,10 +31,10 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
   };
 
   useEffect(() => {
-    getRoomAPI(id).then(res => {
+    getRoomAPI(id).then((res) => {
       setRoomInfo(res.data);
-    })
-  }, [])
+    });
+  }, []);
 
   useEffect(() => {
     if (!myStream.stream) return;
@@ -71,10 +68,14 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
           </div>
         )}
       </div>
-      <div className='w-96'>
+      <div className="w-96">
         <div className="py-4">
-          <p className="text-2xl text-gray-500 font-semibold">{roomInfo?.name}</p>
-          <p className="text-gray-400 font-bold">owner: {roomInfo?.owner?.name}</p>
+          <p className="text-2xl text-gray-500 font-semibold">
+            {roomInfo?.name}
+          </p>
+          <p className="text-gray-400 font-bold">
+            owner: {roomInfo?.owner?.name}
+          </p>
         </div>
         {canAccess ? (
           <>
@@ -114,17 +115,21 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
                 </IconButton>
               )}
             </div>
-            {joinError?.type === 'REQUEST' && (
+            {joinError?.type === "REQUEST" && (
               <div>
                 <CircularProgress />
-                <Alert style={{ marginTop: "15px" }} severity='info' className='my-4'>
+                <Alert
+                  style={{ marginTop: "15px" }}
+                  severity="info"
+                  className="my-4"
+                >
                   {joinError.msg}
                 </Alert>
               </div>
             )}
-            {joinError?.type === 'REFUSE' && (
+            {joinError?.type === "REFUSE" && (
               <div>
-                <Alert style={{ marginTop: "15px" }} severity='error'>
+                <Alert style={{ marginTop: "15px" }} severity="error">
                   {joinError.msg}
                 </Alert>
               </div>

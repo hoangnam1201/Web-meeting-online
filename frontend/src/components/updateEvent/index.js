@@ -2,11 +2,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import RemoveIcon from "@mui/icons-material/Remove";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Link, useParams } from "react-router-dom";
-import TextField from "@material-ui/core/TextField";
 import * as yup from "yup";
-import Button from "@mui/material/Button";
+import { Button, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import {
@@ -140,21 +139,21 @@ function UpdateEvent() {
       <div hidden={notFound} className="px-6 xl:px-16">
         <div className="py-4 shadow-md p-4">
           <div className="py-4 text-left">
-            <p className="text-md font-semibold">
-              Share link
-            </p>
+            <p className="text-md font-semibold">Share link</p>
             <p className="text-gray-400 font-thin text-sm">
               The link is used to share for members to join the room
             </p>
           </div>
           <div className=" bg-gray-100 py-2 rounded-sm tracking-widest text-left px-3 text-gray-500 flex justify-between">
             <p>{`${window.location.origin.toString()}/room/${id}`}</p>
-            <button onClick={() => {
-              navigator.clipboard.writeText(`${window.location.origin.toString()}/room/${id}`);
-              dispatch(
-                setGlobalNotification('success', 'copied')
-              )
-            }}>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `${window.location.origin.toString()}/room/${id}`
+                );
+                dispatch(setGlobalNotification("success", "copied"));
+              }}
+            >
               <ContentCopyIcon></ContentCopyIcon>
             </button>
           </div>
@@ -165,10 +164,14 @@ function UpdateEvent() {
             {tables?.loading && <LinearProgress />}
             <p className=" font-semibold text-md">Tables</p>
             <p className="text-gray-400 font-thin text-sm">
-              The tables in the room are used by the members to sit and divide the group
+              The tables in the room are used by the members to sit and divide
+              the group
             </p>
           </div>
-          <div className="flex flex-col col-span-2 p-4" style={{ height: "700px" }}>
+          <div
+            className="flex flex-col col-span-2 p-4"
+            style={{ height: "700px" }}
+          >
             <div className="grid grid-cols-3 px-4 py-1 bg-gray-200 rounded-md">
               <div className="col-span-2 text-left border-r-2 border-gray-300">
                 name
@@ -233,15 +236,13 @@ function UpdateEvent() {
 
         <div className="shadow-md p-4 mt-4">
           <div className="py-4 text-left">
-            <p className="text-md font-semibold">
-              Groups
-            </p>
+            <p className="text-md font-semibold">Groups</p>
             <p className="text-gray-400 font-thin text-sm">
               Contains the permanent members of each table
             </p>
           </div>
           <div className="flex justify-start">
-            <Link to={`/room/groups/${id}`} target='_blank'>
+            <Link to={`/room/groups/${id}`} target="_blank">
               <Button variant="contained" type="submit">
                 Manage groups
               </Button>
@@ -256,16 +257,24 @@ function UpdateEvent() {
               Users can join the room without sending a request
             </p>
           </div>
-          <div className="flex flex-col col-span-2 p-4 shadow-md" style={{ height: "700px" }}>
+          <div
+            className="flex flex-col col-span-2 p-4 shadow-md"
+            style={{ height: "700px" }}
+          >
             <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-md">
-              <div className="text-left border-r-2 border-gray-500">username</div>
+              <div className="text-left border-r-2 border-gray-500">
+                username
+              </div>
               <div className="text-left pl-3">email</div>
             </div>
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
               {room &&
                 room.members.map((u, index) => {
                   return (
-                    <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-md mt-4 text-sm text-gray-500" key={index}>
+                    <div
+                      className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-md mt-4 text-sm text-gray-500"
+                      key={index}
+                    >
                       <div className="text-left border-r-2 border-gray-300">
                         {u.username}
                       </div>
@@ -297,9 +306,8 @@ function UpdateEvent() {
             </div>
           </div>
         </div>
-
       </div>
-    </div >
+    </div>
   );
 }
 

@@ -5,7 +5,7 @@ import UserAuth from "./routes/helper/userAuth";
 import UnAuth from "./routes/helper/unAuth";
 import Error from "./components/Error";
 import DefautLayout from "./layouts/defautLayout";
-import Alert from "@material-ui/lab/Alert";
+import { Alert } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 

@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Container from "@material-ui/core/Container";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import IconButton from "@material-ui/core/IconButton";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import LogoMeeting from "../../../assets/logomeeting.png";
+import {
+  Button,
+  CssBaseline,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Alert,
+  Grid,
+  Box,
+  Typography,
+  Container,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { Link, useHistory } from "react-router-dom";
-import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -27,8 +27,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
 import { loginAPI } from "../../../api/user.api";
-import Alert from "@material-ui/lab/Alert";
-import jwtDecode from "jwt-decode";
+import imgLogo from "../../../assets/logomeeting.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -41,10 +40,10 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "100%",
   },
   // container chứa form
-  containerMobile: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(6),
-  },
+  // containerMobile: {
+  //   paddingTop: theme.spacing(8),
+  //   paddingBottom: theme.spacing(6),
+  // },
   containerDesktop: {
     position: "absolute",
     top: "50%",
@@ -58,27 +57,22 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
 
-    background: theme.palette.common.white,
+    background: "white",
 
-    borderRadius: theme.spacing(1),
-    padding: theme.spacing(4),
+    borderRadius: "10px",
+    padding: "10px",
 
     boxShadow:
       "-40px 40px 160px 0 rgb(0 0 0 / 8%), -8px 8px 15px 0 rgb(120 120 120 / 4%), 3px 3px 30px 0 rgb(0 0 0 / 4%)",
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
-    width: theme.spacing(10),
-    height: theme.spacing(10),
-  },
+
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
+    marginTop: "10px",
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
-    padding: theme.spacing(1, 0),
+    margin: "30px 0 20px",
+    padding: "10px 0",
   },
 
   bottomLink: {
@@ -86,27 +80,22 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "12px",
     fontWeight: 600,
 
-    color: theme.palette.secondary.main,
+    color: "red",
   },
 
   closeBox: {
     position: "absolute",
     top: "-18px",
     right: "-18px",
-
     width: "36px",
     height: "36px",
     borderRadius: "50%",
-
-    backgroundColor: theme.palette.primary.main,
     color: "#455570",
     boxShadow: "0 2px 10px 0 rgb(0 0 0 / 50%)",
     cursor: "pointer",
-
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-
     transition: "all .2s",
 
     "&:hover": {
@@ -260,8 +249,9 @@ function Login(props) {
         >
           <CssBaseline />
           <div className={classes.paper}>
-            <Avatar src={LogoMeeting} className={classes.avatar}></Avatar>
-            <Typography component="h3" variant="h3">
+            {/* <Avatar src={LogoMeeting} className={classes.avatar}></Avatar> */}
+            <img src={imgLogo} alt="" height={300} width={300} />
+            <Typography component="h4" variant="h4" className="my-6">
               Đăng Nhập
             </Typography>
             <form
@@ -362,7 +352,7 @@ function Login(props) {
               </Grid>
             </form>
             <Link to="/home" className={classes.closeBox}>
-              <CloseRoundedIcon />
+              <CancelIcon />
             </Link>
             <div className="flex justify-center flex-col items-center">
               <h2 className="font-bold mt-3 border-b-2 border-black w-40">

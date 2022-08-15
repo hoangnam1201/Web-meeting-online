@@ -1,20 +1,16 @@
 import React, { useState } from "react";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import TextField from "@material-ui/core/TextField";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
+import { makeStyles } from "@mui/styles";
+import { Box, TextField, Button, Container, Alert } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ScaleLoader } from "react-spinners";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
-import Alert from "@material-ui/lab/Alert";
 import { useCookies } from "react-cookie";
 import { changePasswordAPI } from "../../api/user.api";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: { marginBottom: "100px", padding: "0 100px" },
   loaderRoot: {
     opacity: 0.5,
@@ -44,7 +40,9 @@ const useStyles = makeStyles((theme) => ({
 const schema = yup.object().shape({
   oldPassword: yup.string().required("Vui lòng nhập lại password cũ !"),
   password: yup.string().required("Vui lòng nhập password mới !"),
-  passwordConfirmation: yup.string().required("Vui lòng nhập lại password !")
+  passwordConfirmation: yup
+    .string()
+    .required("Vui lòng nhập lại password !")
     .oneOf([yup.ref("password")], "Mật khẩu không khớp !"),
 });
 
@@ -83,7 +81,7 @@ export default function ChangePassword() {
       oldPassword: password.oldPassword,
       password: password.password,
       passwordConfirmation: password.passwordConfirmation,
-    }
+    };
     changePasswordAPI(data)
       .then(() => {
         setLoading(false);
