@@ -63,7 +63,6 @@ class Connection {
   //join err
   joinErr;
 
-
   constructor(setting) {
     this.setting = setting;
     this.myPeer = initializePeerConnection();
@@ -140,32 +139,31 @@ class Connection {
 
       this.setting.updateInstance("myStream", { ...this.myStream });
 
-
       const currentUser = store.getState().userReducer?.user;
 
-      const table = tables.find(t => {
-        return t.members.find(m => m === currentUser._id)
-      })
+      const table = tables.find((t) => {
+        return t.members.find((m) => m === currentUser._id);
+      });
 
       if (!table) {
-        return confirmSwal('Error to join table',
-          'You are not a member of any tables');
-      };
+        return confirmSwal(
+          "Error to join table",
+          "You are not a member of any tables"
+        );
+      }
 
       countTime(
-        'Divide into tables',
-        'You will join your table <b></b> seconds',
-        5, () => {
-          this.socket.emit(
-            "table:join",
-            table._id,
-            this.myID,
-            { audio: false, video: false }
-          );
-        });
-
+        "Divide into tables",
+        "You will join your table <b></b> seconds",
+        5,
+        () => {
+          this.socket.emit("table:join", table._id, this.myID, {
+            audio: false,
+            video: false,
+          });
+        }
+      );
     });
-
 
     this.socket.on("table:user-leave", (data) => {
       const { peerId } = data;
@@ -178,7 +176,7 @@ class Connection {
         if (videoSelected.peerId === peerId)
           return store.dispatch({
             type: SET_SELECTEDVIDEO,
-            payload: null
+            payload: null,
           });
       }
     });
@@ -192,6 +190,7 @@ class Connection {
           user: {
             name: userCurrent.user.name,
             _id: userCurrent.user._id,
+            picture: userCurrent.user.picture,
           },
           media: Connection.getMediaStatus(this.myStream.stream),
           peerId: peerId,
@@ -201,7 +200,12 @@ class Connection {
       const call = this.myPeer.call(peerId, this.myStream.stream, options);
 
       call.on("stream", (userStream) => {
-        this.streamDatas[call.peer] = { user, stream: userStream, media, peerId };
+        this.streamDatas[call.peer] = {
+          user,
+          stream: userStream,
+          media,
+          peerId,
+        };
         this.setting.updateInstance("streamDatas", {
           ...this.streamDatas,
         });
@@ -245,7 +249,6 @@ class Connection {
           type: SET_SELECTEDVIDEO,
           payload: { ...this.streamDatas[peerId] },
         });
-
       }
     });
 
@@ -293,15 +296,16 @@ class Connection {
       this.setting.updateInstance("myStream", { ...this.myStream });
 
       countTime(
-        'Participate Presentation',
-        'You will participate in presentation <b></b> seconds',
-        time, () => {
-          this.socket.emit(
-            "present:join",
-            this.myID,
-            { audio: false, video: false }
-          );
-        });
+        "Participate Presentation",
+        "You will participate in presentation <b></b> seconds",
+        time,
+        () => {
+          this.socket.emit("present:join", this.myID, {
+            audio: false,
+            video: false,
+          });
+        }
+      );
     });
 
     this.socket.on("present:close", () => {
@@ -311,7 +315,7 @@ class Connection {
     });
 
     this.socket.on("present:user-leave", (data) => {
-      const { peerId } = data
+      const { peerId } = data;
       this.peers[peerId]?.close();
       delete this.streamDatas[peerId];
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
@@ -321,7 +325,7 @@ class Connection {
         if (videoSelected.peerId === peerId)
           return store.dispatch({
             type: SET_SELECTEDVIDEO,
-            payload: null
+            payload: null,
           });
       }
     });
@@ -342,6 +346,7 @@ class Connection {
           user: {
             name: userCurrent.user.name,
             _id: userCurrent.user._id,
+            picture: userCurrent.user.picture,
           },
           media: Connection.getMediaStatus(this.myStream.stream),
           peerId: peerId,
@@ -428,7 +433,6 @@ class Connection {
       });
 
       call.on("close", () => {
-        console.log("close");
         this.peers[call.peer]?.close();
         delete this.streamDatas[call.peer];
         this.setting.updateInstance("streamDatas", this.streamDatas);
@@ -479,9 +483,8 @@ class Connection {
     store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
     this.tableMessages = [];
     this.setting.updateInstance("table:messages", [...this.tableMessages]);
-    this.socket.emit('table:leave', this.myID);
-
-  }
+    this.socket.emit("table:leave", this.myID);
+  };
 
   getDisplayMediaStream = () => {
     if (this.isShare) {
@@ -577,10 +580,10 @@ class Connection {
     return myNavigator({
       video: video
         ? {
-          frameRate: quality,
-          width: { min: 640, ideal: 1280, max: 1920 },
-          height: { min: 480, ideal: 720, max: 1080 },
-        }
+            frameRate: quality,
+            width: { min: 640, ideal: 1280, max: 1920 },
+            height: { min: 480, ideal: 720, max: 1080 },
+          }
         : false,
       audio: audio,
     });

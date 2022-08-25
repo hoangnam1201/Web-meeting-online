@@ -7,6 +7,11 @@ import { roomShowChatAction } from "../../store/actions/roomCallAction";
 import { Waypoint } from "react-waypoint";
 import LinearProgress from "@mui/material/LinearProgress";
 import { sendMessageAction } from "../../store/actions/messageAction";
+import SendIcon from "@mui/icons-material/Send";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import { IconButton } from "@mui/material";
+import Avatar from "react-avatar";
+import moment from "moment";
 
 const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
   const [value, setValue] = useState(0);
@@ -25,16 +30,27 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
 
   const handleKeydown = (e) => {
     if (e.key === "Enter") {
-      if (value == 1) {
+      if (value === 1) {
         connection.current.socket.emit("table:send-message", msgText);
       }
-      if (value == 0) {
+      if (value === 0) {
         connection.current.socket.emit("room:send-message", msgText);
       }
 
       setMsgText("");
       endRef.current.scrollIntoView({ behavior: "smooth" });
     }
+  };
+  const handleSendMessage = () => {
+    if (value === 1) {
+      connection.current.socket.emit("table:send-message", msgText);
+    }
+    if (value === 0) {
+      connection.current.socket.emit("room:send-message", msgText);
+    }
+
+    setMsgText("");
+    endRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -85,34 +101,66 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
           <LinearProgress />
         </div>
       </div>
-      <input
-        className="px-5 py-2 w-full shadow-md focus:outline-none bg-gray-100 rounded-full"
-        value={msgText}
-        onChange={(e) => setMsgText(e.target.value)}
-        onKeyDown={handleKeydown}
-      />
+      <div className="flex border-2 border-t-2 h-11">
+        <input
+          className="px-5 py-2 w-full shadow-md focus:outline-none bg-gray-200 rounded-md"
+          value={msgText}
+          onChange={(e) => setMsgText(e.target.value)}
+          onKeyDown={handleKeydown}
+          placeholder="Type..."
+        />
+        <IconButton>
+          <AttachFileIcon />
+        </IconButton>
+        <IconButton onClick={handleSendMessage}>
+          <SendIcon />
+        </IconButton>
+      </div>
     </div>
   );
 };
 
 export const Message = ({ nameClass, msgData, type, ...rest }) => {
+  const timeAgo = moment(msgData.createdAt).fromNow();
   return (
     <div {...rest}>
       <div
-        className={`flex flex-col ${type === 0 ? "items-end" : "items-start"
-          } mt-4 mx-2 `}
+        className={`flex flex-col ${
+          type === 0 ? "items-end" : "items-start"
+        } mt-4 mx-2 `}
       >
         {type === 1 && (
           <div className={`text-sm mx-4 ${nameClass}`}>
-            {msgData.sender?.name}
+            {msgData?.sender?.name}
           </div>
         )}
-        <div
-          className={`w-3/4 h-auto ${type === 0 ? "bg-blue-200" : "bg-gray-200"
-            } rounded-lg px-2 py-1
+        <div className="w-5/6 h-auto">
+          <div className="flex items-center">
+            {msgData?.sender?.picture ? (
+              <img
+                src={msgData?.sender?.picture}
+                alt=""
+                className="cursor-pointer rounded-full w-7 mr-2"
+              />
+            ) : (
+              <Avatar
+                name={msgData?.sender?.name}
+                size="30"
+                round={true}
+                className="cursor-pointer mr-2"
+              />
+            )}
+
+            <div
+              className={`w-full h-auto ${
+                type === 0 ? "bg-blue-200" : "bg-gray-200"
+              } rounded-lg px-2 py-1
                  whitespace-normal break-words`}
-        >
-          {msgData.message}
+            >
+              {msgData.message}
+            </div>
+          </div>
+          <div className="text-gray-500 text-xs pl-36">{timeAgo}</div>
         </div>
       </div>
     </div>

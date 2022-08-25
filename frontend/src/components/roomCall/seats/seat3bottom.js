@@ -13,7 +13,7 @@ const Seat3Bottom = ({ users = [] }) => {
             {users[0] &&
               (users[0]?.picture ? (
                 <img
-                  className="rounded-full shadow-lg border-gray-500 border-2"
+                  className="absolute rounded-full shadow-lg border-gray-500 border-2"
                   src={users[0]?.picture}
                   alt=""
                   width={50}
