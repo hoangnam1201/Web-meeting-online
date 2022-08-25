@@ -4,163 +4,131 @@ import mongoose from "mongoose";
 import { TableCreateDto } from "../../Dtos/table-create.dto";
 import tableModel, { Table } from "../../models/table.model";
 import roomModel from "../../models/room.model";
-import { match } from "assert";
-export default class TablerController {
+import TableService from "../../services/table.service";
 
-    createTable(req: Request, res: Response) {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ status: 400, errors: errors.array() });
-        }
-        const tableCreate = TableCreateDto.fromTable(req.body);
-        tableModel.create(tableCreate, (err: Error) => {
-            if (err) {
-                return res.status(400).json({ status: 400, errors: [{ msg: err }] })
-            }
-            return res.status(200).json({ status: 200, data: null });
-        })
+export default () => {
+  const tableService = TableService();
+
+  const createTable = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: 400, errors: errors.array() });
     }
-
-    saveMember(req: Request, res: Response) {
-        const { roomId } = req.params;
-        tableModel.updateMany({ room: new mongoose.Types.ObjectId(roomId) as any }, [{
-            $set: { members: '$users' }
-        }]).then(() => {
-            return res.status(200).json({ status: 200, data: null });
-        }).catch((err: any) => {
-            console.log(err);
-            return res.status(500).json({ status: 500, data: 'Internal Server Error' });
-        })
+    try {
+      const tableCreate = TableCreateDto.fromTable(req.body);
+      await tableService.create(tableCreate);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Enternal Server Error" });
     }
+  };
 
-    deleteTable(req: Request, res: Response) {
-        const tableId = req.params.tableId;
-        tableModel.deleteOne({ _id: tableId }, {}, (err) => {
-            if (err) {
-                return res.status(400).json({ status: 400, errors: [{ msg: err }] })
-            }
-            return res.status(200).json({ status: 200, data: null });
-        })
+  const saveMember = async (req: Request, res: Response) => {
+    const { roomId } = req.params;
+    try {
+      await tableService.saveMember(roomId);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
     }
+  };
 
-    addUser(req: Request, res: Response) {
-        const tableId = req.params.tableId;
-        const userId = req.body.userId;
-        tableModel.updateOne({ _id: tableId }, { $addToSet: { members: userId } }, {}, (err: Error) => {
-            if (err) {
-                return res.status(400).json({ status: 400, errors: [{ msg: err }] })
-            }
-            return res.status(200).json({ status: 200, data: null });
-        })
+  const deleteTable = async (req: Request, res: Response) => {
+    const tableId = req.params.tableId;
+    try {
+      await tableService.removeTable(tableId);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
     }
+  };
 
-    removeUser(req: Request, res: Response) {
-        const tableId = req.params.tableId;
-        const userId = req.body.userId;
-
-        tableModel.updateOne({ _id: tableId }, { $pull: { members: userId } }, {}, (err: Error) => {
-            if (err) {
-                return res.status(400).json({ status: 400, errors: [{ msg: err }] })
-            }
-            return res.status(200).json({ status: 200, data: null });
-        })
+  const addUser = async (req: Request, res: Response) => {
+    const tableId = req.params.tableId;
+    const userId = req.body.userId;
+    try {
+      await tableService.addUser(tableId, userId);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
     }
+  };
 
-    getTable(req: Request, res: Response) {
-        const tableId = req.params.tableId;
-        tableModel.findById(tableId).populate({ path: 'members', select: 'name username _id email' })
-            .then((table: Table) => {
-                return res.status(200).json({ status: 200, data: table })
-            }).catch((err: Error) => {
-                return res.status(400).json({ status: 400, errors: [{ msg: err }] })
-            })
+  const removeUser = async (req: Request, res: Response) => {
+    const tableId = req.params.tableId;
+    const userId = req.body.userId;
+    try {
+      await tableService.removeUser(tableId, userId);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
     }
+  };
 
-    getTablesInRoom(req: Request, res: Response) {
-        const roomId = req.params.roomId;
-        tableModel.find({ room: new mongoose.Types.ObjectId(roomId) as any }, (err: any, tables: Table) => {
-            if (err) {
-                return res.status(400).json({ err })
-            }
-            return res.status(200).json({ status: 200, data: tables });
-        })
+  const getTable = async (req: Request, res: Response) => {
+    const tableId = req.params.tableId;
+    try {
+      const table = tableService.getDetail(tableId);
+      return res.status(200).json({ status: 200, data: table });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
     }
+  };
 
-    searchMember(req: Request, res: Response) {
-        const roomId = req.params.roomId;
-        roomModel.aggregate()
-            .match({ _id: new mongoose.Types.ObjectId(roomId) as any })
-            .lookup({
-                from: 'tables',
-                let: { id: '$_id' },
-                pipeline: [
-                    { $match: { $expr: { $eq: ['$$id', '$room'] } } },
-                    {
-                        $unwind: {
-                            path: '$members',
-                            preserveNullAndEmptyArrays: true
-                        }
-                    },
-                    { $group: { _id: '$room', members: { $addToSet: '$members' } } }
-                ],
-                as: 'table',
-            })
-            .unwind(
-                {
-                    path: '$table',
-                    preserveNullAndEmptyArrays: true
-                },
-                {
-                    path: '$members',
-                    preserveNullAndEmptyArrays: true
-                }
-            )
-            .match({ $expr: { $not: { $in: ['$members', '$table.members'] } } })
-            .group({ _id: '$_id', members: { $addToSet: '$members' }, table: { $push: '$table' } })
-            .lookup({
-                from: 'users',
-                let: { mb: '$members' },
-                pipeline: [
-                    { $match: { $expr: { $in: ['$_id', '$$mb'] } } },
-                    { $project: { '_id': 1, 'name': 1, 'username': 1, 'email': 1 } }
-                ],
-                as: 'members'
-            })
-            .then((items: any) => {
-                res.status(200).json({ data: items[0] ? items[0].members : [] })
-            })
+  const getTablesInRoom = (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      const tables = tableService.getTablesInRoom(roomId);
+      return res.status(200).json({ status: 200, data: tables });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
     }
+  };
 
-    getMemberTables(req: Request, res: Response) {
-        const roomId = req.params.roomId;
-        const { limit = '10', page = '0' } = req.query;
-        const ltemp = parseInt(limit as string);
-        const ptemp = parseInt(page as string);
+  const searchMember = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      const items = await tableService.searchMember(roomId);
+      res.status(200).json({ data: items[0] ? items[0].members : [] });
+    } catch {}
+  };
 
-        tableModel.aggregate()
-            .match({ room: new mongoose.Types.ObjectId(roomId) as any })
-            .lookup({
-                from: 'users',
-                let: { mb: '$members' },
-                pipeline: [
-                    { $match: { $expr: { $in: ['$_id', '$$mb'] } } },
-                    { $project: { '_id': 1, 'name': 1, 'username': 1, 'email': 1 } }
-                ],
-                as: 'members'
-            })
-            .facet({
-                count: [{ $count: 'count' }],
-                results: [{ $skip: ltemp * ptemp }, { $limit: ltemp }]
-            })
-            .addFields({
-                count: { $arrayElemAt: ['$count.count', 0] }
-            })
-            .then(items => {
-                res.status(200).json({ data: items[0], status: 200 })
-            })
-            .catch(err => {
-                res.status(500).json({ error: 'Interal Server Error', status: 200 })
-            })
+  const getMemberTables = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    const { limit = "10", page = "0" } = req.query;
+    const ltemp = parseInt(limit as string);
+    const ptemp = parseInt(page as string);
+    try {
+      const items = await tableService.getMemberTables(roomId, ltemp, ptemp);
+      res.status(200).json({ data: items[0], status: 200 });
+    } catch {
+      res.status(500).json({ error: "Interal Server Error", status: 200 });
     }
+  };
 
-}
+  return {
+    createTable,
+    saveMember,
+    deleteTable,
+    getMemberTables,
+    searchMember,
+    removeUser,
+    addUser,
+    getTable,
+    getTablesInRoom,
+  };
+};

@@ -4,12 +4,12 @@ POST http://localhost:3002/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "rexno01",
-    "password": "123123",
-    "passwordConfirmation": "123123",
+    "username": "rexno02",
+    "password": "123123123",
+    "passwordConfirmation": "123123123",
     "name": "than lam",
     "phone":"0123123123",
-    "email": "lamtvu1903@gmail.com"
+    "email": "18110142@student.hcmute.edu.vn"
 }
 
 //Login
@@ -22,11 +22,18 @@ Content-Type: application/json
     "password": "123123123"
 }
 
+//get verify email
+###
+GET  http://localhost:3002/api/auth/get-verify-email HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzA3NDgyOGY5NTA5MTJmNTYzNTMwZmQiLCJpYXQiOjE2NjE0MjE2MTksImV4cCI6MTY2MTQyODgxOX0.wZptutXa8uf3NOmV1HaW6-EVJlmAGJ7dHg5mns7uEa4
+
+
 //get person imformation
 ###
 GET http://localhost:3002/api/user/get-detail  HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImZkYTEwNjY0NTNkYzlkYzNkZDkzM2E0MWVhNTdkYTNlZjI0MmIwZjciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2NjA0ODU3OTQsImF1ZCI6IjE1NTEyODUwMDM1OS00OXNlbDFzZDNoN3ZybjJob2VkMTI2OWJrbTltcWplcS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjEwNjAzOTA1NTQyOTgwMzkzNzQ0NSIsImVtYWlsIjoibGhuYW0xMjAxQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiIxNTUxMjg1MDAzNTktNDlzZWwxc2QzaDd2cm4yaG9lZDEyNjlia205bXFqZXEuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJuYW1lIjoibmFtIGxlIGhvYW5nIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FJdGJ2bWtjVHdFUzVHaHprODY5RW01RmRVbzdMUHJqRmwxY0FlZ1R1Z082PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6Im5hbSIsImZhbWlseV9uYW1lIjoibGUgaG9hbmciLCJpYXQiOjE2NjA0ODYwOTQsImV4cCI6MTY2MDQ4OTY5NCwianRpIjoiZWRiMDFkMjcxZDZhYmExZmQ2MGI4ZTBlYWJlNTRiZGIzNWUxNjRiYiJ9.Lu-hEl-7xi_DcL3bMPbwepL505VHuFSozUO4E4VOFgF2I-bSRRperwBEAJq_H7P4b8Ov6nHnjMzn5kYHtEzd_YALesVHlD0xRN_-DIw6ty3nQuMeuV7rc3EMvUHqpbsknbcVC_oa0m2d4DwV3AC7a_W-NJQ9sh-J7VSnZKRUEJaxLMJgsbKUQn6m_wBsg_lp0ld_32Rr5bRvjA9rVTNwzU4eHmzty5AHASaO2MewEeddXIWfePAivRkdm8mslCKu2yWKhraiCXd7ARVx4mLo9DG-RcO1f8mT4l1vlRlXVlLOO8-TUwcxrUFKsxqE_hwYBphSNorNo0k3PGx_7afPug
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzA3NDgyOGY5NTA5MTJmNTYzNTMwZmQiLCJpYXQiOjE2NjE0MjE2MTksImV4cCI6MTY2MTQyODgxOX0.wZptutXa8uf3NOmV1HaW6-EVJlmAGJ7dHg5mns7uEa4
 
 //change infor (name, dob, phone)
 ###
@@ -58,10 +65,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 ###
 POST http://localhost:3002/api/room HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2Mzk5MTQ3NTMsImV4cCI6MTYzOTkyMTk1M30.Q30qPBahQEzQ2-fM3rZt5XyFLt0T244KIfSOMx9rfP8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
 
 {
-    "name":"r",
+    "name":"meeting room",
     "description": "ta",
     "startDate": 123123123123,
     "endDate": 193213123123
@@ -75,9 +82,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 
 //--------------------change room infor
 ###
-PUT  http://localhost:3001/api/room/61505ebd67f9eb8d83106ff0 HTTP/1.1
+PUT  http://localhost:3002/api/room/61505ebd67f9eb8d83106ff0 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
 
 {
     "name":"room 02",
@@ -91,22 +98,22 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 ###
 GET http://localhost:3002/api/room/614ff45687aa8816aaf86bfb HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjE0MzE5OTQsImV4cCI6MTY2MTQzOTE5NH0.WcoxGKhLV5Z6W6BkBMc2B_3HKSBdHF_QXUCtA1bl9Ac
 
 //------------------get owed room
 ###
-GET http://localhost:3002/api/room/owned-room?pageSize=2&pageIndex=0 HTTP/1.1
+GET http://localhost:3002/api/room/owned-room HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTYxMmJmMTNhMTMxMTBiOWVjMzRkZjQiLCJpYXQiOjE2MzQ2NDI3NDQsImV4cCI6MTYzNDcyOTE0NH0.EDteISU05_9CjdY4S0PAV61u97J8pS8mm5I6Hn3GMP4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjE0MzE5OTQsImV4cCI6MTY2MTQzOTE5NH0.WcoxGKhLV5Z6W6BkBMc2B_3HKSBdHF_QXUCtA1bl9Ac
 
 //------------------them member
 ###
-POST http://localhost:3002/api/room/members/add-member/615020e29adb831d90569942 HTTP/1.1
+POST http://localhost:3002/api/room/members/add-member/6306012033ee8c05c81fa14e HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzNjAxNTcsImV4cCI6MTY2MTM2NzM1N30.gZSPNYA1hhhTjaY1iQ2zJOuOb4DYm6aFRkA2LRJTpvQ
 
 {
-    "userId":"614ff4bf87aa8816aaf86c07"
+    "userId":"61af68788f3c36c99d296160"
 }
 
 //------------------xoa member
@@ -145,9 +152,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 
 //-----------------get invitedRoom
 ###
-GET http://localhost:3001/api/room/invited-room?pageSize=2&pageIndex=1 HTTP/1.1
+GET http://localhost:3002/api/room/invited-room?pageSize=2&pageIndex=0 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZDMwMWM5M2FjMDQ2N2U3OTM5NGEiLCJpYXQiOjE2MzI3NTI0MTksImV4cCI6MTYzMjgzODgxOX0.F0O8eaIsuUNmUobvvP2Wp31reuWaWJEfovgcqbwiHr4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzA3NDgyOGY5NTA5MTJmNTYzNTMwZmQiLCJpYXQiOjE2NjE0MzE4MDQsImV4cCI6MTY2MTQzOTAwNH0.5QCTDJJLX5L4WkhdXH6_RhZXep4H7deCZNnAk_0DTpE
 
 
 //------------------------------------------------------------------------------------------------------------------------//

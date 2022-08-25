@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import initRouter from "./src/api/routers/index.router";
 import { initIOServer } from "./src/io/index";
 import { ExpressPeerServer } from "peer";
-import notificationModel from "./src/models/notifications.model";
+import MailService from "./src/services/mail.service";
 
 interface ExpressApp extends Express {
   io?: Server;
@@ -56,17 +56,9 @@ app.io = io;
 initRouter(app);
 
 // test
-app.get("/api/test", (req: any, res) => {
-  notificationModel
-    .create({
-      type: 1,
-      content: "tham gia",
-      user: "6151d301c93ac0467e79394a",
-      read: false,
-    })
-    .then(() => {
-      // req.app.io.emit('notification', 'tao thanh cong')
-    });
+app.get("/api/test", async (req: any, res) => {
+  // await MailService().sendConfirmEmail("18110142@student.hcmute.edu.vn");
+
   res.status(200).json({ status: "ok" });
 });
 

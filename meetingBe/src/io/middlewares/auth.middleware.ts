@@ -23,7 +23,6 @@ export default class AuthMiddlesware {
           audience: clientId,
         });
         const payload = tiket.getPayload();
-        console.log(payload);
         const user = await userModel.findOne({ email: payload.email });
         if (user) {
           socket.data.userData = { userId: user._id };
@@ -32,6 +31,7 @@ export default class AuthMiddlesware {
           const user = new userModel({
             name: payload.name,
             email: payload.email,
+            isVerify: true,
             picture: payload.picture,
           });
           await user.save();

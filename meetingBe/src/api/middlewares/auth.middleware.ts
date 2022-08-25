@@ -32,26 +32,25 @@ export default class AuthMiddlesware {
     } catch (err) {
       //check google token
       try {
-      const tiket = await client.verifyIdToken({
-        idToken: token,
-        audience: clientId,
-      });
-      const payload = tiket.getPayload();
-      console.log(payload);
-      const user = await userModel.findOne({ email: payload.email });
-      if (user) {
-        req.userData = { userId: user._id };
-        next();
-      } else {
-        const user = new userModel({
-          name: payload.name,
-          email: payload.email,
-          picture: payload.picture,
+        const tiket = await client.verifyIdToken({
+          idToken: token,
+          audience: clientId,
         });
-        await user.save();
-        req.userData = { userId: user._id };
-        next();
-      }
+        const payload = tiket.getPayload();
+        const user = await userModel.findOne({ email: payload.email });
+        if (user) {
+          req.userData = { userId: user._id };
+          next();
+        } else {
+          const user = new userModel({
+            name: payload.name,
+            email: payload.email,
+            picture: payload.picture,
+          });
+          await user.save();
+          req.userData = { userId: user._id };
+          next();
+        }
       } catch (err) {
         return res.status(401).json({ status: 401, msg: "Invalid Token" });
       }
@@ -74,7 +73,9 @@ export default class AuthMiddlesware {
       if (!room) {
         return res.status(400).json({ status: 400, msg: "not found room" });
       }
-      if (room.owner.toString() !== userId) {
+      console.log(room.owner);
+      console.log(userId);
+      if (room.owner.toString() !== userId.toString()) {
         return res.status(400).json({
           status: 400,
           errors: [{ msg: "you do not have permission" }],

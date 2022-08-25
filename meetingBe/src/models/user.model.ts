@@ -12,6 +12,7 @@ export class User {
   createdAt: Date;
   picture: string;
   updatedAt: Date;
+  isVerify: boolean;
 }
 
 const userSchema = new Schema(
@@ -25,6 +26,7 @@ const userSchema = new Schema(
     email: { type: String, required: true },
     picture: { type: String, required: false },
     invitedRooms: [{ type: SchemaTypes.ObjectId, ref: "room" }],
+    isVerify: { type: Boolean, default: false },
   },
   { timestamps: {} }
 );

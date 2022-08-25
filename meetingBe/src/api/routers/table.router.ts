@@ -4,7 +4,7 @@ import AuthMiddlesware from "../middlewares/auth.middleware";
 import TableValidator from "../validations/table.validator";
 
 const tableRoute = Router();
-const tableController = new TablerController();
+const tableController = TablerController();
 
 tableRoute.post('',
     [AuthMiddlesware.verifyToken, ...TableValidator.tablerCreateValidator()],
