@@ -45,8 +45,8 @@ const styles = (theme) => ({
   },
   closeButton: {
     position: "absolute",
-    right: "10px",
-    top: "10px",
+    left: "360px",
+    bottom: "40px",
     color: "red",
   },
 });

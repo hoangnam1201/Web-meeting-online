@@ -94,12 +94,21 @@ const ChatBox = ({
                 className="flex items-center justify-between px-5 py-3 text-white hover:bg-sky-200"
                 key={index}
               >
-                <Avatar
-                  name={user?.name}
-                  size="40"
-                  round={true}
-                  className="cursor-pointer"
-                />
+                {user?.picture ? (
+                  <img
+                    src={user?.picture}
+                    alt=""
+                    className="w-10 rounded-full cursor-pointer"
+                  />
+                ) : (
+                  <Avatar
+                    name={user?.name}
+                    size="40"
+                    round={true}
+                    className="cursor-pointer"
+                  />
+                )}
+
                 <h5>{user?.name}</h5>
                 <IconButton>
                   <MoreVertIcon className="text-white" />

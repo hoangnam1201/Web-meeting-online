@@ -8,7 +8,6 @@ const cookies = new Cookies();
 
 instance.interceptors.request.use((config) => {
   const auth = cookies.get("u_auth");
-  console.log(auth);
   if (auth) {
     config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
     return config;

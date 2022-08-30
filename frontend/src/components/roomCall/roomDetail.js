@@ -81,7 +81,7 @@ const RoomDetail = ({
           connection={connection}
           roomMessages={roomMessages}
           tableMessages={tableMessages}
-          className=" fixed h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-full bg-white shadow-md"
+          className=" fixed h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-5/6 bg-white shadow-md"
           style={{ left: "98%" }}
         />
       )}
@@ -134,7 +134,6 @@ const PinVideo = () => {
     return () => {
       document.body.style.overflow = "auto";
     };
-
   }, [selectedVideo]);
 
   return (
