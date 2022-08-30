@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import mongoose from "mongoose";
 import { TableCreateDto } from "../../Dtos/table-create.dto";
-import tableModel, { Table } from "../../models/table.model";
-import roomModel from "../../models/room.model";
 import TableService from "../../services/table.service";
 
 export default () => {

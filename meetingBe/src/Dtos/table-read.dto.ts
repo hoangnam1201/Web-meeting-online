@@ -1,7 +1,6 @@
 import { Table } from "../models/table.model";
 import { User } from "../models/user.model";
 import { UserReadDto } from "./user-read.dto";
-import { UserTableReadDto } from "./user-table-read.dto";
 
 export class TableReadDto {
     _id: any;

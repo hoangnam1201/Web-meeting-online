@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-import { RoomReadDto } from "../Dtos/room-read.dto";
 import { User } from "../models/user.model";
 import { generateToken } from "./jwt.service";
 import RoomService from "./room.service";

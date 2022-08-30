@@ -1,17 +1,22 @@
 import mongoose from "mongoose";
 import { Socket } from "socket.io";
 import { TableReadDto } from "../../Dtos/table-read.dto";
-import { UserTableReadDto } from "../../Dtos/user-table-read.dto";
 import { MessageReadDto } from "../../Dtos/message-read.dto";
 import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
-import { TableDetailDto } from "../../Dtos/table-detail.dto";
 import { UserReadDto } from "../../Dtos/user-read.dto";
-import messageModel, { Message } from "../../models/message.model";
+import messageModel from "../../models/message.model";
 import roomModel, { Room } from "../../models/room.model";
 import tableModel, { Table } from "../../models/table.model";
 import userModel, { User } from "../../models/user.model";
+import UserService from "../../services/user.service";
+import FileService from "../../services/file.service";
+import MessageService from "../../services/message.service";
 
 export default (ioRoom: any, io: any) => {
+  const userService = UserService();
+  const fileService = FileService();
+  const messageService = MessageService();
+
   const joinRoom = async function (roomId: string) {
     const socket: Socket = this;
     const userId = socket.data.userData.userId;
@@ -196,7 +201,56 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  const sendMessage = async function (strMessage: string) {
+  const sendFile = async function (
+    data: { files: [{ data: Buffer; name: string }]; msgString: string },
+    callBack: (status: string) => void
+  ) {
+    const socket = this;
+    const userId = socket.data.userData.userId;
+    const tableId = socket.data.tableId;
+
+    try {
+      const files = await Promise.all(
+        data.files.map(async (f) => {
+          const id = await fileService.putFile(f.name, f.data);
+          return { fileId: id.toString(), name: f.name };
+        })
+      );
+      const message = await messageService.create(
+        userId,
+        data.msgString,
+        files
+      );
+      ioRoom.to(tableId).emit("room:message", message);
+      callBack("success");
+    } catch {
+      callBack("error to send message");
+    }
+  };
+
+  const sendTableFile = async function (
+    data: { files: [{ data: Buffer; name: string }]; msgString: string },
+    callBack: (status: string) => void
+  ) {
+    const socket = this;
+    const userId = socket.data.userData.userId;
+    const tableId = socket.data.tableId;
+    const sender = await userService.findUserById(userId);
+
+    const message = {
+      sender: UserReadDto.fromUser(sender),
+      files: data.files,
+      message: data.msgString,
+      createAt: new Date(),
+    };
+    ioRoom.to(tableId).emit("table:message", message);
+    callBack("success");
+  };
+
+  const sendMessage = async function (
+    strMessage: string,
+    callBack: (status: string) => void
+  ) {
     const socket = this;
     const roomId = socket.data.roomId;
     const userId = socket.data.userData.userId;
@@ -210,12 +264,10 @@ export default (ioRoom: any, io: any) => {
       const messageRead = await messageModel
         .findById(message._id)
         .populate("sender");
-      socket.emit("room:send-message-status", { message: "success" });
+      callBack("success");
       ioRoom.to(roomId).emit("room:message", messageRead);
     } catch (err: any) {
-      return socket.emit("room:send-message-status", {
-        err: "error to send message",
-      });
+      callBack("error to send message");
     }
   };
 
@@ -460,7 +512,9 @@ export default (ioRoom: any, io: any) => {
     joinRoom,
     leaveRoom,
     leaveTable,
+    sendFile,
     sendMessage,
+    sendTableFile,
     present,
     getMessages,
     sendTableMessage,

@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import mongoose from "mongoose";
-import { NotificationCreateDto } from "../../Dtos/notification-create.dto";
 import { RoomCreateDto } from "../../Dtos/room-create.dto";
 import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
 import { RoomReadDto } from "../../Dtos/room-read.dto";
-import roomModel, { Room } from "../../models/room.model";
-import userModel, { User } from "../../models/user.model";
+import { Room } from "../../models/room.model";
 import MailService from "../../services/mail.service";
 import NotificationService from "../../services/notification.service";
 import RoomService from "../../services/room.service";

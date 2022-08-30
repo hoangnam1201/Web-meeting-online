@@ -1,5 +1,4 @@
 import { ObjectId } from "mongoose";
-import roomModel from "../models/room.model";
 
 export class NotificationCreateDto {
     type: number;

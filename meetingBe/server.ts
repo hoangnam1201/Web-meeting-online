@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 import initRouter from "./src/api/routers/index.router";
 import { initIOServer } from "./src/io/index";
 import { ExpressPeerServer } from "peer";
-import MailService from "./src/services/mail.service";
 
 interface ExpressApp extends Express {
   io?: Server;
@@ -42,6 +41,7 @@ const io = new Server(httpServer, {
     origin: "*",
     methods: ["GET", "POST"],
   },
+  maxHttpBufferSize: 1e8,
 });
 initIOServer(io);
 
@@ -54,12 +54,5 @@ app.use("/peerjs", peerServer);
 // api
 app.io = io;
 initRouter(app);
-
-// test
-app.get("/api/test", async (req: any, res) => {
-  // await MailService().sendConfirmEmail("18110142@student.hcmute.edu.vn");
-
-  res.status(200).json({ status: "ok" });
-});
 
 httpServer.listen(PORT, () => console.log("listen on port " + PORT));
