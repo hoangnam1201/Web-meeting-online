@@ -62,7 +62,7 @@ export default (ioRoom: any, io: any) => {
           .populate("sender")
           .sort({ createdAt: -1 })
           .skip(0)
-          .limit(20);
+          .limit(30);
         socket.emit("room:messages", MessageReadDto.fromArray(messages));
       } else {
         socket.emit("room:join-err", {
@@ -201,13 +201,14 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  const sendFile = async function (
+  const sendMessage = async function (
     data: { files: [{ data: Buffer; name: string }]; msgString: string },
     callBack: (status: string) => void
   ) {
+    console.log("send");
     const socket = this;
     const userId = socket.data.userData.userId;
-    const tableId = socket.data.tableId;
+    const roomId = socket.data.roomId;
 
     try {
       const files = await Promise.all(
@@ -218,17 +219,20 @@ export default (ioRoom: any, io: any) => {
       );
       const message = await messageService.create(
         userId,
+        roomId,
         data.msgString,
         files
       );
-      ioRoom.to(tableId).emit("room:message", message);
+      ioRoom
+        .to(roomId)
+        .emit("room:message", MessageReadDto.fromMessage(message));
       callBack && callBack("success");
     } catch {
       callBack && callBack("error to send message");
     }
   };
 
-  const sendTableFile = async function (data: {
+  const sendTableMessage = async function (data: {
     files: [{ data: Buffer; name: string }];
     msgString: string;
   }) {
@@ -243,31 +247,8 @@ export default (ioRoom: any, io: any) => {
       message: data.msgString,
       createAt: new Date(),
     };
+    console.log(message, tableId);
     ioRoom.to(tableId).emit("table:message", message);
-  };
-
-  const sendMessage = async function (
-    strMessage: string,
-    callback: (status: string) => void
-  ) {
-    const socket = this;
-    const roomId = socket.data.roomId;
-    const userId = socket.data.userData.userId;
-    const newMessage = {
-      message: strMessage,
-      sender: userId,
-      room: roomId,
-    };
-    try {
-      const message = await messageModel.create(newMessage);
-      const messageRead = await messageModel
-        .findById(message._id)
-        .populate("sender");
-      callback && callback("success");
-      ioRoom.to(roomId).emit("room:message", messageRead);
-    } catch (err: any) {
-      callback && callback("error to send message");
-    }
   };
 
   const getMessages = async function (pageIndex = 0) {
@@ -339,22 +320,22 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  const sendTableMessage = async function (msgString: string) {
-    const socket = this;
-    const userId = socket.data.userData.userId;
-    const tableId = socket.data.tableId;
-    try {
-      const sender = await userModel.findById(userId);
-      const message = {
-        sender: UserReadDto.fromUser(sender),
-        message: msgString,
-        createAt: new Date(),
-      };
-      ioRoom.to(tableId).emit("table:message", message);
-    } catch (err) {
-      socket.emit("table:err", err);
-    }
-  };
+  // const sendTableMessage = async function (msgString: string) {
+  //   const socket = this;
+  //   const userId = socket.data.userData.userId;
+  //   const tableId = socket.data.tableId;
+  //   try {
+  //     const sender = await userModel.findById(userId);
+  //     const message = {
+  //       sender: UserReadDto.fromUser(sender),
+  //       message: msgString,
+  //       createAt: new Date(),
+  //     };
+  //     ioRoom.to(tableId).emit("table:message", message);
+  //   } catch (err) {
+  //     socket.emit("table:err", err);
+  //   }
+  // };
 
   const changeMedia = async function (
     media: { audio: boolean; video: boolean },
@@ -511,9 +492,7 @@ export default (ioRoom: any, io: any) => {
     joinRoom,
     leaveRoom,
     leaveTable,
-    sendFile,
     sendMessage,
-    sendTableFile,
     present,
     getMessages,
     sendTableMessage,

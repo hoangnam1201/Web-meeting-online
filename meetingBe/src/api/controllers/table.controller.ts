@@ -84,10 +84,10 @@ export default () => {
     }
   };
 
-  const getTablesInRoom = (req: Request, res: Response) => {
+  const getTablesInRoom = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     try {
-      const tables = tableService.getTablesInRoom(roomId);
+      const tables = await tableService.getTablesInRoom(roomId);
       return res.status(200).json({ status: 200, data: tables });
     } catch {
       return res

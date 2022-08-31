@@ -13,15 +13,13 @@ export default (io: any) => {
     const userId = socket.data.userData.userId;
     socket.join(userId);
     socket.on("room:join", _roomHandler.joinRoom);
-    socket.on("room:send-message", _roomHandler.sendMessage);
     socket.on("room:get-messages", _roomHandler.getMessages);
-    socket.on("room:send-file", _roomHandler.sendFile);
+    socket.on("room:send-message", _roomHandler.sendMessage);
     socket.on("room:present", _roomHandler.present);
     socket.on("room:access-request", _roomHandler.acceptRequest);
     socket.on("room:divide-tables", _roomHandler.divideTables);
     socket.on("table:join", _roomHandler.joinTable);
     socket.on("table:send-message", _roomHandler.sendTableMessage);
-    socket.on("table:send-file", _roomHandler.sendTableFile);
     socket.on("change-media", _roomHandler.changeMedia);
     socket.on("disconnecting", _roomHandler.leaveRoom);
     socket.on("present:join", _roomHandler.joinPresent);

@@ -27,7 +27,7 @@ code {
           text-shadow: none;
         }
     } 
-    .croll-none::-webkit-scrollbar {
+    .scroll-none::-webkit-scrollbar {
       width: 0;
       height: 0;
     }

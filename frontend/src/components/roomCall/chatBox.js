@@ -25,6 +25,7 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer);
   const endRef = useRef(null);
+  const [files, setFiles] = useState([]);
 
   const handleChange = (e, newValue) => {
     setValue(newValue);
@@ -36,26 +37,37 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
 
   const handleKeydown = (e) => {
     if (e.key === "Enter") {
-      if (value === 1) {
-        connection.current.socket.emit("table:send-message", msgText);
-      }
-      if (value === 0) {
-        connection.current.socket.emit("room:send-message", msgText);
-      }
-
-      setMsgText("");
-      endRef.current.scrollIntoView({ behavior: "smooth" });
+      handleSendMessage();
     }
   };
 
+  const onFileChange = (e) => {
+    setFiles(Array.from(e.target.files));
+    e.target.value = null;
+  };
+
+  const deleteFile = (index) => {
+    files.splice(index, 1);
+    setFiles([...files]);
+  };
+
   const handleSendMessage = () => {
+    if (!msgText && files.length === 0) return;
+    console.log(value);
     if (value === 1) {
-      connection.current.socket.emit("table:send-message", msgText);
+      connection.current.socket.emit("table:send-message", {
+        msgString: msgText,
+        files: files.map((f) => ({ data: f, name: f.name })),
+      });
     }
     if (value === 0) {
-      connection.current.socket.emit("room:send-message", msgText);
+      connection.current.socket.emit("room:send-message", {
+        msgString: msgText,
+        files: files.map((f) => ({ data: f, name: f.name })),
+      });
     }
     setMsgText("");
+    setFiles([]);
     endRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -71,8 +83,12 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
   };
 
   return (
-    <div {...rest}>
-      <div className="shadow-md flex justify-between">
+    <div
+      className="fixed h-96 pb-1 w-80 transform -translate-y-full
+      -translate-x-full z-40 top-5/6 bg-white shadow-md flex flex-col"
+      {...rest}
+    >
+      <div className="shadow-md flex-grow-0 flex justify-between">
         <Tabs value={value} onChange={handleChange}>
           <Tab label="Room" />
           <Tab label="Table" />
@@ -86,25 +102,13 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
           X
         </Button>
       </div>
-      <div className="h-3/4 overflow-auto">
+      <div className="flex-grow h-0 overflow-y-auto">
         <div hidden={value !== 1}>
           <div className="flex flex-col-reverse">
-            {tableMessages?.map((m, index) => (
+            {tableMessages?.map((m, index, messages) => (
               <Message
-                msgData={m}
                 key={index}
-                type={currentUser.user._id === m.sender._id ? 0 : 1}
-              />
-            ))}
-            <Waypoint onEnter={() => console.log("enter")} />
-          </div>
-        </div>
-        <div hidden={value !== 0}>
-          <div className="flex flex-col-reverse">
-            {roomMessages?.map((m, index, messages) => (
-              <Message
                 msgData={m}
-                key={index}
                 type={currentUser.user._id === m.sender._id ? 0 : 1}
                 position={getPosition(
                   m,
@@ -116,14 +120,58 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
             <Waypoint onEnter={() => console.log("enter")} />
           </div>
         </div>
+        <div hidden={value !== 0}>
+          <div className="flex flex-col-reverse">
+            {roomMessages?.map((m, index, messages) => {
+              return (
+                <Message
+                  key={index}
+                  msgData={m}
+                  type={currentUser.user._id === m.sender._id ? 0 : 1}
+                  position={getPosition(
+                    m,
+                    messages[index - 1],
+                    messages[index + 1]
+                  )}
+                />
+              );
+            })}
+            <Waypoint onEnter={() => console.log("enter")} />
+          </div>
+        </div>
         <div ref={endRef} />
       </div>
-      <div className="h-2">
+      <div className="h-2 flex-grow-0">
         <div hidden={!tableMessages?.loading}>
           <LinearProgress />
         </div>
       </div>
-      <div className="flex h-11">
+      {files.length > 0 && (
+        <div className="h-8 flex-grow-0 flex-row flex gap-2 mx-2 overflow-x-auto scroll-none">
+          {files.map((f, index) => (
+            <div className="flex items-center rounded-lg bg-gray-300 px-2 justify-between">
+              <p className="text-xs whitespace-nowrap break-normal">{f.name}</p>
+              <button onClick={() => deleteFile(index)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-4 h-4 hover:text-gray-500"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="flex h-11 flex-grow-0 px-1">
         <input
           className="px-5 py-2 w-full focus:outline-none bg-gray-100 rounded-full"
           value={msgText}
@@ -133,7 +181,7 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
         />
         <IconButton>
           <label>
-            <input type="file" hidden multiple />
+            <input type="file" hidden multiple onChange={onFileChange} />
             <AttachFileIcon />
           </label>
         </IconButton>
@@ -194,17 +242,54 @@ export const Message = React.memo(
                 </div>
               )}
               {(position === "CENTER" || position === "CENTER-END") && (
-                <p
+                <div
                   className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${
                     type === 0 ? "bg-blue-100" : "bg-gray-200"
                   } rounded-lg`}
                   style={{ maxWidth: "70%" }}
                 >
-                  {msgData.message}
-                </p>
+                  {msgData.files.map((f, index) => (
+                    <div className="flex items-center" key={index}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
+                      {f.fileId && (
+                        <a
+                          className=" whitespace-nowrap break-normal overflow-hidden"
+                          href={`http://localhost:3002/api/file/download/${f.fileId}`}
+                        >
+                          {f.name}
+                        </a>
+                      )}
+                      {f.data && (
+                        <a
+                          className=" whitespace-nowrap break-normal overflow-hidden"
+                          href={window.URL.createObjectURL(
+                            new Blob([f.data], { type: "*/*" })
+                          )}
+                          download={f.name}
+                        >
+                          {f.name}
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                  <p>{msgData.message}</p>
+                </div>
               )}
               {position === "TOP" && (
-                <p
+                <div
                   className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${
                     type === 0 ? "bg-blue-100" : "bg-gray-200"
                   } ${
@@ -214,11 +299,48 @@ export const Message = React.memo(
                   }`}
                   style={{ maxWidth: "70%" }}
                 >
-                  {msgData.message}
-                </p>
+                  {msgData.files.map((f, index) => (
+                    <div className="flex items-center" key={index}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
+                      {f.fileId && (
+                        <a
+                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          href={`http://localhost:3002/api/file/download/${f.fileId}`}
+                        >
+                          {f.name}
+                        </a>
+                      )}
+                      {f.data && (
+                        <a
+                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          href={window.URL.createObjectURL(
+                            new Blob([f.data], { type: "*/*" })
+                          )}
+                          download={f.name}
+                        >
+                          {f.name}
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                  <p>{msgData.message}</p>
+                </div>
               )}
               {position === "BOTTOM" && (
-                <p
+                <div
                   className={`px-4 py-1 whitespace-normal break-words text-sm font-thin ${
                     type === 0 ? "bg-blue-100" : "bg-gray-200"
                   } ${
@@ -228,8 +350,45 @@ export const Message = React.memo(
                   }`}
                   style={{ maxWidth: "70%" }}
                 >
-                  {msgData.message}
-                </p>
+                  {msgData.files.map((f, index) => (
+                    <div className="flex items-center" key={index}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="w-6 h-6 text-gray-600 flex-grow-0"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
+                      {f.fileId && (
+                        <a
+                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          href={`http://localhost:3002/api/file/download/${f.fileId}`}
+                        >
+                          {f.name}
+                        </a>
+                      )}
+                      {f.data && (
+                        <a
+                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          href={window.URL.createObjectURL(
+                            new Blob([f.data], { type: "*/*" })
+                          )}
+                          download={f.name}
+                        >
+                          {f.name}
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                  <p>{msgData.message}</p>
+                </div>
               )}
             </div>
           </div>

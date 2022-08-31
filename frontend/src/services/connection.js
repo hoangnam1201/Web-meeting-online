@@ -274,6 +274,7 @@ class Connection {
     });
 
     this.socket.on("table:message", (msg) => {
+      console.log(msg);
       this.tableMessages = [msg, ...this.tableMessages];
       this.setting.updateInstance("table:messages", [...this.tableMessages]);
       store.dispatch(receiveMessageAction());

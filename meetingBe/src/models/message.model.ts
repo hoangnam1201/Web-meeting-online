@@ -7,7 +7,7 @@ export class Message {
   room: ObjectId | Room;
   sender: ObjectId | User;
   message: string;
-  file: [{ fileId: string; name: string }];
+  files: [{ fileId: string; name: string }];
   like: [{ option: number; user: ObjectId | User }];
   createdAt: Date;
 }
@@ -17,7 +17,7 @@ const messageSchema = new Schema<Message>(
     room: { type: SchemaTypes.ObjectId, ref: "room" },
     sender: { type: SchemaTypes.ObjectId, ref: "user" },
     message: String,
-    file: { data: { type: Buffer }, name: String },
+    files: [{ fileId: String, name: String }],
     like: [
       {
         option: Number,

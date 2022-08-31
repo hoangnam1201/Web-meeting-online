@@ -55,7 +55,7 @@ const RoomDetail = ({
       {!roomInfo?.isPresent && (
         <>
           <VideoTableContainer
-            className="sticky z-10 justify-center w-full overflow-x-auto top-4 croll-none"
+            className="sticky z-10 justify-center w-full overflow-x-auto top-4 scroll-none"
             streamDatas={streamDatas}
             myStream={myStream}
             connection={connection}
@@ -81,7 +81,6 @@ const RoomDetail = ({
           connection={connection}
           roomMessages={roomMessages}
           tableMessages={tableMessages}
-          className=" fixed pb-4 h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-5/6 bg-white shadow-md"
           style={{ left: "98%", top: "100%" }}
         />
       )}
