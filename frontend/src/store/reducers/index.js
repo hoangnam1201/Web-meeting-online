@@ -15,5 +15,4 @@ export const rootReducer = combineReducers({
   tables: TablesReducer,
   globalNofification: globalnofificationReducer,
   notifyMessageReducer,
-
 });

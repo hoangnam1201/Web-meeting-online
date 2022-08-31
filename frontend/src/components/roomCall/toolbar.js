@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -20,6 +20,8 @@ import { sendMessageAction } from "../../store/actions/messageAction";
 import { confirmPresent, confirmSwal } from "../../services/swalServier";
 import { Link, useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
+import { useReactMediaRecorder } from "react-media-recorder";
+import { useCookies } from "react-cookie";
 
 const Toolbar = ({
   connection,
@@ -32,10 +34,25 @@ const Toolbar = ({
   const currentUser = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const history = useHistory();
+  const { status, startRecording, stopRecording, mediaBlobUrl } =
+    useReactMediaRecorder({ screen: true });
+  const [cookies, setCookies, removeCookies] = useCookies(["urlBlob"]);
+  console.log(status, mediaBlobUrl);
+
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
   );
 
+  useEffect(() => {
+    if (status === "stopped") {
+      setCookies("urlBlob", mediaBlobUrl, { path: "/" });
+    }
+  }, [mediaBlobUrl]);
+
+  const turnOnRecord = () => {
+    startRecording();
+    removeCookies("urlBlob");
+  };
   const turnOffAudio = () => {
     connection.current.turnOffAudio();
   };
@@ -62,7 +79,6 @@ const Toolbar = ({
     });
   };
 
-
   return (
     <div {...rest}>
       <div className="flex py-2 text-gray-500">
@@ -74,19 +90,41 @@ const Toolbar = ({
                 <button
                   className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
                   onClick={() => {
-                    confirmSwal('Divide Into Tables', '', () => {
-                      connection.current.socket.emit('room:divide-tables')
-                    })
+                    confirmSwal("Divide Into Tables", "", () => {
+                      connection.current.socket.emit("room:divide-tables");
+                    });
                   }}
                 >
                   divide into tables
                 </button>
-                <Link to={`/room/groups/${roomInfo._id}`}
-                  target='_blank' className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap">
+                {status !== "recording" ? (
+                  <button
+                    className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                    onClick={turnOnRecord}
+                  >
+                    Record meeting
+                  </button>
+                ) : (
+                  <button
+                    className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                    onClick={stopRecording}
+                  >
+                    Stop recording
+                  </button>
+                )}
+
+                <Link
+                  to={`/room/groups/${roomInfo._id}`}
+                  target="_blank"
+                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                >
                   Groups management
                 </Link>
-                <Link to={`/user/update-event/${roomInfo._id}`}
-                  target='_blank' className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap">
+                <Link
+                  to={`/user/update-event/${roomInfo._id}`}
+                  target="_blank"
+                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                >
                   Room Setting
                 </Link>
               </div>
@@ -159,9 +197,7 @@ const Toolbar = ({
           <div className="border-l-2 border-gray-400 px-3 flex">
             <button
               className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
-              onClick={() =>
-                connection.current.leaveTable()
-              }
+              onClick={() => connection.current.leaveTable()}
             >
               <div>
                 <EventSeatIcon className="text-gray-500" />
@@ -171,7 +207,7 @@ const Toolbar = ({
             <button
               className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
               onClick={() =>
-                confirmSwal("Are you sure?", '', () => {
+                confirmSwal("Are you sure?", "", () => {
                   history.push("/user/my-event");
                 })
               }
