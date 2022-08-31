@@ -18,26 +18,14 @@ export default class AuthMiddlesware {
       next();
     } catch (err) {
       try {
-        const tiket = await client.verifyIdToken({
+        const toket = await client.verifyIdToken({
           idToken: token,
           audience: clientId,
         });
-        const payload = tiket.getPayload();
+        const payload = toket.getPayload();
         const user = await userModel.findOne({ email: payload.email });
-        if (user) {
-          socket.data.userData = { userId: user._id };
-          next();
-        } else {
-          const user = new userModel({
-            name: payload.name,
-            email: payload.email,
-            isVerify: true,
-            picture: payload.picture,
-          });
-          await user.save();
-          socket.data.userData = { userId: user._id };
-          next();
-        }
+        socket.data.userData = { userId: user._id };
+        next();
       } catch (err) {
         next(new Error("not authoried"));
       }

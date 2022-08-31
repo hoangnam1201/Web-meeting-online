@@ -222,16 +222,16 @@ export default (ioRoom: any, io: any) => {
         files
       );
       ioRoom.to(tableId).emit("room:message", message);
-      callBack("success");
+      callBack && callBack("success");
     } catch {
-      callBack("error to send message");
+      callBack && callBack("error to send message");
     }
   };
 
-  const sendTableFile = async function (
-    data: { files: [{ data: Buffer; name: string }]; msgString: string },
-    callBack: (status: string) => void
-  ) {
+  const sendTableFile = async function (data: {
+    files: [{ data: Buffer; name: string }];
+    msgString: string;
+  }) {
     const socket = this;
     const userId = socket.data.userData.userId;
     const tableId = socket.data.tableId;
@@ -244,12 +244,11 @@ export default (ioRoom: any, io: any) => {
       createAt: new Date(),
     };
     ioRoom.to(tableId).emit("table:message", message);
-    callBack("success");
   };
 
   const sendMessage = async function (
     strMessage: string,
-    callBack: (status: string) => void
+    callback: (status: string) => void
   ) {
     const socket = this;
     const roomId = socket.data.roomId;
@@ -264,10 +263,10 @@ export default (ioRoom: any, io: any) => {
       const messageRead = await messageModel
         .findById(message._id)
         .populate("sender");
-      callBack("success");
+      callback && callback("success");
       ioRoom.to(roomId).emit("room:message", messageRead);
     } catch (err: any) {
-      callBack("error to send message");
+      callback && callback("error to send message");
     }
   };
 

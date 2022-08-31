@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Button from "@mui/material/Button";
@@ -41,6 +47,7 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
       endRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+
   const handleSendMessage = () => {
     if (value === 1) {
       connection.current.socket.emit("table:send-message", msgText);
@@ -48,9 +55,19 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
     if (value === 0) {
       connection.current.socket.emit("room:send-message", msgText);
     }
-
     setMsgText("");
     endRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const getPosition = (currentElem, nextElem, previousElem) => {
+    if (
+      currentElem?.sender._id === nextElem?.sender?._id &&
+      currentElem?.sender._id === previousElem?.sender?._id
+    )
+      return "CENTER";
+    if (currentElem?.sender?._id === nextElem?.sender?._id) return "TOP";
+    if (currentElem?.sender?._id === previousElem?.sender?._id) return "BOTTOM";
+    return "CENTER-END";
   };
 
   return (
@@ -70,7 +87,7 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
         </Button>
       </div>
       <div className="h-3/4 overflow-auto">
-        <div hidden={value != 1}>
+        <div hidden={value !== 1}>
           <div className="flex flex-col-reverse">
             {tableMessages?.map((m, index) => (
               <Message
@@ -82,13 +99,18 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
             <Waypoint onEnter={() => console.log("enter")} />
           </div>
         </div>
-        <div hidden={value != 0}>
+        <div hidden={value !== 0}>
           <div className="flex flex-col-reverse">
-            {roomMessages?.map((m, index) => (
+            {roomMessages?.map((m, index, messages) => (
               <Message
                 msgData={m}
                 key={index}
                 type={currentUser.user._id === m.sender._id ? 0 : 1}
+                position={getPosition(
+                  m,
+                  messages[index - 1],
+                  messages[index + 1]
+                )}
               />
             ))}
             <Waypoint onEnter={() => console.log("enter")} />
@@ -101,16 +123,19 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
           <LinearProgress />
         </div>
       </div>
-      <div className="flex border-2 border-t-2 h-11">
+      <div className="flex h-11">
         <input
-          className="px-5 py-2 w-full shadow-md focus:outline-none bg-gray-200 rounded-md"
+          className="px-5 py-2 w-full focus:outline-none bg-gray-100 rounded-full"
           value={msgText}
           onChange={(e) => setMsgText(e.target.value)}
           onKeyDown={handleKeydown}
           placeholder="Type..."
         />
         <IconButton>
-          <AttachFileIcon />
+          <label>
+            <input type="file" hidden multiple />
+            <AttachFileIcon />
+          </label>
         </IconButton>
         <IconButton onClick={handleSendMessage}>
           <SendIcon />
@@ -120,51 +145,101 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
   );
 };
 
-export const Message = ({ nameClass, msgData, type, ...rest }) => {
-  const timeAgo = moment(msgData.createdAt).fromNow();
-  return (
-    <div {...rest}>
-      <div
-        className={`flex flex-col ${
-          type === 0 ? "items-end" : "items-start"
-        } mt-4 mx-2 `}
-      >
-        {type === 1 && (
-          <div className={`text-sm mx-4 ${nameClass}`}>
-            {msgData?.sender?.name}
-          </div>
-        )}
-        <div className="w-5/6 h-auto">
-          <div className="flex items-center">
-            {msgData?.sender?.picture ? (
-              <img
-                src={msgData?.sender?.picture}
-                alt=""
-                className="cursor-pointer rounded-full w-7 mr-2"
-              />
-            ) : (
-              <Avatar
-                name={msgData?.sender?.name}
-                size="30"
-                round={true}
-                className="cursor-pointer mr-2"
-              />
+export const Message = React.memo(
+  ({ nameClass, msgData, type, position, ...rest }) => {
+    const timeAgo = moment(msgData.createdAt).fromNow();
+    return (
+      <div {...rest}>
+        <div
+          className={`flex flex-col ${
+            type === 0 ? "items-end" : "items-start"
+          } px-2 overflow-hidden w-full`}
+        >
+          <div
+            className={`flex p-1 ${type === 0 && "flex-row-reverse"} w-full`}
+          >
+            {type === 1 && (
+              <div className="flex-grow-0 w-7 m-1 self-end">
+                {(position === "BOTTOM" || position === "CENTER-END") && (
+                  <div>
+                    {msgData?.sender?.picture ? (
+                      <img
+                        src={msgData?.sender?.picture}
+                        alt=""
+                        className="cursor-pointer rounded-full w-7"
+                      />
+                    ) : (
+                      <Avatar
+                        name={msgData?.sender?.name}
+                        size="28"
+                        round={true}
+                        className="cursor-pointer"
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             )}
-
             <div
-              className={`w-full h-auto ${
-                type === 0 ? "bg-blue-200" : "bg-gray-200"
-              } rounded-lg px-2 py-1
-                 whitespace-normal break-words`}
+              className={`flex-grow w-0 flex flex-col items-start ${
+                type === 0 && "items-end"
+              }`}
             >
-              {msgData.message}
+              {type === 1 && (position === "TOP" || position === "CENTER-END") && (
+                <div
+                  className={`mx-4 text-sm ${nameClass} text-left font-thin text-gray-500`}
+                  style={{ fontSize: "14px" }}
+                >
+                  {msgData?.sender?.name}
+                </div>
+              )}
+              {(position === "CENTER" || position === "CENTER-END") && (
+                <p
+                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${
+                    type === 0 ? "bg-blue-100" : "bg-gray-200"
+                  } rounded-lg`}
+                  style={{ maxWidth: "70%" }}
+                >
+                  {msgData.message}
+                </p>
+              )}
+              {position === "TOP" && (
+                <p
+                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${
+                    type === 0 ? "bg-blue-100" : "bg-gray-200"
+                  } ${
+                    type === 0
+                      ? "rounded-l-lg rounded-tr-xl"
+                      : "rounded-r-lg rounded-tl-xl"
+                  }`}
+                  style={{ maxWidth: "70%" }}
+                >
+                  {msgData.message}
+                </p>
+              )}
+              {position === "BOTTOM" && (
+                <p
+                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin ${
+                    type === 0 ? "bg-blue-100" : "bg-gray-200"
+                  } ${
+                    type === 0
+                      ? "rounded-l-lg rounded-br-xl"
+                      : "rounded-r-lg rounded-bl-xl"
+                  }`}
+                  style={{ maxWidth: "70%" }}
+                >
+                  {msgData.message}
+                </p>
+              )}
             </div>
           </div>
-          <div className="text-gray-500 text-xs pl-36">{timeAgo}</div>
+          {(position === "BOTTOM" || position === "CENTER-END") && (
+            <div className="text-gray-500 text-xs">{timeAgo}</div>
+          )}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default React.memo(ChatBox);

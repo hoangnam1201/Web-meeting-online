@@ -81,8 +81,8 @@ const RoomDetail = ({
           connection={connection}
           roomMessages={roomMessages}
           tableMessages={tableMessages}
-          className=" fixed h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-5/6 bg-white shadow-md"
-          style={{ left: "98%" }}
+          className=" fixed pb-4 h-96 w-80 transform -translate-y-full -translate-x-full z-40 top-5/6 bg-white shadow-md"
+          style={{ left: "98%", top: "100%" }}
         />
       )}
       <LobbyUser
