@@ -138,7 +138,6 @@ export default (ioRoom: any, io: any) => {
         .to(socketId)
         .emit("room:messages", MessageReadDto.fromArray(messages));
     } catch (err) {
-      console.log(err);
       socket.emit("room:err", "Internal Server Error");
     }
   };
@@ -184,7 +183,7 @@ export default (ioRoom: any, io: any) => {
     try {
       const room = await roomModel.findById(roomId);
       if (room.isPresent === false) return;
-      if (room.owner.toString() === userId) {
+      if (room.owner.toString() === userId.toString()) {
         const roomInfo = await roomModel.findByIdAndUpdate(
           roomId,
           { isPresent: false },
@@ -205,7 +204,6 @@ export default (ioRoom: any, io: any) => {
     data: { files: [{ data: Buffer; name: string }]; msgString: string },
     callBack: (status: string) => void
   ) {
-    console.log("send");
     const socket = this;
     const userId = socket.data.userData.userId;
     const roomId = socket.data.roomId;
@@ -247,7 +245,6 @@ export default (ioRoom: any, io: any) => {
       message: data.msgString,
       createAt: new Date(),
     };
-    console.log(message, tableId);
     ioRoom.to(tableId).emit("table:message", message);
   };
 
@@ -363,10 +360,11 @@ export default (ioRoom: any, io: any) => {
     const roomId = socket.data.roomId;
     const userId = socket.data.userData.userId;
 
+    console.log(roomId);
     if (!roomId) return;
     try {
       const checkRoom = await roomModel.findById(roomId);
-      if (checkRoom.owner.toString() !== userId)
+      if (checkRoom.owner.toString() !== userId.toString())
         return socket.emit("room:err", "You do not have permission to present");
 
       const room = await roomModel.findByIdAndUpdate(
@@ -378,11 +376,13 @@ export default (ioRoom: any, io: any) => {
       await tableModel.updateMany({ room: roomId }, { users: [] });
       const tables = await tableModel.find({ room: roomId }).populate("users");
       ioRoom.to(roomId).emit("room:present", { time, tables });
+      console.log(roomId);
 
       setTimeout(() => {
         ioRoom.to(roomId).emit("room:info", RoomReadDetailDto.fromRoom(room));
       }, 1000 * time);
     } catch (err) {
+      console.log(err);
       return socket.emit("room:err", "Internal Server Error");
     }
   };
@@ -424,7 +424,7 @@ export default (ioRoom: any, io: any) => {
       const room = await roomModel.findById(roomId);
       if (room.isPresent === false) return;
 
-      if (room.owner.toString() !== userId)
+      if (room.owner.toString() !== userId.toString())
         return socket.emit("room:err", "You do not have permission to present");
 
       const roomInfo = await roomModel.findByIdAndUpdate(

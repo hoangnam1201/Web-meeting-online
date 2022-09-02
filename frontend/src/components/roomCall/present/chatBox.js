@@ -31,6 +31,17 @@ const ChatBox = ({
     }
   };
 
+  const getPosition = (currentElem, nextElem, previousElem) => {
+    if (
+      currentElem?.sender._id === nextElem?.sender?._id &&
+      currentElem?.sender._id === previousElem?.sender?._id
+    )
+      return "CENTER";
+    if (currentElem?.sender?._id === nextElem?.sender?._id) return "TOP";
+    if (currentElem?.sender?._id === previousElem?.sender?._id) return "BOTTOM";
+    return "CENTER-END";
+  };
+
   return (
     <div className="overflow-auto h-full flex flex-col">
       <div className="flex justify-between" style={{ flexBasis: 0 }}>
@@ -64,12 +75,17 @@ const ChatBox = ({
           <div className="flex-grow h-0 py-4">
             <div className="overflow-auto scroll-sm h-full flex flex-col-reverse">
               <div className="flex flex-col-reverse">
-                {roomMessages?.map((m, index) => (
+                {roomMessages?.map((m, index, messages) => (
                   <Message
                     msgData={m}
                     nameClass={"text-white"}
                     key={index}
                     type={currentUser.user._id === m.sender._id ? 0 : 1}
+                    position={getPosition(
+                      m,
+                      messages[index - 1],
+                      messages[index + 1]
+                    )}
                   />
                 ))}
                 <Waypoint onEnter={() => console.log("enter")} />

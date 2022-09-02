@@ -96,6 +96,7 @@ class Connection {
     });
 
     this.socket.on("room:info", (room) => {
+      console.log(room);
       this.info = room;
       this.access = true;
       this.setting.updateInstance("access", this.access);
@@ -285,6 +286,7 @@ class Connection {
     });
 
     this.socket.on("room:present", ({ time, tables }) => {
+      console.log("present");
       this.tables = tables;
       this.clearPeers();
       this.streamDatas = {};
