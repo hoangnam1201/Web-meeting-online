@@ -1,8 +1,8 @@
 # KHOA ĐÀO TẠO CHẤT LƯỢNG CAO
 
-# TIỂU LUẬN CHUYÊN NGÀNH (HK 1 năm 2021-2022)
+# KHOÁ LUẬN TỐT NGHIỆP (HK 1 năm 2022-2023)
 
-**Đề tài**: Tìm hiểu website remo.co và xây dựng website họp nhóm, học tập và làm việc trực tuyến \
+**Đề tài**: Xây dựng website họp nhóm trực tuyến \
 
 **Công nghệ sử dụng**: MERN Stack
 
