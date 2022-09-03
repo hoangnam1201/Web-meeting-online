@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -37,19 +37,31 @@ const Toolbar = ({
   const { status, startRecording, stopRecording, mediaBlobUrl } =
     useReactMediaRecorder({ screen: true });
   const [cookies, setCookies, removeCookies] = useCookies(["urlBlob"]);
-  console.log(status, mediaBlobUrl);
 
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
   );
 
+  console.log(status);
   useEffect(() => {
     if (status === "stopped") {
       setCookies("urlBlob", mediaBlobUrl, { path: "/" });
+      // window.open("/user/record-preview", "_blank");
     }
   }, [mediaBlobUrl]);
 
   const turnOnRecord = () => {
+    if (cookies.urlBlob) {
+      confirmSwal(
+        "Start recording",
+        "The old recording will be deleted",
+        () => {
+          startRecording();
+          removeCookies("urlBlob");
+        }
+      );
+      return;
+    }
     startRecording();
     removeCookies("urlBlob");
   };
@@ -81,7 +93,7 @@ const Toolbar = ({
 
   return (
     <div {...rest}>
-      <div className="flex py-2 text-gray-500">
+      <div className="relative flex py-2 text-gray-500">
         {roomInfo?.owner._id === currentUser?.user._id && (
           <div className="border-r-2 border-gray-400 px-3 flex items-center">
             <div className=" relative group px-2 py-2">
@@ -97,6 +109,13 @@ const Toolbar = ({
                 >
                   divide into tables
                 </button>
+                {status === "stopped" && (
+                  <div className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap">
+                    <Link to="/user/record-preview" target="_blank">
+                      preview record
+                    </Link>
+                  </div>
+                )}
                 {status !== "recording" ? (
                   <button
                     className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
