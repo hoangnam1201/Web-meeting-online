@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import errorImage from "../../assets/undraw_page_not_found_su7k.svg";
-import Link from "react-router-dom/Link";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
