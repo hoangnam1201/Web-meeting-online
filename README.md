@@ -95,7 +95,7 @@ cd fe
 - Chạy các lệnh sau để run project ở local
 
 ```
-npm install
+npm install --legacy-peer-deps
 npm start
 ```
 
