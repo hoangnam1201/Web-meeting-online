@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom } from "./modules/action";
 import meetingIcon from "../../assets/meetingIcon1.png";
 import { deleteRoomAPI, getInvitedRoomAPI } from "../../api/room.api";
+import { renewToken } from "../../api/user.api";
 
 const useStyles = makeStyles({
   root: {
@@ -94,6 +95,10 @@ const MyEvent = (props) => {
     button: "",
     id: "",
   });
+
+  useEffect(() => {
+    renewToken();
+  }, []);
 
   const getInvitedRoom = async () => {
     try {

@@ -3,6 +3,10 @@
 GET  http://localhost:3002/api/file/download/630cffe9c3c1dd21edda11e6 HTTP/1.1
 Content-Type: application/json
 
+###
+GET  http://localhost:3002/api/auth/token HTTP/1.1
+Content-Type: application/json
+
 //Register
 ###
 POST http://localhost:3002/api/user/register HTTP/1.1
@@ -23,7 +27,7 @@ POST http://localhost:3002/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "lamtvu",
+    "username": "rexno02",
     "password": "123123123"
 }
 

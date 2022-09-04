@@ -6,10 +6,18 @@ const authRoute = Router();
 const authController = AuthController();
 
 authRoute.post("/login", authController.login);
-authRoute.get("/get-verify-email", [
+authRoute.post("/google-login", authController.googleLogin);
+authRoute.post("/token/revoke", authController.revoke);
+authRoute.post(
+  "/token",
+  AuthMiddlesware.verifyRefreshToken,
+  authController.getToken
+);
+authRoute.get(
+  "/get-verify-email",
   AuthMiddlesware.verifyToken,
-  authController.getVerifyMail,
-]);
+  authController.getVerifyMail
+);
 authRoute.get("/verify", authController.verifyEmail);
 
 export default authRoute;

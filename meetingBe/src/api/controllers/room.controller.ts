@@ -79,7 +79,6 @@ export default () => {
 
   const getOwnedRoom = async (req: Request, res: Response) => {
     const userId = req.userData.userId;
-    console.log(userId);
     try {
       const { pageIndex, pageSize } = req.query;
       if (!pageIndex && !pageSize) {

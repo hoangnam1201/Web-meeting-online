@@ -2,16 +2,36 @@ import dotenv from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import roomModel, { Room } from "../../models/room.model";
 import * as jwtService from "../../services/jwt.service";
-import { OAuth2Client } from "google-auth-library";
 import userModel from "../../models/user.model";
+import TokenService from "../../services/token.service";
 
 dotenv.config();
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-const clientId = process.env.CLIENT_ID;
-const client = new OAuth2Client(clientId);
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 export default class AuthMiddlesware {
+  static verifyRefreshToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const tokenService = TokenService();
+    const { refreshToken } = req.body;
+    const token = await tokenService.getByToken(refreshToken);
+    if (!token) return res.status(403).json({ status: 403, msg: "Forbidden" });
+    try {
+      const decoded = await jwtService.verifyToken(
+        refreshToken,
+        refreshTokenSecret
+      );
+      req.userData = decoded;
+      next();
+    } catch (err) {
+      return res.status(403).json({ status: 403, msg: "Forbidden" });
+    }
+  };
+
   static verifyToken = async (
     req: Request,
     res: Response,
@@ -23,37 +43,13 @@ export default class AuthMiddlesware {
         status: 401,
       });
     }
-
     const token = req.headers.authorization.split(" ")[1];
     try {
       const decoded = await jwtService.verifyToken(token, accessTokenSecret);
       req.userData = decoded;
       next();
-    } catch (err) {
-      //check google token
-      try {
-        const tiket = await client.verifyIdToken({
-          idToken: token,
-          audience: clientId,
-        });
-        const payload = tiket.getPayload();
-        const user = await userModel.findOne({ email: payload.email });
-        if (user) {
-          req.userData = { userId: user._id };
-          next();
-        } else {
-          const user = new userModel({
-            name: payload.name,
-            email: payload.email,
-            picture: payload.picture,
-          });
-          await user.save();
-          req.userData = { userId: user._id };
-          next();
-        }
-      } catch (err) {
-        return res.status(401).json({ status: 401, msg: "Invalid Token" });
-      }
+    } catch {
+      return res.status(401).json({ status: 401, msg: "Invalid Token" });
     }
   };
 
@@ -73,8 +69,6 @@ export default class AuthMiddlesware {
       if (!room) {
         return res.status(400).json({ status: 400, msg: "not found room" });
       }
-      console.log(room.owner);
-      console.log(userId);
       if (room.owner.toString() !== userId.toString()) {
         return res.status(400).json({
           status: 400,

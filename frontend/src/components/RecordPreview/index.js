@@ -3,7 +3,6 @@ import { useCookies } from "react-cookie";
 
 const RecordPreview = () => {
   const [cookies] = useCookies(["urlBlob"]);
-  console.log(cookies);
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <video

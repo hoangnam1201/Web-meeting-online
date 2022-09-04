@@ -16,7 +16,7 @@ import {
 import { makeStyles } from "@mui/styles";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -26,8 +26,10 @@ import { ScaleLoader } from "react-spinners";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
-import { loginAPI } from "../../../api/user.api";
+import { googleLoginAPI, loginAPI } from "../../../api/user.api";
 import imgLogo from "../../../assets/logomeeting.png";
+import { useDispatch } from "react-redux";
+import { actionRemoveUserInfo } from "../../../store/actions/userInfoAction";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -125,22 +127,36 @@ const schema = yup.object().shape({
 function Login(props) {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
   const matches = useMediaQuery("(min-height:650px)");
-  const [cookies, setCookies] = useCookies(["u_auth"]);
+  const [cookies, setCookies, removeCookies] = useCookies(["u_auth"]);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [loginError, setLoginError] = useState(null);
-
+  const location = useLocation();
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
-
   const { register, handleSubmit, errors } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    if (localStorage.getItem("remember")) {
+      setRemember(true);
+      setUser(JSON.parse(localStorage.getItem("remember")));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (location.state !== "LOGOUT") return;
+    dispatch(actionRemoveUserInfo());
+    removeCookies("u_auth", { path: "/" });
+    history.replace({ ...history.location, state: null });
+  }, [location.state]);
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -151,13 +167,6 @@ function Login(props) {
       [name]: value,
     });
   };
-
-  useEffect(() => {
-    if (localStorage.getItem("remember")) {
-      setRemember(true);
-      setUser(JSON.parse(localStorage.getItem("remember")));
-    }
-  }, []);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -202,11 +211,26 @@ function Login(props) {
         }
       });
   };
+
   // Login with google
   const handleLoginGoogle = (googleData) => {
-    const token = { accessToken: googleData.credential };
-    console.log(googleData.credential);
-    setCookies("u_auth", token, { path: "/" });
+    googleLoginAPI(googleData.credential)
+      .then((res) => {
+        setLoading(false);
+        setLoginError(null);
+        setCookies("u_auth", res, { path: "/" });
+      })
+      .catch((errors) => {
+        setLoading(false);
+        if (errors?.response?.data?.err) {
+          setLoginError(errors?.response?.data?.err);
+          return;
+        }
+        if (errors?.response?.data?.errors) {
+          setLoginError(errors?.response?.data?.errors[0].msg);
+          return;
+        }
+      });
   };
 
   useEffect(() => {
@@ -222,6 +246,7 @@ function Login(props) {
       size: "large",
     });
   }, []);
+
   return (
     <>
       <Helmet>

@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import initRouter from "./src/api/routers/index.router";
 import { initIOServer } from "./src/io/index";
 import { ExpressPeerServer } from "peer";
+import cors from "cors";
 
 interface ExpressApp extends Express {
   io?: Server;
@@ -16,18 +17,7 @@ const PORT = process.env.PORT || 3000;
 const app: ExpressApp = express();
 const httpServer = createServer(app);
 
-app.use((req: Request, res: Response, next: any) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET,PUT,POST,DELETE,PATCH,OPTIONS"
-  );
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  next();
-});
+app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
 
 app.use(json());
 app.use(urlencoded({ extended: false }));

@@ -19,6 +19,10 @@ export default () => {
     return userModel.findById(id);
   };
 
+  const findUserByEmail = (email: string) => {
+    return userModel.findOne({ email: email });
+  };
+
   const create = (userData: UserCreateDto) => {
     return userModel.create(userData);
   };
@@ -47,6 +51,7 @@ export default () => {
     findUserById,
     getUsersByIds,
     create,
+    findUserByEmail,
     changeInfo,
     changePassword,
   };

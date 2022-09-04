@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "./header.css";
 import imgLogo from "../../../assets/logomeeting.png";
 import Avatar from "react-avatar";
 import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
-import { getInfoAPI } from "../../../api/user.api";
+import { getInfoAPI, logoutAPI } from "../../../api/user.api";
 import { useDispatch } from "react-redux";
 import {
   actionRemoveUserInfo,
@@ -21,6 +21,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   const dispatch = useDispatch();
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
   const [cookies, setCookies, removeCookies] = useCookies(["u_auth"]);
+  const history = useHistory();
   let LinkScroll = Scroll.Link;
 
   useEffect(() => {
@@ -34,14 +35,15 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   }, [type]);
 
   const handleLogout = () => {
-    removeCookies("u_auth", { path: "/" });
-    dispatch(actionRemoveUserInfo());
-    Swal.fire({
-      icon: "success",
-      title: "Đăng xuất thành công",
-      text: "Cảm ơn bạn đã sử dụng UTE Meeting",
-      showConfirmButton: false,
-      timer: 1500,
+    logoutAPI().then(() => {
+      history.push("/auth/login", "LOGOUT");
+      Swal.fire({
+        icon: "success",
+        title: "Đăng xuất thành công",
+        text: "Cảm ơn bạn đã sử dụng UTE Meeting",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     });
   };
 
@@ -123,13 +125,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                             </Link>
                           </li>
                           <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
-                            <Link
-                              underline="none"
-                              to="/"
-                              onClick={handleLogout}
-                            >
-                              Đăng xuất
-                            </Link>
+                            <button onClick={handleLogout}>Đăng xuất</button>
                           </li>
                         </ul>
                       </div>

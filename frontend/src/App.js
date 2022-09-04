@@ -20,7 +20,6 @@ function App() {
       setShowNotification(false);
     }, 2000);
   }, [notification]);
-  console.log(process.env.REACT_APP_CLIENT_ID);
   return (
     <div className="App">
       <div

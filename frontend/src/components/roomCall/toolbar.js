@@ -42,7 +42,6 @@ const Toolbar = ({
     (state) => state.notifyMessageReducer.isReceive
   );
 
-  console.log(status);
   useEffect(() => {
     if (status === "stopped") {
       setCookies("urlBlob", mediaBlobUrl, { path: "/" });
@@ -109,7 +108,7 @@ const Toolbar = ({
                 >
                   divide into tables
                 </button>
-                {status === "stopped" && (
+                {cookies.urlBlob && (
                   <div className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap">
                     <Link to="/user/record-preview" target="_blank">
                       preview record

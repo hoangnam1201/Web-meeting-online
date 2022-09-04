@@ -7,6 +7,7 @@ import { confirmSwal, countTime, disconnectSwal } from "./swalServier";
 import { SET_SELECTEDVIDEO } from "../store/reducers/selectVideoReducer";
 import sound from "../sounds/join-permission.mp3";
 import sound1 from "../sounds/meet-message-sound-1.mp3";
+import { renewToken } from "../api/user.api";
 
 var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
@@ -17,13 +18,14 @@ const peerEndPoint = {
   port: 3002,
 };
 const socketRoomEndPoint = "http://localhost:3002/socket/rooms";
+const cookies = new Cookies();
 
 const initializePeerConnection = () => {
   return new Peer("", peerEndPoint);
 };
 
 const initializeSocketConnection = () => {
-  const auth = new Cookies().get("u_auth");
+  const auth = cookies.get("u_auth");
   return openSocket(socketRoomEndPoint, {
     forceNew: true,
     auth: {
@@ -82,6 +84,22 @@ class Connection {
         "canAccess",
         this.socket.connected && this.myID && this.myStream.stream
       );
+    });
+
+    this.socket.on("connect_error", async (err) => {
+      console.log(err.message);
+      if (err?.message !== "not authoried") return;
+      const res = await renewToken();
+      const accessToken = res.data;
+      cookies.set(
+        "u_auth",
+        { ...cookies.get("u_auth"), accessToken },
+        { path: "/" }
+      );
+      this.socket.auth = {
+        token: "Bearer " + accessToken,
+      };
+      this.socket.connect();
     });
 
     this.socket.on("room:user-request", (request) => {
@@ -386,10 +404,11 @@ class Connection {
     });
 
     this.socket.on("disconnect", () => {
-      if (this.isMeetting)
-        disconnectSwal(() => {
-          window.location.reload();
-        });
+      // if (this.isMeetting)
+        // disconnectSwal(() => {
+        //   window.location.reload();
+        // });
+        this.socket.connect()
     });
 
     this.socket.on("error", (err) => {

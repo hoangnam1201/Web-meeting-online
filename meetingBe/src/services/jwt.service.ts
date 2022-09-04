@@ -5,7 +5,7 @@ export const generateToken = (
   secretKey: string,
   tokenLife: string
 ) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     jwt.sign(
       userData,
       secretKey,

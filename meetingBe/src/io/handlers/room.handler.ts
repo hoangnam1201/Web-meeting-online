@@ -360,7 +360,6 @@ export default (ioRoom: any, io: any) => {
     const roomId = socket.data.roomId;
     const userId = socket.data.userData.userId;
 
-    console.log(roomId);
     if (!roomId) return;
     try {
       const checkRoom = await roomModel.findById(roomId);
@@ -376,7 +375,6 @@ export default (ioRoom: any, io: any) => {
       await tableModel.updateMany({ room: roomId }, { users: [] });
       const tables = await tableModel.find({ room: roomId }).populate("users");
       ioRoom.to(roomId).emit("room:present", { time, tables });
-      console.log(roomId);
 
       setTimeout(() => {
         ioRoom.to(roomId).emit("room:info", RoomReadDetailDto.fromRoom(room));
