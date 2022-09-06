@@ -28,6 +28,10 @@ export const increaseFloorAPI = (id) => {
   return instance.post("/room/floors/" + id);
 };
 
+export const deleteFloorAPI = (id, floor) => {
+  return instance.delete("/room/floors/" + id, { params: { floor: floor } });
+};
+
 export const addMembersAPI = (roomId, userIds) => {
   return instance.post("/room/members/add-members/" + roomId, { userIds });
 };

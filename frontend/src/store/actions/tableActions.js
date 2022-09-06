@@ -39,7 +39,6 @@ const tableSelectFloor = (floor) => {
 
 export const tableSelectFloorAction = (roomId, floor) => {
   return async (dispatch) => {
-    console.log(floor);
     dispatch(tableSelectFloor(floor));
     dispatch(getTabelsAction(roomId, floor));
   };
@@ -63,7 +62,7 @@ export const addTableAction = (table) => {
     dispatch(tableRequest());
     try {
       await createTableAPI(table);
-      dispatch(getTabelsAction(table.room));
+      dispatch(getTabelsAction(table.room, table.floor));
     } catch (err) {
       dispatch(tableError(err.response?.data?.err));
     }
@@ -71,11 +70,11 @@ export const addTableAction = (table) => {
 };
 
 export const removeTableAction = (id, roomId) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     dispatch(tableRequest());
     try {
       await deleteTableAPI(id);
-      dispatch(getTabelsAction(roomId));
+      dispatch(getTabelsAction(roomId, getState().tables.currentFloor));
     } catch (err) {
       dispatch(tableError(err.response?.data?.err));
     }

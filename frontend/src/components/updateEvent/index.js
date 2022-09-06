@@ -20,11 +20,14 @@ import Swal from "sweetalert2";
 import { searchUserAPI } from "../../api/user.api";
 import {
   addMembersAPI,
+  deleteFloorAPI,
   getRoomAPI,
   increaseFloorAPI,
   removeMemberAPI,
 } from "../../api/room.api";
 import { setGlobalNotification } from "../../store/reducers/globalNotificationReducer";
+import { confirmSwal } from "../../services/swalServier";
+import { LoadingButton } from "@mui/lab";
 
 const roomSchema = yup.object().shape({
   name: yup.string().min(5).required(),
@@ -40,6 +43,7 @@ function UpdateEvent() {
   const [notFound, setNotFound] = useState(false);
   //members
   const [usersSelected, setUsersSelected] = useState([]);
+  const [statusMembers, setStatusMembers] = useState("idle");
   const { register, handleSubmit, errors, reset } = useForm({
     mode: "onBlur",
     resolver: yupResolver(roomSchema),
@@ -49,11 +53,17 @@ function UpdateEvent() {
     getRoom();
   }, []);
 
-  const getRoom = async () => {
+  const getRoom = async (position) => {
     try {
       const res = await getRoomAPI(id);
-      dispatch(tableSelectFloorAction(id, res.data.floors[0]));
       setRoom(res.data);
+      const floors = res.data.floors;
+      setStatusMembers("idle");
+      if (position === "END") {
+        dispatch(tableSelectFloorAction(id, floors[floors.length - 1]));
+        return;
+      }
+      dispatch(tableSelectFloorAction(id, floors[0]));
     } catch (err) {
       setNotFound(true);
     }
@@ -91,7 +101,28 @@ function UpdateEvent() {
     setUsersSelected(e);
   };
 
+  const onDeleteFloor = async () => {
+    try {
+      confirmSwal("Delete this floor", "Are you sure", async () => {
+        await deleteFloorAPI(room._id, tables.currentFloor);
+        await getRoom();
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onIncreaseFloor = async () => {
+    try {
+      await increaseFloorAPI(room._id, tables.currentFloor);
+      await getRoom("END");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const onAddMember = async () => {
+    setStatusMembers("LOADING");
     try {
       const userIds = usersSelected.map((s) => s.value);
       await addMembersAPI(id, userIds);
@@ -102,18 +133,8 @@ function UpdateEvent() {
     }
   };
 
-  const onIncreaseFloor = async () => {
-    if (!room) return;
-    try {
-      await increaseFloorAPI(room._id);
-      setUsersSelected(null);
-      await getRoom();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const onRemoveMember = async (userId) => {
+    setStatusMembers("LOADING");
     try {
       const { isConfirmed } = await Swal.fire({
         icon: "question",
@@ -124,8 +145,7 @@ function UpdateEvent() {
         cancelButtonText: "cancel",
       });
       if (!isConfirmed) return;
-      const res = await removeMemberAPI(id, userId);
-      console.log(res);
+      await removeMemberAPI(id, userId);
       await getRoom();
     } catch (err) {
       console.log(err);
@@ -178,7 +198,7 @@ function UpdateEvent() {
 
         <div className="grid grid-cols-3 shadow-md p-4 mt-4">
           <div className="text-md col-span-3 text-left">
-            {tables?.loading && <LinearProgress />}
+            <div className="h-2">{tables?.loading && <LinearProgress />}</div>
             <div className="flex items-center justify-between">
               <div>
                 <p className=" font-semibold text-md">Tables</p>
@@ -227,25 +247,47 @@ function UpdateEvent() {
               ))}
             </div>
             <div className="flex gap-4 items-center">
-              <button
-                className="grow-0 hover:text-blue-500 text-gray-500"
-                onClick={onIncreaseFloor}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
+              <div className="grow-0 flex flex-col">
+                <button
+                  className="hover:text-blue-500 text-gray-500"
+                  onClick={onIncreaseFloor}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  className="hover:text-red-500  disabled:text-gray-200 text-gray-500"
+                  onClick={onDeleteFloor}
+                  disabled={room?.floors.length === 1}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
               <div className=" w-0 grow scroll-sm flex flex-row gap-4 border overflow-x-auto snap-x p-2">
                 {room?.floors?.map((f, index) => (
                   <button
@@ -254,7 +296,7 @@ function UpdateEvent() {
                     }}
                     key={f}
                     className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
-                      tables?.currentFloor === f && "bg-gray-200"
+                      tables?.currentFloor === f && "shadow-lg bg-gray-200"
                     }`}
                   >
                     Floor {index}
@@ -293,9 +335,13 @@ function UpdateEvent() {
                 error={!!errors.numberOfSeat}
                 helperText={errors?.numberOfSeat?.message}
               />
-              <Button variant="contained" type="submit">
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                loading={tables?.loading}
+              >
                 Add
-              </Button>
+              </LoadingButton>
             </form>
           </div>
         </div>
@@ -366,9 +412,13 @@ function UpdateEvent() {
                 value={usersSelected}
                 onChange={onSelectChange}
               />
-              <Button variant="contained" onClick={onAddMember}>
+              <LoadingButton
+                variant="contained"
+                onClick={onAddMember}
+                loading={statusMembers === "LOADING"}
+              >
                 Add
-              </Button>
+              </LoadingButton>
             </div>
           </div>
         </div>

@@ -16,10 +16,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createTableAPI, updateTableAPI } from "../../api/table.api";
 import { useParams } from "react-router-dom";
-import { getTabelsAction } from "../../store/actions/tableActions";
+import {
+  getTabelsAction,
+  tableSelectFloorAction,
+} from "../../store/actions/tableActions";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -83,6 +86,7 @@ const schema = yup.object().shape({
 const CreateDialog = (props) => {
   const classes = useStyles();
   const { openDialog, setOpenDialog, handleCloseDialog, modal } = props;
+  const tables = useSelector((state) => state.tables);
   const dispatch = useDispatch();
   const { id } = useParams();
   const [tableError, setTableError] = useState(null);
@@ -100,6 +104,7 @@ const CreateDialog = (props) => {
       [name]: value,
     });
   };
+
   useEffect(() => {
     setTableInfo(props.table);
   }, [props.table]);
@@ -108,6 +113,7 @@ const CreateDialog = (props) => {
     const table = {
       ...data,
       room: id,
+      floor: tables.currentFloor,
     };
     createTableAPI(table)
       .then(() => {
@@ -118,7 +124,7 @@ const CreateDialog = (props) => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          dispatch(getTabelsAction(id));
+          dispatch(getTabelsAction(id, tables.currentFloor));
         });
       })
       .catch((error) => {
@@ -135,6 +141,7 @@ const CreateDialog = (props) => {
         }
       });
   };
+
   // const onUpdateSubmit = (data) => {
   //   updateTableAPI(id, data)
   //     .then(() => {
@@ -154,11 +161,25 @@ const CreateDialog = (props) => {
   //     });
   // };
 
+  const onCloseHandler = () => {
+    reset();
+    handleCloseDialog();
+  };
+
   return (
     <div>
-      <Dialog maxWidth="xs" onClose={handleCloseDialog} open={openDialog}>
-        <DialogTitleMui onClose={handleCloseDialog}>
-          {modal.title}
+      <Dialog maxWidth="xs" open={openDialog}>
+        <DialogTitleMui>
+          <Grid container>
+            <Grid item xs={11}>
+              {modal.title}
+            </Grid>
+            <Grid item xs={1}>
+              <IconButton onClick={onCloseHandler}>
+                <CloseIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
         </DialogTitleMui>
         <DialogContentMui dividers>
           <form className={classes.form} noValidate>
@@ -172,7 +193,7 @@ const CreateDialog = (props) => {
                   label="name"
                   inputRef={register}
                   error={!!errors.name}
-                  value={tableInfo?.name}
+                  // value={tableInfo?.name}
                   helperText={errors?.name?.message}
                   onChange={handleChange}
                 />
@@ -185,7 +206,6 @@ const CreateDialog = (props) => {
                   name="numberOfSeat"
                   label="number of seats"
                   inputRef={register}
-                  value={tableInfo?.numberOfSeat}
                   error={!!errors.numberOfSeat}
                   helperText={errors?.numberOfSeat?.message}
                   onChange={handleChange}
