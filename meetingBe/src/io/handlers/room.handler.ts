@@ -317,22 +317,9 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  // const sendTableMessage = async function (msgString: string) {
-  //   const socket = this;
-  //   const userId = socket.data.userData.userId;
-  //   const tableId = socket.data.tableId;
-  //   try {
-  //     const sender = await userModel.findById(userId);
-  //     const message = {
-  //       sender: UserReadDto.fromUser(sender),
-  //       message: msgString,
-  //       createAt: new Date(),
-  //     };
-  //     ioRoom.to(tableId).emit("table:message", message);
-  //   } catch (err) {
-  //     socket.emit("table:err", err);
-  //   }
-  // };
+  const joinFloor = async function (floorNumber: number) {
+    
+  };
 
   const changeMedia = async function (
     media: { audio: boolean; video: boolean },

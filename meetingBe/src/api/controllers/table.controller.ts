@@ -96,6 +96,22 @@ export default () => {
     }
   };
 
+  const getTablesInRoomAndFloor = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    const floor = req.query.floor;
+    try {
+      const tables = await tableService.getTablesByRoomAndFloor(
+        roomId,
+        floor.toString()
+      );
+      return res.status(200).json({ status: 200, data: tables });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
+    }
+  };
+
   const searchMember = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     try {
@@ -127,5 +143,6 @@ export default () => {
     addUser,
     getTable,
     getTablesInRoom,
+    getTablesInRoomAndFloor,
   };
 };

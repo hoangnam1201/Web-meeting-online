@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, param, query } from "express-validator";
 import RoomController from "../controllers/room.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
 import RoomValidator from "../validations/room.validator";
@@ -76,6 +76,20 @@ roomRoute.delete(
     body("userIds", "invalid userId").exists().isArray(),
   ],
   roomController.removeMembers
+);
+roomRoute.post(
+  "/floors/:roomId",
+  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],
+  roomController.increaseFloors
+);
+roomRoute.delete(
+  "/floors/:roomId",
+  [
+    AuthMiddlesware.verifyToken,
+    AuthMiddlesware.checkClassOwnership,
+    query("floor", "invalid floor").exists().isString(),
+  ],
+  roomController.deleteFloor
 );
 
 export default roomRoute;

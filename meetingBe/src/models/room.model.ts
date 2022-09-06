@@ -11,6 +11,7 @@ export class Room {
   isPresent: boolean;
   members: ObjectId[] | User[];
   joiners: ObjectId[] | User[];
+  floors: ObjectId[];
 }
 
 const RoomSchema = new Schema<Room>({
@@ -19,6 +20,7 @@ const RoomSchema = new Schema<Room>({
   startDate: Number,
   endDate: Number,
   isPresent: Boolean,
+  floors: [{ type: SchemaTypes.ObjectId }],
   owner: { type: SchemaTypes.ObjectId, ref: "user" },
   members: [{ type: SchemaTypes.ObjectId, ref: "user" }],
   joiners: [{ type: SchemaTypes.ObjectId, ref: "user" }],

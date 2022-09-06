@@ -2,13 +2,18 @@ import { RoomCreateDto } from "../Dtos/room-create.dto";
 import roomModel from "../models/room.model";
 import userModel from "../models/user.model";
 import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
+import tableModel from "../models/table.model";
+import messageModel from "../models/message.model";
 
 export default () => {
   const create = (roomData: RoomCreateDto) => {
-    return roomModel.create(roomData);
+    return roomModel.create({ ...roomData, floors: [new ObjectId()] });
   };
 
   const deleteRoom = async (roomId: string) => {
+    await messageModel.deleteMany({ room: roomId });
+    await tableModel.deleteMany({ room: roomId });
     const room = await roomModel.findOneAndDelete({ _id: roomId });
     return userModel.updateMany(
       { _id: { $in: room.members } },
@@ -18,6 +23,18 @@ export default () => {
 
   const changeRoomInfo = (roomId: string, roomData: RoomCreateDto) => {
     return roomModel.updateOne({ _id: roomId }, roomData);
+  };
+
+  const inscreaseFloors = (roomId: string) => {
+    return roomModel.updateOne(
+      { _id: roomId },
+      { $push: { floors: new ObjectId() } }
+    );
+  };
+
+  const deleteFloor = async (roomId: string, floorId: string) => {
+    await tableModel.deleteMany({ room: roomId, floor: floorId });
+    return roomModel.updateOne({ _id: roomId }, { $pull: { floors: floorId } });
   };
 
   const getDetail = (roomId: string) => {
@@ -184,6 +201,8 @@ export default () => {
   };
 
   return {
+    inscreaseFloors,
+    deleteFloor,
     create,
     getDetail,
     deleteRoom,

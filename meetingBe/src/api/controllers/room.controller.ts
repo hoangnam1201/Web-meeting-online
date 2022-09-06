@@ -62,6 +62,33 @@ export default () => {
     }
   };
 
+  const increaseFloors = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      await roomService.inscreaseFloors(roomId);
+      return res.status(200).json({ status: 200, data: null });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({ status: 500, error: "Internal Server Error" });
+    }
+  };
+
+  const deleteFloor = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    const { floor } = req.query;
+    try {
+      await roomService.deleteFloor(roomId, floor.toString());
+      return res.status(200).json({ status: 200, data: null });
+    } catch (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({ status: 500, error: "Internal Server Error" });
+    }
+  };
+
   const getRoomById = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     try {
@@ -248,6 +275,7 @@ export default () => {
   };
 
   return {
+    increaseFloors,
     removeMember,
     removeMembers,
     addMember,
@@ -258,5 +286,6 @@ export default () => {
     getOwnedRoom,
     getRoomById,
     deleteRoom,
+    deleteFloor,
   };
 };

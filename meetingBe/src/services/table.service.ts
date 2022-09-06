@@ -46,6 +46,10 @@ export default () => {
     });
   };
 
+  const getTablesByRoomAndFloor = (roomId: string, floorId: string) => {
+    return tableModel.find({ room: roomId, floor: floorId }).populate("users");
+  };
+
   const searchMember = (roomId: string) => {
     return roomModel
       .aggregate()
@@ -116,6 +120,7 @@ export default () => {
 
   return {
     create,
+    getTablesByRoomAndFloor,
     getMemberTables,
     saveMember,
     removeTable,
