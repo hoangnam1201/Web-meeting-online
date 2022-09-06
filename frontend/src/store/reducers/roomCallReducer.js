@@ -1,20 +1,24 @@
-import { ROOM_LOADING, ROOM_SHOWCHAT, ROOM_SHOWLOBBY } from "../actions/roomCallAction"
+import {
+  ROOMCALL_SHOWCHAT,
+  ROOMCALL_LOADING,
+  ROOMCALL_SHOWLOBBY,
+} from "../actions/roomCallAction";
 
 const initState = {
-    loading: false,
-    showChat: false,
-    showLobby: false,
-}
+  loading: false,
+  showChat: false,
+  showLobby: false,
+};
 
 export const roomCallReducer = (state = initState, { type, payload }) => {
-    switch (type) {
-        case ROOM_SHOWCHAT:
-            return { ...state, showChat: payload };
-        case ROOM_LOADING:
-            return { ...state, loading: true };
-        case ROOM_SHOWLOBBY:
-            return { ...state, showLobby: payload };
-        default:
-            return state
-    }
-}
+  switch (type) {
+    case ROOMCALL_SHOWCHAT:
+      return { ...state, showChat: payload };
+    case ROOMCALL_LOADING:
+      return { ...state, loading: true };
+    case ROOMCALL_SHOWLOBBY:
+      return { ...state, showLobby: payload };
+    default:
+      return state;
+  }
+};

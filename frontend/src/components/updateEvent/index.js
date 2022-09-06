@@ -12,12 +12,18 @@ import {
   addTableAction,
   getTabelsAction,
   removeTableAction,
+  tableSelectFloorAction,
 } from "../../store/actions/tableActions";
 import LinearProgress from "@mui/material/LinearProgress";
 import AsyncSelect from "react-select/async";
 import Swal from "sweetalert2";
 import { searchUserAPI } from "../../api/user.api";
-import { addMembersAPI, getRoomAPI, removeMemberAPI } from "../../api/room.api";
+import {
+  addMembersAPI,
+  getRoomAPI,
+  increaseFloorAPI,
+  removeMemberAPI,
+} from "../../api/room.api";
 import { setGlobalNotification } from "../../store/reducers/globalNotificationReducer";
 
 const roomSchema = yup.object().shape({
@@ -33,20 +39,20 @@ function UpdateEvent() {
   const [room, setRoom] = useState(null);
   const [notFound, setNotFound] = useState(false);
   //members
-  const [selected, setSelected] = useState([]);
+  const [usersSelected, setUsersSelected] = useState([]);
   const { register, handleSubmit, errors, reset } = useForm({
     mode: "onBlur",
     resolver: yupResolver(roomSchema),
   });
 
   useEffect(() => {
-    dispatch(getTabelsAction(id));
     getRoom();
   }, []);
 
   const getRoom = async () => {
     try {
       const res = await getRoomAPI(id);
+      dispatch(tableSelectFloorAction(id, res.data.floors[0]));
       setRoom(res.data);
     } catch (err) {
       setNotFound(true);
@@ -54,7 +60,7 @@ function UpdateEvent() {
   };
 
   const createTable = (data) => {
-    const table = { ...data, room: id };
+    const table = { ...data, room: id, floor: tables.currentFloor };
     dispatch(addTableAction(table));
     reset();
   };
@@ -82,14 +88,25 @@ function UpdateEvent() {
   };
 
   const onSelectChange = (e) => {
-    setSelected(e);
+    setUsersSelected(e);
   };
 
   const onAddMember = async () => {
     try {
-      const userIds = selected.map((s) => s.value);
+      const userIds = usersSelected.map((s) => s.value);
       await addMembersAPI(id, userIds);
-      setSelected(null);
+      setUsersSelected(null);
+      await getRoom();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onIncreaseFloor = async () => {
+    if (!room) return;
+    try {
+      await increaseFloorAPI(room._id);
+      setUsersSelected(null);
       await getRoom();
     } catch (err) {
       console.log(err);
@@ -196,6 +213,42 @@ function UpdateEvent() {
                 </div>
               ))}
             </div>
+            <div className="flex gap-4 items-center">
+              <button
+                className="grow-0 hover:text-blue-500 text-gray-500"
+                onClick={onIncreaseFloor}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+              <div className=" w-0 grow scroll-sm flex flex-row gap-4 border overflow-x-auto snap-x p-2">
+                {room?.floors?.map((f, index) => (
+                  <button
+                    onClick={() => {
+                      dispatch(tableSelectFloorAction(id, f));
+                    }}
+                    key={f}
+                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
+                      tables?.currentFloor === f && "bg-gray-200"
+                    }`}
+                  >
+                    Floor {index}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           <div className="p-4">
             <div className="text-left text-md text-gray-500 font-semibold">
@@ -297,7 +350,7 @@ function UpdateEvent() {
               <AsyncSelect
                 isMulti={true}
                 loadOptions={searchUser}
-                value={selected}
+                value={usersSelected}
                 onChange={onSelectChange}
               />
               <Button variant="contained" onClick={onAddMember}>

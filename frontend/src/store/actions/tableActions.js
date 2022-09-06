@@ -1,62 +1,83 @@
-import { createTableAPI, deleteTableAPI, getTablesAPI } from "../../api/table.api";
+import {
+  createTableAPI,
+  deleteTableAPI,
+  getTablesAPI,
+  getTablesByRoomAndFloorAPI,
+} from "../../api/table.api";
 
-export const TABLE_REQUEST = 'TABLE_REQUEST';
-export const TABLE_SUCCESS = 'TABLE_SUCCESS';
-export const TABLE_ERROR = 'TABLE_ERROR';
+export const TABLE_REQUEST = "TABLE_REQUEST";
+export const TABLE_SUCCESS = "TABLE_SUCCESS";
+export const TABLE_ERROR = "TABLE_ERROR";
+export const TABLE_SELECT_FLOOR = "TABLE_SELECT-FLOOR";
 
 const tableRequest = () => {
-    return {
-        type: TABLE_REQUEST
-    }
-}
+  return {
+    type: TABLE_REQUEST,
+  };
+};
 
 const tableSuccess = (tables) => {
-    return {
-        type: TABLE_SUCCESS,
-        payload: tables
-    }
-}
+  return {
+    type: TABLE_SUCCESS,
+    payload: tables,
+  };
+};
 
 const tableError = (msg) => {
-    return {
-        type: TABLE_SUCCESS,
-        payload: msg
-    }
-}
+  return {
+    type: TABLE_SUCCESS,
+    payload: msg,
+  };
+};
 
-export const getTabelsAction = (roomId) => {
-    return async (dispatch) => {
-        dispatch(tableRequest());
-        try {
-            const res = await getTablesAPI(roomId);
-            dispatch(tableSuccess(res.data));
-        } catch (err) {
-            console.log(err)
-            dispatch(tableError(err.response?.data?.err));
-        }
+const tableSelectFloor = (floor) => {
+  return {
+    type: TABLE_SELECT_FLOOR,
+    payload: floor,
+  };
+};
+
+export const tableSelectFloorAction = (roomId, floor) => {
+  return async (dispatch) => {
+    console.log(floor);
+    dispatch(tableSelectFloor(floor));
+    dispatch(getTabelsAction(roomId, floor));
+  };
+};
+
+export const getTabelsAction = (roomId, floor) => {
+  return async (dispatch) => {
+    dispatch(tableRequest());
+    try {
+      const res = await getTablesByRoomAndFloorAPI(roomId, floor);
+      dispatch(tableSuccess(res.data));
+    } catch (err) {
+      console.log(err);
+      dispatch(tableError(err.response?.data?.err));
     }
-}
+  };
+};
 
 export const addTableAction = (table) => {
-    return async (dispatch) => {
-        dispatch(tableRequest());
-        try {
-            await createTableAPI(table);
-            dispatch(getTabelsAction(table.room));
-        } catch (err) {
-            dispatch(tableError(err.response?.data?.err));
-        }
+  return async (dispatch) => {
+    dispatch(tableRequest());
+    try {
+      await createTableAPI(table);
+      dispatch(getTabelsAction(table.room));
+    } catch (err) {
+      dispatch(tableError(err.response?.data?.err));
     }
-}
+  };
+};
 
 export const removeTableAction = (id, roomId) => {
-    return async (dispatch) => {
-        dispatch(tableRequest());
-        try {
-            await deleteTableAPI(id);
-            dispatch(getTabelsAction(roomId));
-        } catch (err) {
-            dispatch(tableError(err.response?.data?.err));
-        }
+  return async (dispatch) => {
+    dispatch(tableRequest());
+    try {
+      await deleteTableAPI(id);
+      dispatch(getTabelsAction(roomId));
+    } catch (err) {
+      dispatch(tableError(err.response?.data?.err));
     }
-}
+  };
+};
