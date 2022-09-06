@@ -179,11 +179,24 @@ function UpdateEvent() {
         <div className="grid grid-cols-3 shadow-md p-4 mt-4">
           <div className="text-md col-span-3 text-left">
             {tables?.loading && <LinearProgress />}
-            <p className=" font-semibold text-md">Tables</p>
-            <p className="text-gray-400 font-thin text-sm">
-              The tables in the room are used by the members to sit and divide
-              the group
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className=" font-semibold text-md">Tables</p>
+                <p className="text-gray-400 font-thin text-sm">
+                  The tables in the room are used by the members to sit and
+                  divide the group
+                </p>
+              </div>
+              <Link to={`/room/tables/${id}`}>
+                <Button
+                  className="right-64 mr-52"
+                  variant="contained"
+                  color="primary"
+                >
+                  Manage Tables
+                </Button>
+              </Link>
+            </div>
           </div>
           <div
             className="flex flex-col col-span-2 p-4"

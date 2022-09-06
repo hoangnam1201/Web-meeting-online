@@ -7,6 +7,7 @@ import UpdateEvent from "../components/updateEvent";
 import RoomCall from "../components/roomCall";
 import GroupManagement from "../components/groupManagement";
 import RecordPreview from "../components/RecordPreview";
+import TableManagement from "../components/tableManagement";
 
 export const userRoute = [
   {
@@ -37,6 +38,11 @@ export const roomRoute = [
     exact: true,
     path: "/room/:id",
     component: RoomCall,
+  },
+  {
+    exact: true,
+    path: "/room/tables/:id",
+    component: TableManagement,
   },
 ];
 

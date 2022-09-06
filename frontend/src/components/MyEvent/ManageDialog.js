@@ -53,11 +53,9 @@ const styles = (theme) => ({
 const DialogTitleMui = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <DialogTitle disableTypography className={classes.root} {...other}>
-      <Typography color="secondary" variant="h6" align="center">
-        {children}
-      </Typography>
-      {onClose ? (
+    <DialogTitle className={classes.root} {...other}>
+      <h6>{children}</h6>
+      {/* {onClose ? (
         <IconButton
           aria-label="close"
           className={classes.closeButton}
@@ -65,7 +63,7 @@ const DialogTitleMui = withStyles(styles)((props) => {
         >
           <CloseIcon />
         </IconButton>
-      ) : null}
+      ) : null} */}
     </DialogTitle>
   );
 });
@@ -178,9 +176,7 @@ const ManageDialog = (props) => {
   return (
     <div>
       <Dialog maxWidth="xs" onClose={handleCloseDialog} open={openDialog}>
-        <DialogTitleMui onClose={handleCloseDialog}>
-          {modal.title}
-        </DialogTitleMui>
+        <DialogTitleMui>{modal.title}</DialogTitleMui>
         <DialogContentMui dividers>
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
