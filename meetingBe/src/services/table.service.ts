@@ -40,14 +40,46 @@ export default () => {
       .populate({ path: "members", select: "name username _id email" });
   };
 
+  const getById = (tableId: string) => {
+    return tableModel.findById(tableId);
+  };
+
   const getTablesInRoom = (roomId: string) => {
     return tableModel.find({
       room: roomId,
     });
   };
 
-  const getTablesByRoomAndFloor = (roomId: string, floorId: string) => {
+  const getTablesByRoomAndFloor = (
+    roomId: string | ObjectId,
+    floorId: string | ObjectId
+  ) => {
     return tableModel.find({ room: roomId, floor: floorId }).populate("users");
+  };
+
+  const addJoiner = async (
+    roomId: string,
+    tableId: string,
+    userId: string | ObjectId
+  ) => {
+    await tableModel.updateMany({ room: roomId }, { $pull: { users: userId } });
+    return tableModel.updateOne(
+      { _id: tableId },
+      { $addToSet: { users: userId as ObjectId } }
+    );
+  };
+
+  const findAndClearJoiner = async (roomId: string) => {
+    await tableModel.updateMany({ room: roomId }, { users: [] });
+    return tableModel.find({ room: roomId }).populate("users");
+  };
+
+  const removeJoiner = (tableId: string, userId: string) => {
+    return tableModel.findByIdAndUpdate(
+      tableId,
+      { $pull: { users: userId } },
+      { new: true }
+    );
   };
 
   const searchMember = (roomId: string) => {
@@ -119,7 +151,11 @@ export default () => {
   };
 
   return {
+    findAndClearJoiner,
+    getById,
     create,
+    addJoiner,
+    removeJoiner,
     getTablesByRoomAndFloor,
     getMemberTables,
     saveMember,

@@ -41,6 +41,8 @@ class Connection {
   canAccess = false;
   access = false;
   isMeetting = true;
+  //floor
+  currentFloor = null;
   //peers
   peers = {};
   //room
@@ -102,6 +104,14 @@ class Connection {
       this.socket.connect();
     });
 
+    this.socket.on("floor:tables", ({ tables, floor }) => {
+      console.log(tables, floor);
+      this.tables = tables;
+      this.currentFloor = floor;
+      this.setting.updateInstance("tables", [...this.tables]);
+      this.setting.updateInstance("currentFloor", floor);
+    });
+
     this.socket.on("room:user-request", (request) => {
       this.requests[request.user._id] = request;
       this.setting.updateInstance("requests", { ...this.requests });
@@ -119,11 +129,6 @@ class Connection {
       this.access = true;
       this.setting.updateInstance("access", this.access);
       this.setting.updateInstance("info", this.info);
-    });
-
-    this.socket.on("room:tables", (tables) => {
-      this.tables = tables;
-      this.setting.updateInstance("tables", [...this.tables]);
     });
 
     this.socket.on("room:messages", (messages) => {
@@ -305,7 +310,7 @@ class Connection {
 
     this.socket.on("room:present", ({ time, tables }) => {
       console.log("present");
-      this.tables = tables;
+      // this.tables = tables;
       this.clearPeers();
       this.streamDatas = {};
       store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
@@ -333,6 +338,10 @@ class Connection {
       this.clearPeers();
       this.peers = {};
       store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
+      this.socket.emit("table:join-previous", this.myID, {
+        audio: false,
+        video: false,
+      });
     });
 
     this.socket.on("present:user-leave", (data) => {
@@ -405,10 +414,10 @@ class Connection {
 
     this.socket.on("disconnect", () => {
       // if (this.isMeetting)
-        // disconnectSwal(() => {
-        //   window.location.reload();
-        // });
-        this.socket.connect()
+      // disconnectSwal(() => {
+      //   window.location.reload();
+      // });
+      this.socket.connect();
     });
 
     this.socket.on("error", (err) => {

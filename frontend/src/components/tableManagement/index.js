@@ -133,7 +133,12 @@ const TableManagement = (props) => {
           </Link>
           Back
         </div>
-        <Button onClick={handleAdd} variant="contained" color="primary" className="mr-6">
+        <Button
+          onClick={handleAdd}
+          variant="contained"
+          color="primary"
+          className="mr-6"
+        >
           Create table
         </Button>
       </div>
@@ -151,7 +156,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table1
                       key={t._id}
-                      className="h-full overflow-hidden shadow"
+                      className="h-full overflow-hidden shadow relative z-0"
                       data={t}
                     />
                   </div>
@@ -166,7 +171,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table2
                       key={t._id}
-                      className="h-full overflow-hidden shadow"
+                      className="h-full overflow-hidden shadow z-0 relative"
                       data={t}
                     />
                   </div>
@@ -181,7 +186,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table3
                       key={t._id}
-                      className="h-full overflow-hidden shadow"
+                      className="h-full overflow-hidden shadow relative z-0"
                       data={t}
                     />
                   </div>
@@ -196,7 +201,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table4
                       key={t._id}
-                      className="h-full overflow-hidden shadow"
+                      className="h-full overflow-hidden shadow relative z-0"
                       data={t}
                     />
                   </div>
@@ -211,7 +216,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table5
                       key={t._id}
-                      className="h-full col-span-2 overflow-hidden shadow"
+                      className="h-full col-span-2 overflow-hidden shadow relative z-0"
                       data={t}
                     />
                   </div>
@@ -226,7 +231,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table6
                       key={t._id}
-                      className="h-full col-span-2 overflow-hidden shadow"
+                      className="h-full col-span-2 overflow-hidden shadow relative z-0"
                       data={t}
                     />
                   </div>
@@ -241,7 +246,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table7
                       key={t._id}
-                      className="h-full col-span-2 overflow-hidden shadow"
+                      className="h-full col-span-2 overflow-hidden shadow relative z-0"
                       data={t}
                     />
                   </div>
@@ -256,7 +261,7 @@ const TableManagement = (props) => {
                     </div>
                     <Table8
                       key={t._id}
-                      className="h-full col-span-2 overflow-hidden shadow"
+                      className="h-full col-span-2 overflow-hidden shadow relative z-0"
                       data={t}
                     />
                   </div>

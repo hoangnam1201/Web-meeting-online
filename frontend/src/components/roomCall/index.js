@@ -14,6 +14,7 @@ const RoomCall = () => {
   const [access, setAccess] = useState(false);
   const [roomTables, setRoomTables] = useState([]);
   const [roomInfo, setRoomInfo] = useState(null);
+  const [currentFloor, setCurrentFloor] = useState(null);
   const history = useHistory();
   const [userJoined, setUserJoined] = useState([]);
   const [userRequests, setUserRequests] = useState({});
@@ -49,8 +50,10 @@ const RoomCall = () => {
         return setUserJoined(data);
       case "join-err":
         return setJoinError(data);
-      case 'requests':
+      case "requests":
         return setUserRequests(data);
+      case "currentFloor":
+        return setCurrentFloor(data);
       default:
         return;
     }
@@ -76,6 +79,7 @@ const RoomCall = () => {
           tableMessages={tableMessages}
           userJoined={userJoined}
           userRequests={userRequests}
+          currentFloor={currentFloor}
         />
       )}
     </div>

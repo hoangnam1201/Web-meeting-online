@@ -12,6 +12,7 @@ export default (io: any) => {
   const connection = (socket: Socket) => {
     const userId = socket.data.userData.userId;
     socket.join(userId);
+    socket.on("floor:join", _roomHandler.joinFloor);
     socket.on("room:join", _roomHandler.joinRoom);
     socket.on("room:get-messages", _roomHandler.getMessages);
     socket.on("room:send-message", _roomHandler.sendMessage);
@@ -19,6 +20,7 @@ export default (io: any) => {
     socket.on("room:access-request", _roomHandler.acceptRequest);
     socket.on("room:divide-tables", _roomHandler.divideTables);
     socket.on("table:join", _roomHandler.joinTable);
+    socket.on("table:join-previous", _roomHandler.joinPreviousTable);
     socket.on("table:send-message", _roomHandler.sendTableMessage);
     socket.on("change-media", _roomHandler.changeMedia);
     socket.on("disconnecting", _roomHandler.leaveRoom);

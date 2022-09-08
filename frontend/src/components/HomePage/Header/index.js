@@ -95,13 +95,15 @@ const Header = React.memo(({ type = 0, ...rest }) => {
               </div>
               {type === 1 ? (
                 <div className="collapse navbar-collapse mr-10">
-                  <div className="relative">
+                  <div
+                    className="relative p-2"
+                    onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+                  >
                     {currentUser?.user?.picture ? (
                       <img
                         src={currentUser?.user?.picture}
                         alt=""
                         className="cursor-pointer rounded-full w-12"
-                        onClick={() => setShowAvatarMenu(!showAvatarMenu)}
                       ></img>
                     ) : (
                       <Avatar
@@ -109,7 +111,6 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                         size="50"
                         round={true}
                         className="cursor-pointer"
-                        onClick={() => setShowAvatarMenu(!showAvatarMenu)}
                       ></Avatar>
                     )}
 

@@ -1,12 +1,16 @@
 import { RoomCreateDto } from "../Dtos/room-create.dto";
 import roomModel from "../models/room.model";
 import userModel from "../models/user.model";
-import mongoose from "mongoose";
+import mongoose, { ObjectId as ObjectID } from "mongoose";
 import { ObjectId } from "mongodb";
 import tableModel from "../models/table.model";
 import messageModel from "../models/message.model";
 
 export default () => {
+  const findById = (id: string) => {
+    return roomModel.findById(id);
+  };
+
   const create = (roomData: RoomCreateDto) => {
     return roomModel.create({ ...roomData, floors: [new ObjectId()] });
   };
@@ -29,6 +33,34 @@ export default () => {
     return roomModel.updateOne(
       { _id: roomId },
       { $push: { floors: new ObjectId() } }
+    );
+  };
+
+  const findOneAndRemoveJoiner = (roomId: string, userId: string) => {
+    return roomModel
+      .findOneAndUpdate(
+        { _id: roomId },
+        { $pull: { joiners: userId } },
+        { timestamps: true, new: true }
+      )
+      .populate("joiners");
+  };
+
+  const findOneAndAddJoiner = (roomId: string, userId: string | ObjectID) => {
+    return roomModel
+      .findOneAndUpdate(
+        { _id: roomId },
+        { $addToSet: { joiners: userId as ObjectID } },
+        { timestamps: true, new: true }
+      )
+      .populate("joiners");
+  };
+
+  const findOneAndUpdatePresent = (roomId: string, isPresent: boolean) => {
+    return roomModel.findByIdAndUpdate(
+      roomId,
+      { isPresent: isPresent },
+      { new: true }
     );
   };
 
@@ -200,7 +232,21 @@ export default () => {
     );
   };
 
+  const checkCanAccept = (roomId: string, userId: string) => {
+    return roomModel.exists({
+      $or: [
+        { _id: roomId, members: userId },
+        { _id: roomId, owner: userId },
+      ],
+    });
+  };
+
   return {
+    checkCanAccept,
+    findById,
+    findOneAndAddJoiner,
+    findOneAndRemoveJoiner,
+    findOneAndUpdatePresent,
     inscreaseFloors,
     deleteFloor,
     create,

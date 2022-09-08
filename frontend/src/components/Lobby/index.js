@@ -6,6 +6,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import BasicPopover from "../Popover";
 import { useSelector } from "react-redux";
+import { Button, Paper } from "@mui/material";
 
 const LobbyUser = (props) => {
   const { openLobby, userJoined, roomInfo, userRequests, connection } = props;
@@ -126,23 +127,23 @@ const LobbyUser = (props) => {
                       </div>
                       <div>
                         <BasicPopover>
-                          <div className="flex flex-col text-gray-500">
-                            <button
-                              className="text-sm hover:bg-gray-100 px-4 py-2"
+                          <div>
+                            <Button
                               onClick={() =>
                                 connection.current.replyRequest(request, true)
                               }
                             >
-                              access
-                            </button>
-                            <button
-                              className="text-sm hover:bg-gray-100 px-4 py-2"
+                              accept
+                            </Button>
+                          </div>
+                          <div>
+                            <Button
                               onClick={() =>
                                 connection.current.replyRequest(request, false)
                               }
                             >
                               refuse
-                            </button>
+                            </Button>
                           </div>
                         </BasicPopover>
                       </div>

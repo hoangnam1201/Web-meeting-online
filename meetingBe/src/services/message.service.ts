@@ -15,5 +15,14 @@ export default () => {
     });
     return messageRead.populate("sender");
   };
-  return { create };
+
+  const getMessages = (room: string, take: number, skip: number) => {
+    return messageModel
+      .find({ room: room })
+      .populate("sender")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(take);
+  };
+  return { create, getMessages };
 };

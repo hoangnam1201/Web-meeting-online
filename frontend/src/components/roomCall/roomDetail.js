@@ -32,6 +32,7 @@ const RoomDetail = ({
   myStream,
   userJoined,
   userRequests,
+  currentFloor,
 }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const [mediaStatus, setMediaStatus] = useState({
@@ -51,7 +52,7 @@ const RoomDetail = ({
   }, [myStream]);
 
   return (
-    <div className="min-h-screen relative bg-gray-100">
+    <div className="min-h-screen relative bg-gray-100 pb-20">
       {!roomInfo?.isPresent && (
         <>
           <VideoTableContainer
@@ -69,11 +70,16 @@ const RoomDetail = ({
       >
         {connection?.current?.info?.name}
       </div>
-      <div className="px-4">
+      <div className="px-4 flex flex-col gap-4">
         <ListTable
           tables={roomTables}
           connection={connection}
           mediaStatus={mediaStatus}
+        />
+        <ListFloor
+          floors={roomInfo?.floors}
+          currentFloor={currentFloor}
+          connection={connection}
         />
       </div>
       {roomCall?.showChat && (
@@ -216,6 +222,28 @@ const PinVideo = () => {
     </>
   );
 };
+
+const ListFloor = React.memo(({ floors, currentFloor, connection }) => {
+  return (
+    <>
+      <div className="scroll-sm flex flex-row gap-4 border overflow-x-auto snap-x p-2">
+        {floors?.map((f, index) => (
+          <button
+            onClick={() => {
+              connection.current.socket.emit("floor:join", f);
+            }}
+            key={f}
+            className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
+              currentFloor === f && "shadow-lg bg-gray-200"
+            }`}
+          >
+            Floor {index}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+});
 
 const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
   const joinTable = (id) => {
