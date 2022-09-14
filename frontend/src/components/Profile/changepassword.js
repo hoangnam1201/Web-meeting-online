@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@mui/styles";
-import { Box, TextField, Button, Container, Alert } from "@mui/material";
+import { Box, TextField, Container, Alert } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
 import { changePasswordAPI } from "../../api/user.api";
+import { LoadingButton } from "@mui/lab";
 
 const useStyles = makeStyles(() => ({
   root: { marginBottom: "100px", padding: "0 100px" },
@@ -125,7 +126,7 @@ export default function ChangePassword() {
           margin={4}
         />
       </Box>
-      <Container className={classes.root}>
+      <Container className={`${classes.root} ${loading ? `opacity-50` : null}`}>
         <form
           className={classes.form}
           noValidate
@@ -187,7 +188,9 @@ export default function ChangePassword() {
               {errorNotify}
             </Alert>
           ) : null}
-          <Button
+          <LoadingButton
+            loading={loading}
+            loadingPosition="start"
             type="submit"
             variant="contained"
             autoFocus
@@ -195,7 +198,7 @@ export default function ChangePassword() {
             className={classes.button}
           >
             Thay đổi
-          </Button>
+          </LoadingButton>
         </form>
       </Container>
     </>

@@ -214,6 +214,7 @@ function Login(props) {
 
   // Login with google
   const handleLoginGoogle = (googleData) => {
+    setLoading(true);
     googleLoginAPI(googleData.credential)
       .then((res) => {
         setLoading(false);
@@ -263,7 +264,7 @@ function Login(props) {
           margin={4}
         />
       </Box>
-      <div className={classes.root}>
+      <div className={`${classes.root} ${loading ? classes.loaderRoot : null}`}>
         <img alt="bg" src={AuthBackground} className={classes.backImg} />
         <Container
           className={`${classes.containerMobile} ${

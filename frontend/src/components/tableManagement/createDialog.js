@@ -23,6 +23,7 @@ import {
   getTabelsAction,
   tableSelectFloorAction,
 } from "../../store/actions/tableActions";
+import { LoadingButton } from "@mui/lab";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -90,6 +91,7 @@ const CreateDialog = (props) => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const [tableError, setTableError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit, errors, reset } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
@@ -110,6 +112,7 @@ const CreateDialog = (props) => {
   }, [props.table]);
 
   const onAddSubmit = (data) => {
+    setLoading(true);
     const table = {
       ...data,
       room: id,
@@ -118,6 +121,7 @@ const CreateDialog = (props) => {
     createTableAPI(table)
       .then(() => {
         setOpenDialog(false);
+        setLoading(false);
         Swal.fire({
           icon: "success",
           title: "Tạo table thành công",
@@ -128,6 +132,7 @@ const CreateDialog = (props) => {
         });
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error);
         // setOpenDialog(false);
         if (error?.response?.data?.msg) {
@@ -220,7 +225,9 @@ const CreateDialog = (props) => {
               {tableError}
             </Alert>
           ) : null}
-          <Button
+          <LoadingButton
+            loading={loading}
+            loadingPosition="start"
             type="submit"
             className={classes.button}
             variant="contained"
@@ -228,7 +235,7 @@ const CreateDialog = (props) => {
             onClick={modal.id === "tao" ? handleSubmit(onAddSubmit) : null}
           >
             {modal.button}
-          </Button>
+          </LoadingButton>
         </DialogActionsMui>
       </Dialog>
     </div>

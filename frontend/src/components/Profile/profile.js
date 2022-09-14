@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
-import { TextField, Box, Button, Container, Alert } from "@mui/material";
+import { TextField, Box, Container, Alert } from "@mui/material";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,7 @@ import moment from "moment";
 import { Helmet } from "react-helmet";
 import { useSelector } from "react-redux";
 import { changeUserInfoAPI } from "../../api/user.api";
+import { LoadingButton } from "@mui/lab";
 
 const useStyles = makeStyles(() => ({
   root: { marginBottom: "100px", padding: "0 100px" },
@@ -158,7 +159,7 @@ export default function Profiles() {
           margin={4}
         />
       </Box>
-      <Container className={classes.root}>
+      <Container className={`${classes.root} ${loading ? `opacity-50` : null}`}>
         <form
           className={classes.form}
           noValidate
@@ -245,7 +246,9 @@ export default function Profiles() {
               {errorNotify}
             </Alert>
           ) : null}
-          <Button
+          <LoadingButton
+            loading={loading}
+            loadingPosition="start"
             type="submit"
             variant="contained"
             autoFocus
@@ -253,7 +256,7 @@ export default function Profiles() {
             className={classes.button}
           >
             Thay đổi
-          </Button>
+          </LoadingButton>
         </form>
       </Container>
     </>

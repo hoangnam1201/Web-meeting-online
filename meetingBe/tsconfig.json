@@ -9,7 +9,7 @@
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "noImplicitAny": true,
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "public",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
