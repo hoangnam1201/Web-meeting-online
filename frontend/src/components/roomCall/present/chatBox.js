@@ -126,9 +126,19 @@ const ChatBox = ({
                 )}
 
                 <h5>{user?.name}</h5>
-                <IconButton>
-                  <MoreVertIcon className="text-white" />
-                </IconButton>
+                <div className="group relative z-50">
+                  <IconButton>
+                    <MoreVertIcon className="text-white" />
+                  </IconButton>
+                  <div className="hidden flex-col absolute top-20 z-50 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md ">
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                    >
+                      Buzz !!!
+                    </button>
+                  </div>
+                </div>
               </div>
             );
           })}

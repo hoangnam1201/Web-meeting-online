@@ -13,6 +13,10 @@ const LobbyUser = (props) => {
   const currentUser = useSelector((state) => state.userReducer);
   const [tab, setTab] = useState(0);
 
+  const handleBuzzUser = (userId, text) => {
+    connection.current.socket.emit("room:buzz", userId, text);
+    console.log("click");
+  };
   return (
     <>
       <div
@@ -67,9 +71,22 @@ const LobbyUser = (props) => {
                     </p>
                   </div>
                 )}
-                <IconButton>
-                  <MoreVertIcon />
-                </IconButton>
+                <div className="group relative z-50">
+                  <IconButton>
+                    <MoreVertIcon />
+                  </IconButton>
+                  <div className="hidden flex-col absolute top-20 z-50 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md ">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBuzzUser(user._id, "Cảnh Cáo bạn chú !!");
+                      }}
+                      className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                    >
+                      Buzz !!!
+                    </button>
+                  </div>
+                </div>
               </div>
             );
           })}

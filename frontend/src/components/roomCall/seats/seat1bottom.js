@@ -8,20 +8,40 @@ const Seat1Bottom = ({ user, ...rest }) => {
         <div className="relative">
           {user &&
             (user?.picture ? (
-              <img
-                className="absolute z-50 top-0 left-0 rounded-full shadow-lg border-gray-500 border-2"
-                src={user?.picture}
-                alt=""
-                width={50}
-                height={50}
-              />
+              <div className="group relative z-50">
+                <img
+                  className="absolute z-50 top-0 left-0 rounded-full shadow-lg border-gray-500 border-2"
+                  src={user?.picture}
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+                <div className="hidden flex-col absolute top-10 left-20 z-50 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md ">
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                  >
+                    Buzz !!!
+                  </button>
+                </div>
+              </div>
             ) : (
-              <Avatar
-                name={user?.name}
-                size="60"
-                round={true}
-                className="absolute z-50 top-0 left-0 shadow-md"
-              />
+              <div className="group relative z-50">
+                <Avatar
+                  name={user?.name}
+                  size="50"
+                  round={true}
+                  className="absolute z-50 top-0 left-0 shadow-md"
+                />
+                <div className="hidden flex-col absolute top-10 left-20 z-50 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md ">
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                  >
+                    Buzz !!!
+                  </button>
+                </div>
+              </div>
             ))}
           <div className="h-8 overflow-hidden rounded-xl absolute z-40 top-1/2 left-1/2 transform -translate-x-1/2 rotate-180">
             <div className="bg-red-200 w-20 h-20 rounded-full relative" />
