@@ -45,4 +45,8 @@ app.use("/peerjs", peerServer);
 app.io = io;
 initRouter(app);
 
+app.get("/api/test", (req, res) => {
+  res.json(process.env.HOST_FRONTEND);
+});
+
 httpServer.listen(PORT, () => console.log("listen on port " + PORT));

@@ -14,6 +14,8 @@ export default (io: any) => {
     socket.join(userId);
     socket.on("floor:join", _roomHandler.joinFloor);
     socket.on("room:join", _roomHandler.joinRoom);
+    socket.on("room:kick", _roomHandler.kickUser);
+    socket.on("room:buzz", _roomHandler.buzzUser);
     socket.on("room:get-messages", _roomHandler.getMessages);
     socket.on("room:send-message", _roomHandler.sendMessage);
     socket.on("room:present", _roomHandler.present);

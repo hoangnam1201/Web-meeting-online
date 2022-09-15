@@ -20,5 +20,4 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 3002
 CMD [ "nodemon", "server.ts" ]

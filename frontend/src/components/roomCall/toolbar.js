@@ -45,7 +45,6 @@ const Toolbar = ({
   useEffect(() => {
     if (status === "stopped") {
       setCookies("urlBlob", mediaBlobUrl, { path: "/" });
-      // window.open("/user/record-preview", "_blank");
     }
   }, [mediaBlobUrl]);
 

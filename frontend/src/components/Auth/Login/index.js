@@ -236,16 +236,19 @@ function Login(props) {
 
   useEffect(() => {
     // eslint-disable-next-line no-undef
-    google.accounts.id.initialize({
+    window.google?.accounts.id.initialize({
       client_id: process.env.REACT_APP_CLIENT_ID,
       callback: handleLoginGoogle,
       auto_select: false,
     });
     // eslint-disable-next-line no-undef
-    google.accounts.id.renderButton(document.getElementById("googleLogin"), {
-      theme: "outline",
-      size: "large",
-    });
+    window.google?.accounts.id.renderButton(
+      document.getElementById("googleLogin"),
+      {
+        theme: "outline",
+        size: "large",
+      }
+    );
   }, []);
 
   return (

@@ -22,11 +22,18 @@ export default (ioRoom: any, io: any) => {
   const joinRoom = async function (roomId: string) {
     const socket: Socket = this;
     const userId = socket.data.userData.userId;
+    const previousRoomId = socket.data.roomId;
     try {
       const check = await roomService.checkCanAccept(roomId, userId);
+      //check previous room
+      if (previousRoomId) {
+        socket.leave(roomId);
+        socket.leave(`${roomId}${userId}`);
+      }
       // is class member
       if (check) {
         socket.join(roomId);
+        socket.join(`${roomId}${userId}`);
         socket.data.roomId = roomId;
 
         const room = await roomService.findOneAndAddJoiner(roomId, userId);
@@ -78,6 +85,43 @@ export default (ioRoom: any, io: any) => {
         });
     } catch (err) {
       socket.emit("room:err", { err });
+    }
+  };
+
+  const kickUser = async function (
+    memberId: string,
+    isRemoveMember: boolean = false
+  ) {
+    const socket: Socket = this;
+    const userId = socket.data.userData.userId;
+    const roomId = socket.data.roomId;
+    try {
+      const ids = await ioRoom.in(memberId).allSockets();
+      if (isRemoveMember) {
+        await roomService.removeMember(memberId, roomId);
+      }
+      for (const id of ids) {
+        const socketTemp = ioRoom.sockets.get(id);
+        if (socketTemp.rooms.has(roomId)) {
+          socketTemp.disconnect();
+        }
+      }
+    } catch {
+      socket.emit("room:err", "Internal Server Error");
+    }
+  };
+
+  const buzzUser = async function (memberId: string, text: string) {
+    const socket: Socket = this;
+    const roomId = socket.data.roomId;
+    const userId = socket.data.userData.userId;
+    try {
+      const checkRoom = await roomService.findById(roomId);
+      if (checkRoom.owner.toString() !== userId.toString())
+        return socket.emit("room:err", "You do not have permission to present");
+      socket.to(`${roomId}${memberId}`).emit("room:buzz", text);
+    } catch {
+      socket.emit("room:err", "Internal Server Error");
     }
   };
 
@@ -495,6 +539,8 @@ export default (ioRoom: any, io: any) => {
   };
 
   return {
+    buzzUser,
+    kickUser,
     joinRoom,
     joinFloor,
     leaveRoom,

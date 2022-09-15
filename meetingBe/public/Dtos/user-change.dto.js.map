@@ -1,1 +1,0 @@
-{"version":3,"file":"user-change.dto.js","sourceRoot":"","sources":["../../src/Dtos/user-change.dto.ts"],"names":[],"mappings":";;AAEA,MAAqB,aAAa;IAI9B,MAAM,CAAC,QAAQ,CAAC,IAAU;QACtB,MAAM,UAAU,GAAG,IAAI,aAAa,EAAE,CAAC;QACvC,UAAU,CAAC,IAAI,GAAG,IAAI,CAAC,IAAI,CAAC;QAC5B,UAAU,CAAC,KAAK,GAAG,IAAI,CAAC,KAAK,CAAC;QAC9B,OAAO,UAAU,CAAC;IACtB,CAAC;CACJ;AAVD,gCAUC"}
