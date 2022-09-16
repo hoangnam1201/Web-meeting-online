@@ -58,3 +58,41 @@ export const confirmSwal = (title, text = "", callback) => {
     if (result.isConfirmed) callback && callback();
   });
 };
+
+export const kickComfirmSwal = (callback) => {
+  Swal.fire({
+    title: "Are you sure to kick this user out?",
+    input: "checkbox",
+    inputValue: 1,
+    inputPlaceholder: "remove this user from member list",
+    showCancelButton: true,
+    confirmButtonText: "Yes",
+    cancelButtonText: "Cancel",
+  }).then(({ value, isConfirmed }) => {
+    if (isConfirmed) callback(value);
+  });
+};
+
+export const SendBuzzSwal = (callback) => {
+  Swal.fire({
+    title: "Enter buzz text to user",
+    input: "text",
+    inputLabel: "Buzz text",
+    inputValue: "",
+    inputPlaceholder: "Concentrate on presentation!!",
+    showCancelButton: true,
+    confirmButtonText: "Send",
+    cancelButtonText: "Cancel",
+  }).then(({ value, isConfirmed }) => {
+    if (isConfirmed) callback(value);
+  });
+};
+
+export const buzzSwal = (text) => {
+  Swal.fire({
+    title: "Owner room buzz to you",
+    text: text,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  });
+};

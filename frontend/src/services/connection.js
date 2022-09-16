@@ -3,11 +3,16 @@ import { Cookies } from "react-cookie";
 import { store } from "../store";
 import Peer from "peerjs";
 import { receiveMessageAction } from "../store/actions/messageAction";
-import { confirmSwal, countTime, textSwal } from "./swalServier";
+import { buzzSwal, confirmSwal, countTime, textSwal } from "./swalServier";
 import { SET_SELECTEDVIDEO } from "../store/reducers/selectVideoReducer";
 import sound from "../sounds/join-permission.mp3";
 import sound1 from "../sounds/meet-message-sound-1.mp3";
 import { renewToken } from "../api/user.api";
+import {
+  roomAddRequestAction,
+  roomSetRoomInfoAction,
+  roomSetSocketAction,
+} from "../store/actions/roomCallAction";
 
 var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
@@ -60,8 +65,6 @@ class Connection {
   joiners = [];
   //tables
   tables = [];
-  //requests
-  requests = {};
   //stateMessage
   messageState;
   //join err
@@ -82,6 +85,7 @@ class Connection {
 
   initializeSocketEvents = () => {
     this.socket.on("connect", () => {
+      store.dispatch(roomSetSocketAction(this.socket));
       this.setting.updateInstance(
         "canAccess",
         this.socket.connected && this.myID && this.myStream.stream
@@ -111,8 +115,7 @@ class Connection {
     });
 
     this.socket.on("room:user-request", (request) => {
-      this.requests[request.user._id] = request;
-      this.setting.updateInstance("requests", { ...this.requests });
+      store.dispatch(roomAddRequestAction(request));
       soundJoin.play();
     });
 
@@ -126,6 +129,7 @@ class Connection {
       this.access = true;
       this.setting.updateInstance("access", this.access);
       this.setting.updateInstance("info", this.info);
+      store.dispatch(roomSetRoomInfoAction(room));
     });
 
     this.socket.on("room:messages", (messages) => {
@@ -203,7 +207,7 @@ class Connection {
     });
 
     this.socket.on("room:buzz", (text) => {
-      console.log(text);
+      buzzSwal(text);
     });
 
     this.socket.on("room:present", ({ time, tables }) => {
@@ -414,7 +418,7 @@ class Connection {
 
     this.socket.on("disconnect", (reason) => {
       if (reason === "io server disconnect")
-        textSwal("You are kicked", () => {
+        textSwal("You are kicked out of room", () => {
           window.location.reload();
         });
     });
@@ -617,17 +621,6 @@ class Connection {
         : false,
       audio: audio,
     });
-  };
-
-  replyRequest = (request, isAccess) => {
-    this.socket.emit(
-      "room:access-request",
-      request.socketId,
-      request.user._id,
-      isAccess
-    );
-    delete this.requests[request.user._id];
-    this.setting.updateInstance("requests", { ...this.requests });
   };
 
   static getMediaStatus = (stream) => {

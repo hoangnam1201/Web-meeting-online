@@ -7,10 +7,13 @@ import Tabs from "@mui/material/Tabs";
 import BasicPopover from "../Popover";
 import { useSelector } from "react-redux";
 import { Button, Paper } from "@mui/material";
+import JoinerList from "./joinerList";
+import RequestList from "./requestList";
 
 const LobbyUser = (props) => {
   const { openLobby, userJoined, roomInfo, userRequests, connection } = props;
   const currentUser = useSelector((state) => state.userReducer);
+  const roomCallState = useSelector((state) => state.roomCall);
   const [tab, setTab] = useState(0);
 
   const handleBuzzUser = (userId, text) => {
@@ -37,62 +40,10 @@ const LobbyUser = (props) => {
           )}
         </div>
         <div hidden={tab !== 0}>
-          {userJoined?.map((user, index) => {
-            return (
-              <div
-                className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 px-2"
-                key={index}
-              >
-                {user?.picture ? (
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={user?.picture}
-                      alt=""
-                      className="cursor-pointer rounded-full w-12"
-                    />
-                    <p className=" whitespace-nowrap">
-                      {user?.name.length < 15
-                        ? user?.name
-                        : `${user?.name.slice(0, 15)}...`}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-4">
-                    <Avatar
-                      name={user?.name}
-                      size="40"
-                      round={true}
-                      className="cursor-pointer"
-                    />
-                    <p className=" whitespace-nowrap">
-                      {user?.name.length < 15
-                        ? user?.name
-                        : `${user?.name.slice(0, 15)}...`}
-                    </p>
-                  </div>
-                )}
-                <div className="group relative z-50">
-                  <IconButton>
-                    <MoreVertIcon />
-                  </IconButton>
-                  <div className="hidden flex-col absolute top-20 z-50 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md ">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleBuzzUser(user._id, "Cảnh Cáo bạn chú !!");
-                      }}
-                      className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                    >
-                      Buzz !!!
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          <JoinerList joiners={userJoined} />
         </div>
         <div hidden={tab !== 1} className="h-0 flex-grow overflow-y-auto">
-          {Object.values(userRequests).length > 0 && (
+          {roomCallState && Object.values(roomCallState.requests).length > 0 && (
             <div className="flex flex-col">
               <div className="px-4 flex justify-start my-2">
                 <button
@@ -106,68 +57,7 @@ const LobbyUser = (props) => {
                   ACCEPT ALL
                 </button>
               </div>
-              <div className="flex-grow h-0">
-                {Object.values(userRequests).map((request, index) => {
-                  return (
-                    <div
-                      className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 px-2"
-                      key={index}
-                    >
-                      <div className="flex items-center gap-4 w-0 flex-grow">
-                        {request.user?.picture ? (
-                          <img
-                            src={request.user?.picture}
-                            alt=""
-                            className="rounded-full w-12 cursor-pointer"
-                          />
-                        ) : (
-                          <Avatar
-                            name={request.user?.name}
-                            size="40"
-                            round={true}
-                            className="cursor-pointer"
-                          />
-                        )}
-                        <div className="w-0 flex-grow overflow-x-hidden">
-                          <p className="whitespace-nowrap text-left font-semibold text-gray-500">
-                            {request.user?.name.length < 15
-                              ? request.user?.name
-                              : `${request.user?.name.slice(0, 15)}...`}
-                          </p>
-                          <p className=" whitespace-nowrap text-left text-sm text-gray-400">
-                            {" "}
-                            {request.user?.email.length < 18
-                              ? request.user?.email
-                              : `${request.user?.email.slice(0, 15)}...`}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <BasicPopover>
-                          <div>
-                            <Button
-                              onClick={() =>
-                                connection.current.replyRequest(request, true)
-                              }
-                            >
-                              accept
-                            </Button>
-                          </div>
-                          <div>
-                            <Button
-                              onClick={() =>
-                                connection.current.replyRequest(request, false)
-                              }
-                            >
-                              refuse
-                            </Button>
-                          </div>
-                        </BasicPopover>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <RequestList requests={Object.values(roomCallState.requests)} />
             </div>
           )}
         </div>

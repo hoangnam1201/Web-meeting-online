@@ -96,6 +96,9 @@ export default (ioRoom: any, io: any) => {
     const userId = socket.data.userData.userId;
     const roomId = socket.data.roomId;
     try {
+      const checkRoom = await roomService.findById(roomId);
+      if (checkRoom.owner.toString() !== userId.toString())
+        return socket.emit("room:err", "You do not have permission to present");
       const ids = await ioRoom.in(memberId).allSockets();
       if (isRemoveMember) {
         await roomService.removeMember(memberId, roomId);
@@ -145,6 +148,7 @@ export default (ioRoom: any, io: any) => {
 
       if (!room) return socket.emit("error:bad-request", "not found room");
       clientSocket.join(roomId);
+      clientSocket.join(`${roomId}${userId}`);
       clientSocket.data.roomId = roomId;
 
       ioRoom.to(socketId).emit("room:info", RoomReadDetailDto.fromRoom(room));

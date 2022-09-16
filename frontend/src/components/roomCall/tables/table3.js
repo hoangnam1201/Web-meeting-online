@@ -10,7 +10,7 @@ const Table3 = ({ data, ...rest }) => {
                 <div className='absolute z-50 text-white text-shadow'>{data?.name}</div>
                 <Seat1 className='z-10 relative' user={data?.users[0]} />
                 <div className='z-10 relative flex justify-around'>
-                    <Seat1Left user={data?.users[2]} />
+                    <Seat1Left user={data?.users[1]} />
                     <div className='inline-block relative h-28'>
                         <div className='bg-white rounded-full w-24 h-24 relative z-30' />
                         <div className='bg-gray-200 top-4 rounded-full w-24 h-24 z-0 absolute' />
@@ -18,7 +18,7 @@ const Table3 = ({ data, ...rest }) => {
                     <div className='w-16' />
                 </div>
                 <div className='border-4 border-gray-100 w-1/2 h-1/2 absolute z-0 top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2'></div>
-                <Seat1Bottom user={data?.users[1]} />
+                <Seat1Bottom user={data?.users[2]} />
             </div>
         </div>
     )

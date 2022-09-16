@@ -266,7 +266,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table1
                   key={t._id}
-                  className="h-full overflow-hidden shadow"
+                  className="h-full shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -275,7 +275,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table2
                   key={t._id}
-                  className="h-full overflow-hidden shadow"
+                  className="h-full shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -284,7 +284,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table3
                   key={t._id}
-                  className="h-full overflow-hidden shadow"
+                  className="h-full shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -293,7 +293,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table4
                   key={t._id}
-                  className="h-full overflow-hidden shadow"
+                  className="h-full shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -302,7 +302,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table5
                   key={t._id}
-                  className="h-full col-span-2 overflow-hidden shadow"
+                  className="h-full col-span-2 shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -311,7 +311,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table6
                   key={t._id}
-                  className="h-full col-span-2 overflow-hidden shadow"
+                  className="h-full col-span-2 shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -320,7 +320,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table7
                   key={t._id}
-                  className="h-full col-span-2 overflow-hidden shadow"
+                  className="h-full col-span-2 shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -329,7 +329,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table8
                   key={t._id}
-                  className="h-full col-span-2 overflow-hidden shadow"
+                  className="h-full col-span-2 shadow"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
