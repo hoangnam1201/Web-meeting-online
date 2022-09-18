@@ -72,8 +72,8 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
             onClick={closeHandler}
           ></div>
           <div className="p-1 flex flex-col absolute bg-gray-50 z-50 left-full top-0 rounded-lg shadow-lg">
-            {roomCallState?.roomInfo?.owner._id === userSate?.user._id &&
-              userSate?.user._id !== user._id && (
+            {roomCallState?.roomInfo?.owner?._id === userSate?.user?._id &&
+              userSate?.user?._id !== user?._id && (
                 <>
                   <button
                     className="rounded-lg border-b hover:shadow px-4 py-1"

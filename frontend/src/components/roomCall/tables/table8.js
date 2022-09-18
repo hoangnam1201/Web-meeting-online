@@ -17,7 +17,7 @@ const Table8 = ({ data, ...rest }) => {
           <div className="flex justify-around">
             <Seat1Left user={data?.users[3]} />
             <div className="inline-block relative h-28">
-              <div className="bg-white rounded-full w-24 h-24 relative z-30" />
+              <div className="bg-white rounded-full w-24 h-24 relative z-10" />
               <div className="bg-gray-200 top-4 rounded-full w-24 h-24 z-0 absolute" />
             </div>
             <Seat1Right user={data?.users[4]} />

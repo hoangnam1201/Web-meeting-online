@@ -9,10 +9,10 @@ const Table1 = ({ data, ...rest }) => {
         style={{ minWidth: "100px" }}
       >
         <div className="absolute z-50 text-white text-shadow">{data?.name}</div>
-        <Seat1 className="z-10 relative" user={data?.users[0]} />
+        <Seat1 className="z-20 relative" user={data?.users[0]} />
         <div className="z-10 relative">
           <div className="inline-block relative h-28">
-            <div className="bg-white rounded-full w-24 h-24 relative z-30" />
+            <div className="bg-white rounded-full w-24 h-24 relative z-10" />
             <div className="bg-gray-200 top-4 rounded-full w-24 h-24 z-0 absolute" />
           </div>
         </div>
