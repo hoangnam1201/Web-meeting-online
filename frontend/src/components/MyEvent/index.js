@@ -27,6 +27,7 @@ import meetingIcon from "../../assets/meetingIcon1.png";
 import { deleteRoomAPI, getInvitedRoomAPI } from "../../api/room.api";
 import { renewToken } from "../../api/user.api";
 import { ScaleLoader } from "react-spinners";
+import PersonIcon from "@mui/icons-material/Person";
 
 const useStyles = makeStyles({
   root: {
@@ -87,6 +88,8 @@ const useStyles = makeStyles({
 const MyEvent = (props) => {
   const classes = useStyles();
   const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
+
+  console.log("listRoom", listRoom);
 
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false);
@@ -285,7 +288,13 @@ const MyEvent = (props) => {
                           </div>
                         </CardContent>
                         <CardActions>
-                          <Button size="small">1 floor</Button>
+                          <div className="flex justify-center items-center ">
+                            {room.floors.length} Floor
+                          </div>
+                          <div className="flex justify-center items-center ml-3">
+                            {room.memberCount + 1}
+                            <PersonIcon fontSize="small" />
+                          </div>
                         </CardActions>
                       </Card>
                     </Grid>

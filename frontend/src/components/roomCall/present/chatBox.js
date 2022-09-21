@@ -4,7 +4,10 @@ import Tabs from "@mui/material/Tabs";
 import React, { useEffect, useRef, useState } from "react";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { useDispatch } from "react-redux";
-import { roomShowChatAction } from "../../../store/actions/roomCallAction";
+import {
+  roomRemoveRequestAction,
+  roomShowChatAction,
+} from "../../../store/actions/roomCallAction";
 import { Message } from "../chatBox";
 import { Waypoint } from "react-waypoint";
 import { useSelector } from "react-redux";
@@ -29,7 +32,17 @@ const ChatBox = ({
   const [files, setFiles] = useState([]);
   const roomCallState = useSelector((state) => state.roomCall);
 
-  console.log("roomcallstate", roomCallState);
+  const replyHandlerAll = () => {
+    Object.values(roomCallState.requests).forEach((request) => {
+      roomCallState?.socket.emit(
+        "room:access-request",
+        request.socketId,
+        request.user._id,
+        true
+      );
+      dispatch(roomRemoveRequestAction(request.user._id));
+    });
+  };
 
   useEffect(() => {
     endRef?.current?.scrollIntoView();
@@ -200,11 +213,7 @@ const ChatBox = ({
               <div className="px-4 flex justify-start my-2">
                 <button
                   className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    Object.values(userRequests).forEach((request) => {
-                      connection.current.replyRequest(request, true);
-                    });
-                  }}
+                  onClick={replyHandlerAll}
                 >
                   ACCEPT ALL
                 </button>

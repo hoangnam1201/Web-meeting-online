@@ -623,17 +623,6 @@ class Connection {
     });
   };
 
-  replyRequest = (request, isAccess) => {
-    this.socket.emit(
-      "room:access-request",
-      request.socketId,
-      request.user._id,
-      isAccess
-    );
-    delete this.requests[request.user._id];
-    this.setting.updateInstance("requests", { ...this.requests });
-  };
-
   static getMediaStatus = (stream) => {
     let media = { video: false, audio: false };
     stream?.getTracks().forEach((track) => {
