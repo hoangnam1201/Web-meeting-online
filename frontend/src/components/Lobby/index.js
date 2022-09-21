@@ -1,12 +1,7 @@
 import React, { useState } from "react";
-import IconButton from "@material-ui/core/IconButton";
-import Avatar from "react-avatar";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import BasicPopover from "../Popover";
 import { useSelector } from "react-redux";
-import { Button, Paper } from "@mui/material";
 import JoinerList from "./joinerList";
 import RequestList from "./requestList";
 

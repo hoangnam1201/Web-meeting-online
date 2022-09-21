@@ -4,7 +4,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "react-avatar";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { kickComfirmSwal, SendBuzzSwal } from "../../services/swalServier";
 import { roomRemoveRequestAction } from "../../store/actions/roomCallAction";
 
 const RequestList = ({ requests }) => {

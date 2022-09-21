@@ -1,16 +1,18 @@
 import IconButton from "@mui/material/IconButton";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { useDispatch } from "react-redux";
 import { roomShowChatAction } from "../../../store/actions/roomCallAction";
 import { Message } from "../chatBox";
 import { Waypoint } from "react-waypoint";
 import { useSelector } from "react-redux";
-import Avatar from "react-avatar";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import BasicPopover from "../../Popover";
+import { LinearProgress } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import JoinerList from "../../Lobby/joinerList";
+import RequestList from "../../Lobby/requestList";
 
 const ChatBox = ({
   connection,
@@ -23,14 +25,47 @@ const ChatBox = ({
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer);
   const [msgText, setMsgText] = useState("");
+  const endRef = useRef(null);
+  const [files, setFiles] = useState([]);
+  const roomCallState = useSelector((state) => state.roomCall);
+
+  console.log("roomcallstate", roomCallState);
+
+  useEffect(() => {
+    endRef?.current?.scrollIntoView();
+  }, []);
 
   const handleKeydown = (e) => {
     if (e.key === "Enter") {
       setMsgText("");
-      connection.current.socket.emit("room:send-message", msgText);
+      connection.current.socket.emit("room:send-message", {
+        msgString: msgText,
+        files: files.map((f) => ({ data: f, name: f.name })),
+      });
     }
+    setFiles([]);
+    endRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+  const handleSendMessage = () => {
+    connection.current.socket.emit("room:send-message", {
+      msgString: msgText,
+      files: files.map((f) => ({ data: f, name: f.name })),
+    });
+
+    setMsgText("");
+    setFiles([]);
+    endRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const onFileChange = (e) => {
+    setFiles(Array.from(e.target.files));
+    e.target.value = null;
+  };
+
+  const deleteFile = (index) => {
+    files.splice(index, 1);
+    setFiles([...files]);
+  };
   const getPosition = (currentElem, nextElem, previousElem) => {
     if (
       currentElem?.sender._id === nextElem?.sender?._id &&
@@ -91,122 +126,90 @@ const ChatBox = ({
                 <Waypoint onEnter={() => console.log("enter")} />
               </div>
             </div>
+            <div ref={endRef} />
           </div>
-          <div className="flex justify-center items-center bg-gray-600 py-4">
+          <div className="h-2 flex-grow-0">
+            <div hidden={!roomMessages?.loading}>
+              <LinearProgress />
+            </div>
+          </div>
+          {files.length > 0 && (
+            <div className="h-8 flex-grow-0 flex-row flex gap-2 mx-2 overflow-x-auto scroll-none">
+              {files.map((f, index) => (
+                <div className="flex items-center rounded-lg bg-gray-300 px-2 justify-between">
+                  <p className="text-xs whitespace-nowrap break-normal">
+                    {f.name}
+                  </p>
+                  <button onClick={() => deleteFile(index)}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="w-4 h-4 hover:text-gray-500"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex h-11 flex-grow-0 px-1 bg-slate-500">
+            <input
+              className="px-5 py-2 w-full focus:outline-none bg-gray-100 rounded-full"
+              value={msgText}
+              onChange={(e) => setMsgText(e.target.value)}
+              onKeyDown={handleKeydown}
+              placeholder="Type..."
+            />
+            <IconButton>
+              <label>
+                <input type="file" hidden multiple onChange={onFileChange} />
+                <AttachFileIcon className="text-white" />
+              </label>
+            </IconButton>
+            <IconButton onClick={handleSendMessage}>
+              <SendIcon className="text-white" />
+            </IconButton>
+          </div>
+          {/* <div className="flex justify-center items-center bg-gray-600 py-4">
             <input
               className="mx-4 px-5 py-2 w-full shadow-md focus:outline-none bg-gray-100 rounded-xl"
               value={msgText}
               onChange={(e) => setMsgText(e.target.value)}
               onKeyDown={handleKeydown}
             />
-          </div>
+          </div> */}
         </div>
       )}
       {tab === 1 && (
         <div className="flex-grow h-0 flex flex-col scroll-smooth overflow-y-scroll scroll-sm">
-          {userJoined?.map((user, index) => {
-            return (
-              <div
-                className="flex items-center justify-between px-5 py-3 text-white hover:bg-sky-200"
-                key={index}
-              >
-                {user?.picture ? (
-                  <img
-                    src={user?.picture}
-                    alt=""
-                    className="w-10 rounded-full cursor-pointer"
-                  />
-                ) : (
-                  <Avatar
-                    name={user?.name}
-                    size="40"
-                    round={true}
-                    className="cursor-pointer"
-                  />
-                )}
-
-                <h5>{user?.name}</h5>
-                <div className="group relative z-50">
-                  <IconButton>
-                    <MoreVertIcon className="text-white" />
-                  </IconButton>
-                  <div className="hidden flex-col absolute top-20 z-50 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md ">
-                    <button
-                      onClick={(e) => e.stopPropagation()}
-                      className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                    >
-                      Buzz !!!
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          <JoinerList joiners={userJoined} />
         </div>
       )}
       {tab !== 1 && tab !== 0 && (
         <div className="h-0 flex-grow overflow-y-auto">
-          {Object.values(userRequests).length > 0 && (
+          {roomCallState && Object.values(roomCallState.requests).length > 0 && (
             <div className="flex flex-col">
               <div className="px-4 flex justify-start my-2">
-                <button className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100">
+                <button
+                  className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100"
+                  onClick={() => {
+                    Object.values(userRequests).forEach((request) => {
+                      connection.current.replyRequest(request, true);
+                    });
+                  }}
+                >
                   ACCEPT ALL
                 </button>
               </div>
-              <div className="flex-grow h-0">
-                {Object.values(userRequests).map((request, index) => {
-                  return (
-                    <div
-                      className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 px-2"
-                      key={index}
-                    >
-                      <div className="flex items-center gap-4 w-0 flex-grow">
-                        <Avatar
-                          name={request.user?.name}
-                          size="40"
-                          round={true}
-                          className="cursor-pointer"
-                        />
-                        <div className="w-0 flex-grow overflow-x-hidden">
-                          <p className="whitespace-nowrap text-left font-semibold text-gray-500">
-                            {request.user?.name.length < 15
-                              ? request.user?.name
-                              : `${request.user?.name.slice(0, 15)}...`}
-                          </p>
-                          <p className=" whitespace-nowrap text-left text-sm text-gray-400">
-                            {" "}
-                            {request.user?.email.length < 18
-                              ? request.user?.email
-                              : `${request.user?.email.slice(0, 15)}...`}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <BasicPopover>
-                          <div className="flex flex-col text-gray-500">
-                            <button
-                              className="text-sm hover:bg-gray-100 px-4 py-2"
-                              onClick={() =>
-                                connection.current.replyRequest(request, true)
-                              }
-                            >
-                              access
-                            </button>
-                            <button
-                              className="text-sm hover:bg-gray-100 px-4 py-2"
-                              onClick={() =>
-                                connection.current.replyRequest(request, false)
-                              }
-                            >
-                              refuse
-                            </button>
-                          </div>
-                        </BasicPopover>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <RequestList requests={Object.values(roomCallState.requests)} />
             </div>
           )}
         </div>
@@ -214,4 +217,4 @@ const ChatBox = ({
     </div>
   );
 };
-export default ChatBox;
+export default React.memo(ChatBox);
