@@ -92,10 +92,8 @@ const RoomDetail = ({
       )}
       <LobbyUser
         openLobby={roomCall?.showLobby}
-        userJoined={userJoined}
         userRequests={userRequests}
         roomInfo={roomInfo}
-        connection={connection}
       />
       <div className="fixed z-30 top-full transform -translate-y-full flex justify-center w-full">
         <ToolBar

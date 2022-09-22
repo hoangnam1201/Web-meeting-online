@@ -1,16 +1,29 @@
 import React, { useState } from "react";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import JoinerList from "./joinerList";
 import RequestList from "./requestList";
+import { roomRemoveRequestAction } from "../../store/actions/roomCallAction";
 
 const LobbyUser = (props) => {
-  const { openLobby, userJoined, roomInfo, userRequests, connection } = props;
+  const { openLobby, userJoined, roomInfo } = props;
   const currentUser = useSelector((state) => state.userReducer);
   const roomCallState = useSelector((state) => state.roomCall);
+  const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
 
+  const replyHandlerAll = () => {
+    Object.values(roomCallState.requests).forEach((request) => {
+      roomCallState?.socket.emit(
+        "room:access-request",
+        request.socketId,
+        request.user._id,
+        true
+      );
+      dispatch(roomRemoveRequestAction(request.user._id));
+    });
+  };
   return (
     <>
       <div
@@ -39,11 +52,7 @@ const LobbyUser = (props) => {
               <div className="px-4 flex justify-start my-2">
                 <button
                   className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100"
-                  onClick={() => {
-                    Object.values(userRequests).forEach((request) => {
-                      connection.current.replyRequest(request, true);
-                    });
-                  }}
+                  onClick={replyHandlerAll}
                 >
                   ACCEPT ALL
                 </button>
