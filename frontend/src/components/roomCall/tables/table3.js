@@ -7,7 +7,7 @@ const Table3 = ({ data, ...rest }) => {
   return (
     <div {...rest}>
       <div
-        className="bg-blue-200 h-full relative hover:border-blue-300 border-4"
+        className="bg-blue-200 h-full relative"
         style={{ minWidth: "100px" }}
       >
         <div className="absolute z-50 text-white text-shadow">{data?.name}</div>

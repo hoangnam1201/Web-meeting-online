@@ -8,7 +8,7 @@ import {
 import Table1 from "../roomCall/tables/table1";
 import Table2 from "../roomCall/tables/table2";
 import Table3 from "../roomCall/tables/table3";
-import Table4 from "../roomCall/tables/tables4";
+import Table4 from "../roomCall/tables/table4";
 import Table5 from "../roomCall/tables/table5";
 import Table6 from "../roomCall/tables/table6";
 import Table7 from "../roomCall/tables/table7";

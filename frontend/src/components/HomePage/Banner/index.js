@@ -13,12 +13,11 @@ const Banner = () => {
   SwiperCore.use([Autoplay]);
   return (
     <>
-      <div className="flex justify-center items-center bg-blue-dark relative py-12 rounded-b-4xl z-30">
+      <div className="flex justify-center items-center bg-orange-50 relative py-12 z-30">
         <div className="flex flex-col justify-center items-center text-black mr-32 mb-14">
-          <h2 className="font-bold text-4xl">Học tập và làm việc trực tuyến</h2>
-          <p className="py-10">
-            Website cung cấp nền tảng làm việc và học tập trực tuyến
-          </p>
+          <h2 className="font-bold text-4xl">Study, Metting Online</h2>
+          <p className="pt-5 pb-1">We provide an online meeting support platform</p>
+          <p className="py-5 pt-1">Support Divide The Room Into Small Groups</p>
           <Button
             className="w-32 text-black border-2"
             variant="outlined"
@@ -28,12 +27,6 @@ const Banner = () => {
           </Button>
         </div>
         <div className="col-sm-12 col-sm-6 w-1/2">
-          {/* <div className="w-1/2 h-1/2 border-8 border-white">
-            <img src={imgBanner1} alt="" />
-          </div>
-          <div className="w-1/2 h-1/2 border-8 border-white">
-            <img src={imgBanner2} alt="" />
-          </div> */}
           <Swiper
             spaceBetween={10}
             autoplay={{

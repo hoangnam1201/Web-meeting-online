@@ -51,7 +51,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
 
   return (
     <div {...rest}>
-      <section id="header" className="shadow-lg">
+      <section id="header" className="shadow-sm relative">
         <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
@@ -138,20 +138,20 @@ const Header = React.memo(({ type = 0, ...rest }) => {
               ) : (
                 <div className="collapse navbar-collapse mr-10">
                   <Link to="/auth/login">
-                    <Button
+                    <button
                       variant="outlined"
-                      className="mr-10 border-2 border-black text-black"
+                      className="mr-10 py-2 px-5 rounded text-stone-500 bg-stone-50 shadow hover:bg-stone-200"
                     >
-                      Login
-                    </Button>
+                      Sign In
+                    </button>
                   </Link>
                   <Link to="/auth/register">
-                    <Button
+                    <button
                       variant="outlined"
-                      className="border-2 border-black text-black bg-gray-100"
+                      className="py-2 px-5 rounded bg-stone-400 hover:bg-stone-500 text-white shadow"
                     >
-                      SignUp
-                    </Button>
+                      Sign Up
+                    </button>
                   </Link>
                 </div>
               )}

@@ -6,13 +6,13 @@ import iconCheck from "../../../assets/iconcheck.png";
 import Button from "@mui/material/Button";
 import imgMeeting from "../../../assets/imagemeeting.png";
 import Footer from "../Footer";
-import table1 from "../../../assets/tablelayout.jpeg";
-import table2 from "../../../assets/tablelayout2.jpg";
-import table3 from "../../../assets/tablelayout3.jpeg";
+import Table7 from "../../roomCall/tables/table7";
+import Table4 from "../../roomCall/tables/table4";
+import Table2 from "../../roomCall/tables/table2";
+import Table3 from "../../roomCall/tables/table3";
 const useStyles = makeStyles({
   root: {
-    marginTop: "-100px",
-    background: "blue-light",
+    background: "#fff7ed",
     paddingTop: "10px",
     color: "black",
     borderBottom: "1px solid white",
@@ -42,7 +42,7 @@ const useStyles = makeStyles({
   },
   container2: {
     marginTop: "15px",
-    background: "#f7cea3",
+    background: "#ffffff",
     color: "black",
   },
   ul: {
@@ -54,21 +54,32 @@ const MainPage = () => {
   const classes = useStyles();
   return (
     <>
-      <div className="flex justify-center bg-blue-light  transform -translate-y-24  ">
-        <div className="p-5 mt-24">
-          <h1 className={classes.title}>Giao diện đẹp mắt</h1>
-          <div className="flex justify-between items-center my-6">
-            <div className="border-solid border-8 border-white shadow-2xl">
-              <img src={table1} alt="table1" />
-            </div>
-            <div className="border-solid border-8 border-white shadow-2xl">
-              <img src={table2} alt="table2" />
-            </div>
-            <div className="border-solid border-8 border-white shadow-2xl">
-              <img src={table3} alt="table3" />
-            </div>
+      <div className="flex justify-center bg-white">
+        <div className="p-5">
+          <h1 className=" text-4xl font-bold text-stone-500 tracking-wider py-4">
+            Beautiful Interface & Call With Table Group
+          </h1>
+          <div className=" grid lg:grid-cols-5 grid-cols-2 gap-4">
+            <Table7 className="h-full col-span-2" />
+            <Table2 className="h-full w-56" />
+            <Table3 className="h-full" />
+            <Table4 className="h-full" />
           </div>
         </div>
+      </div>
+      <div className="overflow-hidden bg-orange-50">
+        <svg
+          data-name="Layer 1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1200 144"
+          preserveAspectRatio="none"
+          className="w-full h-36"
+        >
+          <path
+            d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+            className="shape-fill fill-white"
+          ></path>
+        </svg>
       </div>
       <Container
         id="service"
@@ -158,6 +169,22 @@ const MainPage = () => {
           </Grid>
         </Grid>
       </Container>
+      <div className="overflow-hidden bg-white">
+        <svg
+          data-v-6da3ec0c=""
+          data-name="Layer 1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1200 144"
+          preserveAspectRatio="none"
+          class="w-full h-36"
+        >
+          <path
+            data-v-6da3ec0c=""
+            d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+            className="shape-fill fill-orange-50"
+          ></path>
+        </svg>
+      </div>
       <Container
         id="about"
         className={classes.container2}

@@ -8,7 +8,7 @@ import Table5 from "./tables/table5";
 import Table6 from "./tables/table6";
 import Table7 from "./tables/table7";
 import Table8 from "./tables/table8";
-import Table4 from "./tables/tables4";
+import Table4 from "./tables/table4";
 import VideoTableContainer from "./videoTableContainer";
 import ChatBox from "./chatBox";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -264,7 +264,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table1
                   key={t._id}
-                  className="h-full shadow"
+                  className="h-full shadow hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -273,7 +273,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table2
                   key={t._id}
-                  className="h-full shadow"
+                  className="h-full shadow  hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -282,7 +282,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table3
                   key={t._id}
-                  className="h-full shadow"
+                  className="h-full shadow hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -291,7 +291,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table4
                   key={t._id}
-                  className="h-full shadow"
+                  className="h-full shadow hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -300,7 +300,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table5
                   key={t._id}
-                  className="h-full col-span-2 shadow"
+                  className="h-full col-span-2 shadow hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -309,7 +309,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table6
                   key={t._id}
-                  className="h-full col-span-2 shadow"
+                  className="h-full col-span-2 shadow hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -318,7 +318,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table7
                   key={t._id}
-                  className="h-full col-span-2 shadow"
+                  className="h-full col-span-2 shadow hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
@@ -327,7 +327,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
               return (
                 <Table8
                   key={t._id}
-                  className="h-full col-span-2 shadow"
+                  className="h-full col-span-2 shadow hover:border-blue-300 border-4"
                   data={t}
                   onClick={() => joinTable(t._id)}
                 />
