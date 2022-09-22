@@ -11,10 +11,6 @@ const LobbyUser = (props) => {
   const roomCallState = useSelector((state) => state.roomCall);
   const [tab, setTab] = useState(0);
 
-  const handleBuzzUser = (userId, text) => {
-    connection.current.socket.emit("room:buzz", userId, text);
-    console.log("click");
-  };
   return (
     <>
       <div

@@ -11,6 +11,7 @@ import FileService from "../../services/file.service";
 import MessageService from "../../services/message.service";
 import RoomService from "../../services/room.service";
 import TableService from "../../services/table.service";
+import { TableDetailDto } from "../../Dtos/table-detail.dto";
 
 export default (ioRoom: any, io: any) => {
   const userService = UserService();
@@ -294,14 +295,15 @@ export default (ioRoom: any, io: any) => {
   };
 
   const joinTable = async function (
-    tableId: string,
+    location: { tableId: string; floor: string },
     peerId: string,
     media: { audio: boolean; video: boolean }
   ) {
     const socket: Socket = this;
     const userId = socket.data.userData.userId;
     const roomId = socket.data.roomId;
-    const floor = socket.data.floor;
+    const currentFloor = socket.data.floor;
+    const { tableId, floor } = location;
 
     try {
       //check full table
@@ -312,19 +314,41 @@ export default (ioRoom: any, io: any) => {
       }
 
       // check previous tables
-      const tableIdTemp = socket.data.tableId;
-      if (tableIdTemp) {
-        socket.leave(tableIdTemp);
-        await tableService.removeJoiner(tableIdTemp, userId);
-        ioRoom.to(tableIdTemp).emit("table:user-leave", { userId, peerId });
+      const previousTableId = socket.data.tableId;
+      checkPrevious: if (previousTableId) {
+        socket.leave(previousTableId);
+        const table = await tableService.removeJoiner(previousTableId, userId);
+        const previousFloor = table.floor.toString();
+        if (floor === previousFloor) break checkPrevious;
+        if (!floor && previousFloor === currentFloor) break checkPrevious;
+        const tables = await tableService.getTablesByRoomAndFloor(
+          roomId,
+          previousFloor
+        );
+        ioRoom.to(previousFloor).emit("floor:tables", {
+          tables: TableReadDto.fromArray(tables),
+          floor: previousFloor,
+        });
+        ioRoom.to(previousTableId).emit("table:user-leave", { userId, peerId });
       }
 
       //join new table
       await tableService.addJoiner(roomId, tableId, userId);
-      const tables = await tableService.getTablesByRoomAndFloor(roomId, floor);
-      ioRoom.to(floor).emit("floor:tables", {
+
+      //join new floor
+      if (floor) {
+        socket.leave(currentFloor);
+        socket.join(floor);
+        socket.data.floor = floor;
+      }
+      const floorTemp = floor ? floor : currentFloor;
+      const tables = await tableService.getTablesByRoomAndFloor(
+        roomId,
+        floorTemp
+      );
+      ioRoom.to(floorTemp).emit("floor:tables", {
         tables: TableReadDto.fromArray(tables),
-        floor,
+        floor: floorTemp,
       });
 
       const user = await userService.findUserById(userId);
@@ -333,8 +357,8 @@ export default (ioRoom: any, io: any) => {
         peerId,
         media,
       });
-      socket.join(tableId);
 
+      socket.join(tableId);
       socket.data.tableId = tableId;
       socket.data.peerId = peerId;
       socket.emit("table:join-success", tableId);
@@ -375,8 +399,8 @@ export default (ioRoom: any, io: any) => {
         peerId,
         media,
       });
-      socket.join(tableId);
 
+      socket.join(tableId);
       socket.data.tableId = tableId;
       socket.data.peerId = peerId;
       socket.emit("table:join-success", tableId);
@@ -389,7 +413,7 @@ export default (ioRoom: any, io: any) => {
     const socket: Socket = this;
     const roomId = socket.data.roomId;
     const previousFloor = socket.data.floor;
-    socket.leave(previousFloor);
+    if (previousFloor) socket.leave(previousFloor);
     const tables = await tableService.getTablesByRoomAndFloor(roomId, floor);
     socket.emit("floor:tables", {
       tables: TableReadDto.fromArray(tables),
@@ -536,8 +560,9 @@ export default (ioRoom: any, io: any) => {
       const tables = await tableService.findAndClearJoiner(roomId);
       ioRoom
         .to(roomId)
-        .emit("room:divide-tables", TableReadDto.fromArray(tables));
+        .emit("room:divide-tables", TableDetailDto.fromArray(tables));
     } catch {
+      console.log("error");
       return socket.emit("room:err", "Internal Server Error");
     }
   };

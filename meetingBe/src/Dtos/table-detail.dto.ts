@@ -4,21 +4,25 @@ import { User } from "../models/user.model";
 import { UserReadCallDto } from "./user-read-call.dto";
 
 export class TableDetailDto {
-    _id: any;
-    name: string;
-    users: UserReadCallDto[];
-    numberOfSeat: number
+  _id: any;
+  name: string;
+  users: UserReadCallDto[];
+  members: UserReadDto[];
+  numberOfSeat: number;
+  floor: string;
 
-    static fromTable(table: Table): TableDetailDto {
-        const tableDetail = new TableDetailDto();
-        tableDetail._id = table._id;
-        tableDetail.name = table.name;
-        tableDetail.numberOfSeat = table.numberOfSeat;
-        tableDetail.users = UserReadCallDto.fromArrayUser(table.users as User[]);
-        return tableDetail;
-    }
+  static fromTable(table: Table): TableDetailDto {
+    const tableDetail = new TableDetailDto();
+    tableDetail._id = table._id;
+    tableDetail.name = table.name;
+    tableDetail.numberOfSeat = table.numberOfSeat;
+    tableDetail.users = UserReadCallDto.fromArrayUser(table.users as User[]);
+    tableDetail.members = UserReadDto.fromArrayUser(table.members as User[]);
+    tableDetail.floor = table.floor.toString();
+    return tableDetail;
+  }
 
-    static fromArray(tables: Table[]): TableDetailDto[] {
-        return tables.map(table=> this.fromTable(table));
-    }
+  static fromArray(tables: Table[]): TableDetailDto[] {
+    return tables.map((table) => this.fromTable(table));
+  }
 }

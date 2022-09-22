@@ -11,11 +11,7 @@ const UserAuth = ({ children, ...rest }) => {
     <Route
       {...rest}
       render={() =>
-        !cookie.u_auth || location.state === "LOGOUT" ? (
-          children
-        ) : (
-          <Redirect to="/user/my-event" />
-        )
+        !cookie.u_auth ? children : <Redirect to="/user/my-event" />
       }
     />
   );

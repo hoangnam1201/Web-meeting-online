@@ -153,10 +153,10 @@ class Connection {
     });
 
     this.socket.on("room:divide-tables", (tables) => {
-      this.tables = tables;
       this.clearPeers();
       store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
-      this.setting.updateInstance("tables", [...this.tables]);
+      // this.tables = tables;
+      // this.setting.updateInstance("tables", [...this.tables]);
 
       this.myStream.stream?.getTracks().forEach((tr) => {
         tr.stop();
@@ -166,10 +166,11 @@ class Connection {
 
       const currentUser = store.getState().userReducer?.user;
 
+      console.log(tables);
       const table = tables.find((t) => {
-        return t.members.find((m) => m === currentUser._id);
+        return t.members.find((m) => m._id === currentUser._id);
       });
-
+      console.log(table);
       if (!table) {
         return confirmSwal(
           "Error to join table",
@@ -182,10 +183,15 @@ class Connection {
         "You will join your table <b></b> seconds",
         5,
         () => {
-          this.socket.emit("table:join", table._id, this.myID, {
-            audio: false,
-            video: false,
-          });
+          this.socket.emit(
+            "table:join",
+            { tableId: table._id, floor: table.floor },
+            this.myID,
+            {
+              audio: false,
+              video: false,
+            }
+          );
         }
       );
     });

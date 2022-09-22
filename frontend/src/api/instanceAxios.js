@@ -1,5 +1,8 @@
 import axios from "axios";
 import { Cookies } from "react-cookie";
+import { myHistory } from "../routes/history";
+import { store } from "../store";
+import { actionRemoveUserInfo } from "../store/actions/userInfoAction";
 import { renewToken } from "./user.api";
 
 const baseURL =
@@ -25,8 +28,9 @@ instance.interceptors.response.use(
     const originalConfig = err.config;
     if (err.response)
       if (err.response?.status === 403) {
+        store.dispatch(actionRemoveUserInfo());
         cookies.remove("u_auth", { path: "/" });
-        return Promise.reject(err);
+        window.location.reload();
       }
     if (err.response?.status === 401) {
       const res = await renewToken();

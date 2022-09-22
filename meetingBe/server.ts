@@ -46,7 +46,7 @@ app.io = io;
 initRouter(app);
 
 app.get("/api/test", (req, res) => {
-  res.json(process.env.HOST_FRONTEND);
+  res.status(403).json({ a: "a" });
 });
 
 httpServer.listen(PORT, () => console.log("listen on port " + PORT));

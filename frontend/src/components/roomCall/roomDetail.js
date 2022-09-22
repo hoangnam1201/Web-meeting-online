@@ -251,7 +251,7 @@ const ListTable = React.memo(({ tables, connection, mediaStatus }) => {
 
     connection.current.socket.emit(
       "table:join",
-      id,
+      { tableId: id },
       connection.current.myID,
       mediaStatus
     );

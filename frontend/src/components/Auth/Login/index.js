@@ -151,13 +151,6 @@ function Login(props) {
     }
   }, []);
 
-  useEffect(() => {
-    if (location.state !== "LOGOUT") return;
-    dispatch(actionRemoveUserInfo());
-    removeCookies("u_auth", { path: "/" });
-    history.replace({ ...history.location, state: null });
-  }, [location.state]);
-
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -187,17 +180,10 @@ function Login(props) {
         } else {
           localStorage.removeItem("remember");
         }
-
         setCookies("u_auth", result, { path: "/" });
-
-        Swal.fire({
-          icon: "success",
-          title: "Đăng nhập thành công",
-          showConfirmButton: false,
-          timer: 1000,
-        }).then(() => {
-          history.push("/user/my-event");
-        });
+        const path = location.state?.targetPath;
+        history.push(path ? path : "/user/my-event");
+        path && history.replace({ ...history?.location, state: null });
       })
       .catch((errors) => {
         setLoading(false);
@@ -220,6 +206,9 @@ function Login(props) {
         setLoading(false);
         setLoginError(null);
         setCookies("u_auth", res, { path: "/" });
+        const path = location.state?.targetPath;
+        history.push(path ? path : "/user/my-event");
+        path && history.replace({ ...history?.location, state: null });
       })
       .catch((errors) => {
         setLoading(false);
@@ -383,11 +372,10 @@ function Login(props) {
             <Link to="/home" className={classes.closeBox}>
               <CancelIcon />
             </Link>
-            <div className="flex justify-center flex-col items-center">
+            <div className="flex justify-center flex-col items-center h-24">
               <h2 className="font-bold mt-3 border-b-2 border-black w-40">
                 Or
               </h2>
-
               <div id="googleLogin"></div>
             </div>
           </div>

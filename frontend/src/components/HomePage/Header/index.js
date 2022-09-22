@@ -36,7 +36,9 @@ const Header = React.memo(({ type = 0, ...rest }) => {
 
   const handleLogout = () => {
     logoutAPI().then(() => {
-      history.push("/auth/login", "LOGOUT");
+      dispatch(actionRemoveUserInfo());
+      removeCookies("u_auth", { path: "/" });
+      history.push("/auth/login");
       Swal.fire({
         icon: "success",
         title: "Đăng xuất thành công",
