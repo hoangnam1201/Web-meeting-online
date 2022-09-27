@@ -176,7 +176,7 @@ const MainPage = () => {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1200 144"
           preserveAspectRatio="none"
-          class="w-full h-36"
+          className="w-full h-36"
         >
           <path
             data-v-6da3ec0c=""
