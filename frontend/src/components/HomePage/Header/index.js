@@ -13,7 +13,6 @@ import {
   actionSetUserInfo,
 } from "../../../store/actions/userInfoAction";
 import Scroll from "react-scroll";
-import { Button } from "@mui/material";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
@@ -41,8 +40,8 @@ const Header = React.memo(({ type = 0, ...rest }) => {
       history.push("/auth/login");
       Swal.fire({
         icon: "success",
-        title: "Đăng xuất thành công",
-        text: "Cảm ơn bạn đã sử dụng UTE Meeting",
+        title: "Logout successfull !!",
+        text: "Thank you for using UTE Meeting",
         showConfirmButton: false,
         timer: 1500,
       });
@@ -56,7 +55,13 @@ const Header = React.memo(({ type = 0, ...rest }) => {
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
               <Link to="/" className="navbar-brand">
-                <img width="150" height="100" src={imgLogo} alt="" referrerPolicy="no-referrer" />
+                <img
+                  width="150"
+                  height="100"
+                  src={imgLogo}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                />
               </Link>
               <div
                 className="collapse navbar-collapse mr-10"
@@ -124,11 +129,11 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                           </li>
                           <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
                             <Link underline="none" to="/user/profile">
-                              Thông tin cá nhân
+                              Profile
                             </Link>
                           </li>
                           <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
-                            <button onClick={handleLogout}>Đăng xuất</button>
+                            <button onClick={handleLogout}>Log out</button>
                           </li>
                         </ul>
                       </div>

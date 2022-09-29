@@ -117,8 +117,8 @@ const MyEvent = (props) => {
 
   const handleAdd = () => {
     setModal({
-      title: "Tạo room",
-      button: "Tạo",
+      title: "Create Room",
+      button: "Create",
       id: "tao",
     });
     setRoomEvent({});
@@ -126,8 +126,8 @@ const MyEvent = (props) => {
   };
   const handleUpdate = (roomEvent) => {
     setModal({
-      title: "Cập nhật phòng họp",
-      button: "Cập nhật",
+      title: "Update Room",
+      button: "Update",
       id: "capnhat",
     });
     setRoomEvent(roomEvent);
@@ -145,11 +145,11 @@ const MyEvent = (props) => {
   const deleteRoom = (roomID) => {
     Swal.fire({
       icon: "question",
-      title: "Xóa phòng họp",
-      text: "Bạn có thật sự muốn xóa phòng này ?",
+      title: "Delete Room",
+      text: "Do you want delete this room ?",
       showCancelButton: true,
-      confirmButtonText: "Đồng ý",
-      cancelButtonText: "Hủy",
+      confirmButtonText: "Agree",
+      cancelButtonText: "Cancel",
     }).then((swalRes) => {
       if (swalRes.isConfirmed) {
         setLoading(true);
@@ -158,7 +158,7 @@ const MyEvent = (props) => {
             setLoading(false);
             Swal.fire({
               icon: "success",
-              title: "Xóa thành công",
+              title: "Delete successfull !",
               showConfirmButton: false,
               timer: 1500,
             }).then(() => {
@@ -303,9 +303,7 @@ const MyEvent = (props) => {
                   <Grid item md={9}>
                     <div className="flex justify-center flex-col items-center">
                       <img src={meetingIcon} width={100} height={100} />
-                      <h2 className="font-bold">
-                        Bạn không có sự kiện nào !!!
-                      </h2>
+                      <h2 className="font-bold">You have no events !!!</h2>
                     </div>
                   </Grid>
                 )}
@@ -388,7 +386,7 @@ const MyEvent = (props) => {
                     <div className="flex justify-center flex-col items-center">
                       <img src={meetingIcon} width={100} height={100} />
                       <h2 className="font-bold">
-                        Bạn không có sự kiện nào được mời !!!
+                        You have no event invited !!!
                       </h2>
                     </div>
                   </Grid>

@@ -45,7 +45,7 @@ const Profile = () => {
                 className={classes.link}
                 to="/user/profile/change-profile"
               >
-                Hồ sơ cá nhân
+                Profile
               </NavLink>
             </li>
 
@@ -55,7 +55,7 @@ const Profile = () => {
                 className={classes.link}
                 to="/user/profile/change-password"
               >
-                Thay đổi mật khẩu
+                Change Password
               </NavLink>
             </li>
           </ul>

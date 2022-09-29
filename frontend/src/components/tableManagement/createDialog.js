@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -124,7 +123,7 @@ const CreateDialog = (props) => {
         setLoading(false);
         Swal.fire({
           icon: "success",
-          title: "Tạo table thành công",
+          title: "Create table successfull",
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
@@ -146,25 +145,6 @@ const CreateDialog = (props) => {
         }
       });
   };
-
-  // const onUpdateSubmit = (data) => {
-  //   updateTableAPI(id, data)
-  //     .then(() => {
-  //       setOpenDialog(false);
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: "Cập nhật thành công",
-  //         timer: 1500,
-  //         showConfirmButton: false,
-  //       }).then(() => {
-  //         dispatch(getTabelsAction(id));
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       setOpenDialog(false);
-  //     });
-  // };
 
   const onCloseHandler = () => {
     reset();
@@ -195,7 +175,7 @@ const CreateDialog = (props) => {
                   variant="outlined"
                   type="text"
                   name="name"
-                  label="name"
+                  label="Name"
                   inputRef={register}
                   error={!!errors.name}
                   // value={tableInfo?.name}
@@ -209,7 +189,7 @@ const CreateDialog = (props) => {
                   variant="outlined"
                   type="number"
                   name="numberOfSeat"
-                  label="number of seats"
+                  label="Number of seats"
                   inputRef={register}
                   error={!!errors.numberOfSeat}
                   helperText={errors?.numberOfSeat?.message}

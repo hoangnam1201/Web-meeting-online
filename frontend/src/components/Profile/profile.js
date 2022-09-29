@@ -67,10 +67,10 @@ const schema = yup.object().shape({
   name: yup.string().min(5).required("Name đang trống !"),
   phone: yup
     .string()
-    .required("Số điện thoại đang trống !")
-    .min(9, "Số điện thoại ít nhất 9 ký tự")
-    .max(12, "Số điện thoại tối đa 12 ký tự")
-    .matches(phoneRegExp, "Số điện thoại không đúng định dạng !"),
+    .required("Phone number is empty !")
+    .min(9, "Phone number at least 9 characters")
+    .max(12, "Phone number up to 12 characters")
+    .matches(phoneRegExp, "Phone number incorrect format !"),
 });
 
 export default function Profiles() {
@@ -118,7 +118,7 @@ export default function Profiles() {
         setErrorNotify(null);
         Swal.fire({
           icon: "success",
-          title: "Cập nhật thông tin thành công",
+          title: "Update profile successfull !",
           timer: 1500,
           showConfirmButton: false,
         });
@@ -142,12 +142,8 @@ export default function Profiles() {
   return (
     <>
       <Helmet>
-        <title>UTE Meeting - Hồ sơ cá nhân</title>
-        <meta
-          charSet="utf-8"
-          name="description"
-          content="Trang hồ sơ cá nhân"
-        />
+        <title>UTE Meeting - Profile</title>
+        <meta charSet="utf-8" name="description" content="Profile" />
       </Helmet>
       <Box className={classes.loaderBox}>
         <ScaleLoader
@@ -186,7 +182,7 @@ export default function Profiles() {
             required
             fullWidth
             id="name"
-            label="Họ Tên"
+            label="Fullname"
             name="name"
             autoComplete="name"
             inputRef={register}
@@ -203,7 +199,7 @@ export default function Profiles() {
             required
             fullWidth
             id="phone"
-            label="Số điện thoại"
+            label="Phone number"
             name="phone"
             autoComplete="phone"
             inputRef={register}
@@ -232,7 +228,7 @@ export default function Profiles() {
             <DesktopDatePicker
               margin="dense"
               id="date-picker-dialog-register"
-              label="Ngày tháng năm sinh"
+              label="Birthday"
               inputFormat="MM/dd/yyyy"
               name="dob"
               value={selectedDate}
@@ -255,7 +251,7 @@ export default function Profiles() {
             color="primary"
             className={classes.button}
           >
-            Thay đổi
+            Update
           </LoadingButton>
         </form>
       </Container>

@@ -81,10 +81,10 @@ export default function Footer() {
                 BLOG
               </Link>
               <Link className={classes.link} underline="none" href="#">
-                LIÊN HỆ
+                Contact
               </Link>
               <Link className={classes.link} underline="none" href="#">
-                VỀ CHÚNG TÔI
+                About us
               </Link>
             </Grid>
             <Grid item xs={6} sm={2} className={classes.linkList}>
@@ -104,9 +104,9 @@ export default function Footer() {
             <Grid item xs={12} sm={6} className={classes.desc}>
               <h2>UTE MEETING</h2>
               <p>
-                Nền tảng học tập, làm việc trực tuyến trong thời kỳ COVID-19
+                Online learning and working platform in the period of COVID-19
               </p>
-              <p>Mang tri thức và sức mạnh đẩy lùi dịch bệnh</p>
+              <p>Bringing knowledge and strength to repel the epidemic</p>
               <p>
                 Địa chỉ: 1 Võ Văn Ngân, phường Linh Chiểu, TP Thủ Đức, TPHCM
               </p>
@@ -114,7 +114,7 @@ export default function Footer() {
           </Grid>
         </Container>
         <div className={classes.copyright}>
-          <p>Copyright UTE MEETING © 2021</p>
+          <p>Copyright UTE MEETING © 2022</p>
         </div>
       </div>
     </>

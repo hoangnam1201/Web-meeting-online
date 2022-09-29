@@ -64,8 +64,8 @@ const TableManagement = (props) => {
 
   const handleAdd = () => {
     setModal({
-      title: "Tạo table",
-      button: "Tạo",
+      title: "Create table",
+      button: "Create",
       id: "tao",
     });
     setTable({});
