@@ -92,7 +92,7 @@ const RoomDetail = ({
       )}
       <LobbyUser
         openLobby={roomCall?.showLobby}
-        userRequests={userRequests}
+        userJoined={userJoined}
         roomInfo={roomInfo}
       />
       <div className="fixed z-30 top-full transform -translate-y-full flex justify-center w-full">

@@ -50,13 +50,13 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   };
 
   return (
-    <div {...rest}>
-      <section id="header" className="shadow-sm relative">
+    <div>
+      <section id="header" className="shadow-sm relative z-30">
         <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
               <Link to="/" className="navbar-brand">
-                <img width="150" height="100" src={imgLogo} alt="" />
+                <img width="150" height="100" src={imgLogo} alt="" referrerPolicy="no-referrer" />
               </Link>
               <div
                 className="collapse navbar-collapse mr-10"

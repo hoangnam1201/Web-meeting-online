@@ -36,6 +36,10 @@ export const addMembersAPI = (roomId, userIds) => {
   return instance.post("/room/members/add-members/" + roomId, { userIds });
 };
 
+export const addMembersByFile = (roomId, data) => {
+  return instance.post("/room/members/add-members-by-file/" + roomId, data);
+};
+
 export const removeMemberAPI = (roomId, userId) => {
   return instance.delete("/room/members/remove-member/" + roomId, {
     params: { userId },

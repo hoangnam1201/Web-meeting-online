@@ -60,6 +60,11 @@ roomRoute.delete(
   roomController.removeMember
 );
 roomRoute.post(
+  "/members/add-members-by-file/:roomId",
+  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],
+  roomController.addMembersByFile
+);
+roomRoute.post(
   "/members/add-members/:roomId",
   [
     AuthMiddlesware.verifyToken,

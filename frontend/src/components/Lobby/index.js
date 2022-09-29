@@ -13,6 +13,8 @@ const LobbyUser = (props) => {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
 
+  console.log(userJoined);
+
   const replyHandlerAll = () => {
     Object.values(roomCallState.requests).forEach((request) => {
       roomCallState?.socket.emit(

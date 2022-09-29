@@ -13,7 +13,9 @@ import Table5 from "../roomCall/tables/table5";
 import Table6 from "../roomCall/tables/table6";
 import Table7 from "../roomCall/tables/table7";
 import Table8 from "../roomCall/tables/table8";
-import { Button, IconButton } from "@mui/material";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
 import CreateDialog from "./createDialog";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
@@ -23,7 +25,7 @@ import {
   increaseFloorAPI,
 } from "../../api/room.api";
 import { confirmSwal } from "../../services/swalServier";
-import { LoadingButton } from "@mui/lab";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const TableManagement = (props) => {
   const { id } = useParams();
@@ -48,6 +50,7 @@ const TableManagement = (props) => {
     try {
       const res = await getRoomAPI(id);
       setRoom(res.data);
+      setLoading(false);
       const floors = res.data.floors;
       if (position === "END") {
         dispatch(tableSelectFloorAction(id, floors[floors.length - 1]));
@@ -74,12 +77,10 @@ const TableManagement = (props) => {
   };
 
   const onDeleteFloor = async () => {
-    setLoading(true);
     try {
       confirmSwal("Delete this floor", "Are you sure ?", async () => {
-        await deleteFloorAPI(room._id, tables.currentFloor).then(() => {
-          setLoading(false);
-        });
+        setLoading(true);
+        await deleteFloorAPI(room._id, tables.currentFloor);
         await getRoom();
       });
     } catch (err) {
@@ -89,11 +90,9 @@ const TableManagement = (props) => {
   };
 
   const onIncreaseFloor = async () => {
-    setLoading(true);
     try {
-      await increaseFloorAPI(room._id, tables.currentFloor).then(() => {
-        setLoading(false);
-      });
+      setLoading(true);
+      await increaseFloorAPI(room._id, tables.currentFloor);
       await getRoom("END");
     } catch (err) {
       setLoading(false);
@@ -154,14 +153,19 @@ const TableManagement = (props) => {
             Create table
           </Button>
         </div>
-        <div className="py-6">
+        <div className="py-6 relative">
+          {tables.loading && (
+            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-10 bg-gray-100 opacity-50">
+              <CircularProgress />
+            </div>
+          )}
           <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-2 relative z-0 grid-flow-row-dense px-2">
             {tables?.items?.map((t, index) => {
               switch (t.numberOfSeat) {
                 case 1:
                   return (
                     <div className="relative group" key={index}>
-                      <div className="absolute right-0 top-0 transform z-10 opacity-0 group-hover:opacity-100">
+                      <div className="absolute right-0 top-0  z-10 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -176,7 +180,7 @@ const TableManagement = (props) => {
                 case 2:
                   return (
                     <div className="relative group" key={index}>
-                      <div className="absolute right-0 top-0 transform z-10 opacity-0 group-hover:opacity-100">
+                      <div className="absolute right-0 top-0 z-10 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -191,7 +195,7 @@ const TableManagement = (props) => {
                 case 3:
                   return (
                     <div className="relative group" key={index}>
-                      <div className="absolute right-0 top-0 transform z-10 opacity-0 group-hover:opacity-100">
+                      <div className="absolute right-0 top-0 z-10 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -206,7 +210,7 @@ const TableManagement = (props) => {
                 case 4:
                   return (
                     <div className="relative group" key={index}>
-                      <div className="absolute right-0 top-0 transform z-10 opacity-0 group-hover:opacity-100">
+                      <div className="absolute left-full top-0 z-10 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -221,7 +225,7 @@ const TableManagement = (props) => {
                 case 5:
                   return (
                     <div className="relative group col-span-2" key={index}>
-                      <div className="absolute z-50 left-96 translate-x-16 opacity-0 group-hover:opacity-100">
+                      <div className="absolute z-50 top-0 right-0 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -236,7 +240,7 @@ const TableManagement = (props) => {
                 case 6:
                   return (
                     <div className="relative group col-span-2" key={index}>
-                      <div className="absolute z-50 left-96 translate-x-16 opacity-0 group-hover:opacity-100">
+                      <div className="absolute z-50 top-0 right-0 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -251,7 +255,7 @@ const TableManagement = (props) => {
                 case 7:
                   return (
                     <div className="relative group col-span-2" key={index}>
-                      <div className="absolute z-50 left-96 translate-x-16 opacity-0 group-hover:opacity-100">
+                      <div className="absolute z-50 top-0 right-0 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -266,7 +270,7 @@ const TableManagement = (props) => {
                 default:
                   return (
                     <div className="relative group col-span-2" key={index}>
-                      <div className="absolute z-50 left-96 translate-x-16 opacity-0 group-hover:opacity-100">
+                      <div className="absolute z-50 top-0 right-0 opacity-0 group-hover:opacity-100">
                         <IconButton onClick={() => onDelete(t._id)}>
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
@@ -306,7 +310,7 @@ const TableManagement = (props) => {
             <LoadingButton
               loading={loading}
               loadingPosition="start"
-              className="hover:text-blue-500 text-gray-500"
+              className="hover:text-blue-500 text-gray-500 disabled:text-gray-300"
               onClick={onIncreaseFloor}
             >
               <svg
@@ -327,9 +331,9 @@ const TableManagement = (props) => {
             <LoadingButton
               loading={loading}
               loadingPosition="start"
-              className="hover:text-red-500  disabled:text-gray-200 text-gray-500"
+              className="hover:text-red-500 text-gray-500 disabled:text-gray-300"
               onClick={onDeleteFloor}
-              disabled={room?.floors.length === 1}
+              // disabled={room?.floors.length === 1}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

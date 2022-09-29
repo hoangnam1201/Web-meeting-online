@@ -211,6 +211,14 @@ export default () => {
     );
   };
 
+  const removeAllMembers = async (roomId: string) => {
+    return roomModel.findOneAndUpdate(
+      { _id: roomId },
+      { members: [] },
+      { returnDocument: "before" }
+    );
+  };
+
   const removeMembers = async (userIds: string[], roomId: string) => {
     const room = await roomModel.findOneAndUpdate(
       { _id: roomId },
@@ -261,5 +269,6 @@ export default () => {
     addMembers,
     removeMember,
     removeMembers,
+    removeAllMembers,
   };
 };

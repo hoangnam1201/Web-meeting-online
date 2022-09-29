@@ -21,35 +21,12 @@ function Login(props) {
   const history = useHistory();
   const [cookies, setCookies, removeCookies] = useCookies(["u_auth"]);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
   const [loginError, setLoginError] = useState(null);
   const location = useLocation();
-  const [user, setUser] = useState({
-    username: "",
-    password: "",
-  });
   const { register, handleSubmit, errors } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
   });
-
-  useEffect(() => {
-    if (localStorage.getItem("remember")) {
-      setRemember(true);
-      setUser(JSON.parse(localStorage.getItem("remember")));
-    }
-  }, []);
-
-  const handleChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    setUser({
-      ...user,
-      [name]: value,
-    });
-  };
 
   const onSubmit = (data) => {
     setLoading(true);
@@ -58,11 +35,6 @@ function Login(props) {
       .then((result) => {
         setLoading(false);
         setLoginError(null);
-        if (remember) {
-          localStorage.setItem("remember", JSON.stringify(data));
-        } else {
-          localStorage.removeItem("remember");
-        }
         setCookies("u_auth", result, { path: "/" });
         const path = location.state?.targetPath;
         history.push(path ? path : "/user/my-event");
@@ -164,15 +136,13 @@ function Login(props) {
               helperText={
                 errors?.username?.message ? errors?.username?.message : " "
               }
-              value={user.username}
-              onChange={handleChange}
             />
             <TextField
               variant="outlined"
               margin="none"
               fullWidth
               color="warning"
-              type={showPassword ? "text" : "password"}
+              type="password"
               name="password"
               label="Password*:"
               id="password"
@@ -181,20 +151,6 @@ function Login(props) {
               helperText={
                 errors?.password?.message ? errors?.password?.message : " "
               }
-              value={user.password}
-              onChange={handleChange}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value="remember"
-                  sx={{ color: "#fdba74" }}
-                  checked={remember}
-                />
-              }
-              sx={{ color: "#fdba74" }}
-              onChange={() => setRemember(!remember)}
-              label="Remember password"
             />
             {/* // In ra loi neu dang nhap that bai */}
             {loginError ? (

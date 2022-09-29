@@ -20,13 +20,14 @@ import Swal from "sweetalert2";
 import { searchUserAPI } from "../../api/user.api";
 import {
   addMembersAPI,
+  addMembersByFile,
   deleteFloorAPI,
   getRoomAPI,
   increaseFloorAPI,
   removeMemberAPI,
 } from "../../api/room.api";
 import { setGlobalNotification } from "../../store/reducers/globalNotificationReducer";
-import { confirmSwal } from "../../services/swalServier";
+import { AboutFormatSwal, confirmSwal } from "../../services/swalServier";
 import { LoadingButton } from "@mui/lab";
 
 const roomSchema = yup.object().shape({
@@ -43,32 +44,41 @@ function UpdateEvent() {
   const [notFound, setNotFound] = useState(false);
   //members
   const [usersSelected, setUsersSelected] = useState([]);
-  const [statusMembers, setStatusMembers] = useState("idle");
+  const [membersLoading, setMembersLoading] = useState(false);
+  //floors
+  const [floorsLoading, setFloorsLoading] = useState(false);
+  //
   const { register, handleSubmit, errors, reset } = useForm({
     mode: "onBlur",
     resolver: yupResolver(roomSchema),
   });
 
   useEffect(() => {
-    getRoom();
+    getRoom("START", "ALL");
   }, []);
 
-  const getRoom = async (position) => {
+  const getRoom = async (position, loadingType) => {
     try {
       const res = await getRoomAPI(id);
       setRoom(res.data);
       const floors = res.data.floors;
-      setStatusMembers("idle");
-      if (position === "END") {
-        dispatch(tableSelectFloorAction(id, floors[floors.length - 1]));
-        return;
+      if (loadingType === "UPDATE_MEMBERS" || loadingType === "ALL") {
+        setMembersLoading(false);
       }
-      dispatch(tableSelectFloorAction(id, floors[0]));
+      if (loadingType === "UPDATE_FLOORS" || loadingType === "ALL") {
+        setFloorsLoading(false);
+        if (position === "END") {
+          dispatch(tableSelectFloorAction(id, floors[floors.length - 1]));
+          return;
+        }
+        dispatch(tableSelectFloorAction(id, floors[0]));
+      }
     } catch (err) {
       setNotFound(true);
     }
   };
 
+  //tables
   const createTable = (data) => {
     const table = { ...data, room: id, floor: tables.currentFloor };
     dispatch(addTableAction(table));
@@ -88,10 +98,33 @@ function UpdateEvent() {
     });
   };
 
+  const onDeleteFloor = async () => {
+    try {
+      confirmSwal("Delete this floor", "Are you sure", async () => {
+        setFloorsLoading(true);
+        await deleteFloorAPI(room._id, tables.currentFloor);
+        await getRoom("START", "UPDATE_FLOORS");
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onIncreaseFloor = async () => {
+    try {
+      setFloorsLoading(true);
+      await increaseFloorAPI(room._id, tables.currentFloor);
+      await getRoom("END", "UPDATE_FLOORS");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  //members
   const searchUser = (str, callback) => {
     searchUserAPI(str).then((res) => {
       const options = res.data.map((u) => {
-        return { label: `${u.username} (${u.email})`, value: u._id };
+        return { label: `${u.name} (${u.email})`, value: u._id };
       });
       callback(options);
     });
@@ -101,40 +134,31 @@ function UpdateEvent() {
     setUsersSelected(e);
   };
 
-  const onDeleteFloor = async () => {
-    try {
-      confirmSwal("Delete this floor", "Are you sure", async () => {
-        await deleteFloorAPI(room._id, tables.currentFloor);
-        await getRoom();
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const onIncreaseFloor = async () => {
-    try {
-      await increaseFloorAPI(room._id, tables.currentFloor);
-      await getRoom("END");
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const onAddMember = async () => {
-    setStatusMembers("LOADING");
+    setMembersLoading(true);
     try {
       const userIds = usersSelected.map((s) => s.value);
       await addMembersAPI(id, userIds);
       setUsersSelected(null);
-      await getRoom();
+      await getRoom(null, "UPDATE_MEMBERS");
     } catch (err) {
       console.log(err);
     }
   };
 
+  const onFileChange = async (e) => {
+    const files = e.target.files;
+    if (!files[0]) return;
+
+    const fd = new FormData();
+    fd.append("importFile", files[0]);
+    setMembersLoading(true);
+    await addMembersByFile(id, fd);
+    await getRoom(null, "UPDATE_MEMBERS");
+    e.target.value = null;
+  };
+
   const onRemoveMember = async (userId) => {
-    setStatusMembers("LOADING");
     try {
       const { isConfirmed } = await Swal.fire({
         icon: "question",
@@ -145,8 +169,9 @@ function UpdateEvent() {
         cancelButtonText: "cancel",
       });
       if (!isConfirmed) return;
+      setMembersLoading(true);
       await removeMemberAPI(id, userId);
-      await getRoom();
+      await getRoom(null, "UPDATE_MEMBERS");
     } catch (err) {
       console.log(err);
     }
@@ -207,10 +232,10 @@ function UpdateEvent() {
                   divide the group
                 </p>
               </div>
-              <Link to={`/room/tables/${id}`}>
+              <Link to={`/room/tables/${id}`} className="mr-4">
                 <Button
-                  className="right-64 mr-52"
-                  variant="contained"
+                  className=" min-w-max"
+                  variant="outlined"
                   color="primary"
                 >
                   Manage Tables
@@ -246,6 +271,7 @@ function UpdateEvent() {
                 </div>
               ))}
             </div>
+            <div className="h-2">{floorsLoading && <LinearProgress />}</div>
             <div className="flex gap-4 items-center">
               <div className="grow-0 flex flex-col">
                 <button
@@ -363,20 +389,48 @@ function UpdateEvent() {
         </div>
 
         <div className="grid grid-cols-3 mt-4 border-b-2">
-          <div className="text-xl font-semibold col-span-3 text-left p-4">
-            <p className=" font-semibold text-md"> Members </p>
-            <p className="text-gray-400 font-thin text-sm">
-              Users can join the room without sending a request
-            </p>
+          <div className="flex justify-between col-span-3 p-4">
+            <div className="text-xl font-semibold text-left">
+              <p className=" font-semibold text-md"> Members </p>
+              <p className="text-gray-400 font-thin text-sm">
+                Users can join the room without sending a request
+              </p>
+              <p className="text-gray-400 font-thin text-sm">
+                Invite only Users with Utemeeting account or signed in with
+                google account at least once
+              </p>
+            </div>
+            <div>
+              <Button variant="outlined">
+                <label>
+                  Import by xlsx file
+                  <input
+                    type="file"
+                    onChange={(e) => {
+                      onFileChange(e);
+                    }}
+                    hidden
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  />
+                </label>
+              </Button>
+              <p className="text-gray-400 font-thin text-sm">
+                Only files in our{" "}
+                <span
+                  className="font-bold cursor-pointer hover:text-gray-500"
+                  onClick={AboutFormatSwal}
+                >
+                  format
+                </span>
+              </p>
+            </div>
           </div>
           <div
             className="flex flex-col col-span-2 p-4 shadow-md"
             style={{ height: "700px" }}
           >
             <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-md">
-              <div className="text-left border-r-2 border-gray-500">
-                username
-              </div>
+              <div className="text-left border-r-2 border-gray-500">name</div>
               <div className="text-left pl-3">email</div>
             </div>
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
@@ -388,7 +442,7 @@ function UpdateEvent() {
                       key={index}
                     >
                       <div className="text-left border-r-2 border-gray-300">
-                        {u.username}
+                        {u.name}
                       </div>
                       <div className="text-left pl-3 flex justify-between">
                         {u.email}
@@ -408,6 +462,12 @@ function UpdateEvent() {
             <div className=" flex flex-col gap-4">
               <AsyncSelect
                 isMulti={true}
+                noOptionsMessage={({ inputValue }) => (
+                  <div>
+                    Could not find a Utemeeting account matching {inputValue}{" "}
+                  </div>
+                )}
+                defaultOptions={true}
                 loadOptions={searchUser}
                 value={usersSelected}
                 onChange={onSelectChange}
@@ -415,7 +475,7 @@ function UpdateEvent() {
               <LoadingButton
                 variant="contained"
                 onClick={onAddMember}
-                loading={statusMembers === "LOADING"}
+                loading={membersLoading}
               >
                 Add
               </LoadingButton>

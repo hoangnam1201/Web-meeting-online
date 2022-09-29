@@ -4,16 +4,20 @@ import { RoomCreateDto } from "../../Dtos/room-create.dto";
 import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
 import { RoomReadDto } from "../../Dtos/room-read.dto";
 import { Room } from "../../models/room.model";
+import FileService from "../../services/file.service";
 import MailService from "../../services/mail.service";
-import NotificationService from "../../services/notification.service";
 import RoomService from "../../services/room.service";
 import UserService from "../../services/user.service";
+
+interface FileRequest extends Request {
+  files: any;
+}
 
 export default () => {
   const roomService = RoomService();
   const mailService = MailService();
   const userService = UserService();
-  const notificationService = NotificationService();
+  const fileService = FileService();
 
   const createRoom = async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -166,20 +170,19 @@ export default () => {
   const addMember = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     const userId = req.body.userId;
-    const authId = req.userData.userId;
     try {
       await roomService.addMember(userId, roomId);
-      const notification = await notificationService.createType12N(
-        userId,
-        notificationService.Type.receiptInvitation,
-        authId,
-        roomId
-      );
       const user = await userService.findUserById(userId);
       if (!user)
         return res.status(400).json({ status: 400, error: "Not Found" });
       await mailService.sendInvitation(roomId, user.email);
-      req.app.io.to(userId).emit("notification", notification);
+      // const notification = await notificationService.createType12N(
+      //   userId,
+      //   notificationService.Type.receiptInvitation,
+      //   authId,
+      //   roomId
+      // );
+      // req.app.io.to(userId).emit("notification", notification);
       res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
@@ -191,7 +194,6 @@ export default () => {
   const addMembers = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     const userIds = req.body.userIds;
-    const authId = req.userData.userId;
     try {
       await roomService.addMembers(userIds, roomId);
       const users = await userService.getUsersByIds(userIds);
@@ -199,17 +201,17 @@ export default () => {
         return total + " " + currentUser.email;
       }, "");
       await mailService.sendInvitation(roomId, ids);
-      await Promise.all(
-        userIds.map(async (id: string) => {
-          const notification = await notificationService.createType12N(
-            id,
-            notificationService.Type.receiptInvitation,
-            authId,
-            roomId
-          );
-          req.app.io.to(id).emit("notification", notification);
-        })
-      );
+      // await Promise.all(
+      //   userIds.map(async (id: string) => {
+      //     const notification = await notificationService.createType12N(
+      //       id,
+      //       notificationService.Type.receiptInvitation,
+      //       authId,
+      //       roomId
+      //     );
+      //     req.app.io.to(id).emit("notification", notification);
+      //   })
+      // );
       res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
@@ -221,7 +223,6 @@ export default () => {
   const removeMembers = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     const userIds = req.body.userIds;
-    const authId = req.userData.userId;
     try {
       await roomService.removeMembers(userIds, roomId);
       const users = await userService.getUsersByIds(userIds);
@@ -229,19 +230,69 @@ export default () => {
         return total + " " + currentUser.email;
       }, "");
       await mailService.sendExpulsion(roomId, ids);
-      await Promise.all(
-        userIds.map(async (id: string) => {
-          const notification = await notificationService.createType12N(
-            id,
-            notificationService.Type.isRemoved,
-            authId,
-            roomId
-          );
-          req.app.io.to(id).emit("notification", notification);
-        })
-      );
+      // await Promise.all(
+      //   userIds.map(async (id: string) => {
+      //     const notification = await notificationService.createType12N(
+      //       id,
+      //       notificationService.Type.isRemoved,
+      //       authId,
+      //       roomId
+      //     );
+      //     req.app.io.to(id).emit("notification", notification);
+      //   })
+      // );
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
+      return res
+        .status(500)
+        .json({ status: 500, error: "Internal Server Error" });
+    }
+  };
+
+  const addMembersByFile = async (req: FileRequest, res: Response) => {
+    const roomId = req.params.roomId;
+    const file = req.files?.importFile;
+    if (!file)
+      return res
+        .status(400)
+        .json({ status: 400, error: "import file is required" });
+    if (
+      file.mimetype !==
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+      return res
+        .status(400)
+        .json({ status: 400, error: "invalied import file" });
+
+    try {
+      await roomService.removeAllMembers(roomId);
+      const emails = fileService
+        .excelToJson(file.data)
+        .map((u: { Email: string; email: string }) =>
+          u.Email ? u.Email : u.email
+        );
+      const users = await userService.findUserByEmails(emails);
+      await roomService.addMembers(
+        users.map((u) => u._id),
+        roomId
+      );
+      const ids = users.reduce((total, currentUser) => {
+        return total + " " + currentUser.email;
+      }, "");
+      await mailService.sendInvitation(roomId, ids);
+      // await Promise.all(
+      //   userIds.map(async (id: string) => {
+      //     const notification = await notificationService.createType12N(
+      //       id,
+      //       notificationService.Type.receiptInvitation,
+      //       authId,
+      //       roomId
+      //     );
+      //     req.app.io.to(id).emit("notification", notification);
+      //   })
+      // );
+      res.status(200).json({ status: 200, data: null });
+    } catch {
       return res
         .status(500)
         .json({ status: 500, error: "Internal Server Error" });
@@ -251,20 +302,19 @@ export default () => {
   const removeMember = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     const userId = req.query.userId;
-    const authId = req.userData.userId;
     try {
       await roomService.removeMember(userId as string, roomId);
-      const notification = await notificationService.createType12N(
-        userId as string,
-        notificationService.Type.isRemoved,
-        authId,
-        roomId
-      );
       const user = await userService.findUserById(userId as string);
       if (!user)
         return res.status(400).json({ status: 400, error: "Not Found" });
       await mailService.sendExpulsion(roomId, user.email);
-      req.app.io.to(userId).emit("notification", notification);
+      // const notification = await notificationService.createType12N(
+      //   userId as string,
+      //   notificationService.Type.isRemoved,
+      //   authId,
+      //   roomId
+      // );
+      // req.app.io.to(userId).emit("notification", notification);
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
       console.log(err);
@@ -280,6 +330,7 @@ export default () => {
     removeMembers,
     addMember,
     addMembers,
+    addMembersByFile,
     createRoom,
     changeRoom,
     getInvitedRoom,

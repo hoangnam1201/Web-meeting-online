@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import importFileImage from "../assets/importFile.png";
 
 export const countTime = (title, html, time, callback) => {
   let timerInterval;
@@ -94,5 +95,13 @@ export const buzzSwal = (text) => {
     text: text,
     allowOutsideClick: false,
     allowEscapeKey: false,
+  });
+};
+
+export const AboutFormatSwal = () => {
+  Swal.fire({
+    title: "Format files",
+    text: "The file could have multiple sheets and require an 'Email' or 'email' column",
+    imageUrl: importFileImage,
   });
 };

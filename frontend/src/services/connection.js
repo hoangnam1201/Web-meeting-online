@@ -120,6 +120,7 @@ class Connection {
     });
 
     this.socket.on("room:user-joined", (users) => {
+      console.log("joiners", users);
       this.joiners = users;
       this.setting.updateInstance("joiners", users);
     });

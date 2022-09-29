@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import initRouter from "./src/api/routers/index.router";
 import { initIOServer } from "./src/io/index";
 import { ExpressPeerServer } from "peer";
+import fileUpload from "express-fileupload";
 import cors from "cors";
 
 interface ExpressApp extends Express {
@@ -18,7 +19,7 @@ const app: ExpressApp = express();
 const httpServer = createServer(app);
 
 app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
-
+app.use(fileUpload());
 app.use(json());
 app.use(urlencoded({ extended: false }));
 

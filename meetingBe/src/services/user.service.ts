@@ -9,7 +9,7 @@ export default () => {
     const regex = new RegExp(searchStr, "i");
     return userModel
       .find({
-        $or: [{ username: { $regex: regex } }, { email: { $regex: regex } }],
+        $or: [{ name: { $regex: regex } }, { email: { $regex: regex } }],
       })
       .sort({ createdAt: 1 })
       .limit(6);
@@ -21,6 +21,10 @@ export default () => {
 
   const findUserByEmail = (email: string) => {
     return userModel.findOne({ email: email });
+  };
+
+  const findUserByEmails = (emails: string[]) => {
+    return userModel.find({ email: { $in: emails } });
   };
 
   const create = (userData: UserCreateDto) => {
@@ -52,6 +56,7 @@ export default () => {
     getUsersByIds,
     create,
     findUserByEmail,
+    findUserByEmails,
     changeInfo,
     changePassword,
   };
