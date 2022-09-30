@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { TableReadDto } from "../../Dtos/table-read.dto";
 import { MessageReadDto } from "../../Dtos/message-read.dto";
 import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
-import { UserReadDto } from "../../Dtos/user-read.dto";
+import { UserReadDetailDto } from "../../Dtos/user-read-detail.dto";
 import { Room } from "../../models/room.model";
 import { Table } from "../../models/table.model";
 import { User } from "../../models/user.model";
@@ -45,7 +45,7 @@ export default (ioRoom: any, io: any) => {
           .to(roomId)
           .emit(
             "room:user-joined",
-            UserReadDto.fromArrayUser(room.joiners as User[])
+            UserReadDetailDto.fromArrayUser(room.joiners as User[])
           );
 
         //join first floor
@@ -81,7 +81,7 @@ export default (ioRoom: any, io: any) => {
       const room = await roomService.findById(roomId);
       if (user)
         ioRoom.to(room.owner.toString()).emit("room:user-request", {
-          user: UserReadDto.fromUser(user),
+          user: UserReadDetailDto.fromUser(user),
           socketId: socket.id,
         });
     } catch (err) {
@@ -157,7 +157,7 @@ export default (ioRoom: any, io: any) => {
         .to(roomId)
         .emit(
           "room:user-joined",
-          UserReadDto.fromArrayUser(room.joiners as User[])
+          UserReadDetailDto.fromArrayUser(room.joiners as User[])
         );
 
       //join first floor
@@ -275,7 +275,7 @@ export default (ioRoom: any, io: any) => {
     const sender = await userService.findUserById(userId);
 
     const message = {
-      sender: UserReadDto.fromUser(sender),
+      sender: UserReadDetailDto.fromUser(sender),
       files: data.files,
       message: data.msgString,
       createAt: new Date(),
@@ -353,7 +353,7 @@ export default (ioRoom: any, io: any) => {
 
       const user = await userService.findUserById(userId);
       ioRoom.to(tableId).emit("table:user-joined", {
-        user: UserReadDto.fromUser(user),
+        user: UserReadDetailDto.fromUser(user),
         peerId,
         media,
       });
@@ -395,7 +395,7 @@ export default (ioRoom: any, io: any) => {
 
       const user = await userService.findUserById(userId);
       ioRoom.to(tableId).emit("table:user-joined", {
-        user: UserReadDto.fromUser(user),
+        user: UserReadDetailDto.fromUser(user),
         peerId,
         media,
       });
@@ -488,7 +488,7 @@ export default (ioRoom: any, io: any) => {
       if (room.isPresent !== true) return;
       const user = await userService.findUserById(userId);
       ioRoom.to(roomId).emit("present:user-joined", {
-        user: UserReadDto.fromUser(user),
+        user: UserReadDetailDto.fromUser(user),
         peerId,
         media,
       });

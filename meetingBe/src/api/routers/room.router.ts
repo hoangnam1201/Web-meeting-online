@@ -82,6 +82,7 @@ roomRoute.delete(
   ],
   roomController.removeMembers
 );
+roomRoute.get("/members/download-csv/:roomId", roomController.exportToCSV);
 roomRoute.post(
   "/floors/:roomId",
   [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],

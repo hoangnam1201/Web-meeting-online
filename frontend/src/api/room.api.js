@@ -36,8 +36,12 @@ export const addMembersAPI = (roomId, userIds) => {
   return instance.post("/room/members/add-members/" + roomId, { userIds });
 };
 
-export const addMembersByFile = (roomId, data) => {
+export const addMembersByFileAPI = (roomId, data) => {
   return instance.post("/room/members/add-members-by-file/" + roomId, data);
+};
+
+export const dowloadMemberCSVFileAPI = (roomId) => {
+  return instance.get("/room/members/download-csv/" + roomId);
 };
 
 export const removeMemberAPI = (roomId, userId) => {

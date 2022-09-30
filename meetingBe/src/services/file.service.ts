@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import { ReadStream } from "fs";
 import { GridFSBucket, ObjectId } from "mongodb";
 import XLSX from "xlsx";
+import { Readable } from "stream";
+import * as fs from "fs";
+
+XLSX.stream.set_readable(Readable);
 
 let gridfsBucket: GridFSBucket;
 mongoose.connection.once("open", () => {
@@ -47,6 +51,15 @@ export default () => {
     }
   };
 
+  const jsonToExcel = (data: object[]) => {
+    try {
+      const workSheet = XLSX.utils.json_to_sheet(data);
+      return XLSX.stream.to_csv(workSheet);
+    } catch {
+      throw new Error("Internal Server Error");
+    }
+  };
+
   const removeFile = (id: string) => {
     return gridfsBucket.delete(new ObjectId(id));
   };
@@ -54,5 +67,12 @@ export default () => {
   const findById = (id: string) => {
     return gridfsBucket.find({ _id: new ObjectId(id) });
   };
-  return { putFile, getStreamFile, removeFile, findById, excelToJson };
+  return {
+    putFile,
+    getStreamFile,
+    removeFile,
+    findById,
+    excelToJson,
+    jsonToExcel,
+  };
 };

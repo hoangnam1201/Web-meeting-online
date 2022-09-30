@@ -20,8 +20,9 @@ import Swal from "sweetalert2";
 import { searchUserAPI } from "../../api/user.api";
 import {
   addMembersAPI,
-  addMembersByFile,
+  addMembersByFileAPI,
   deleteFloorAPI,
+  dowloadMemberCSVFileAPI,
   getRoomAPI,
   increaseFloorAPI,
   removeMemberAPI,
@@ -153,7 +154,7 @@ function UpdateEvent() {
     const fd = new FormData();
     fd.append("importFile", files[0]);
     setMembersLoading(true);
-    await addMembersByFile(id, fd);
+    await addMembersByFileAPI(id, fd);
     await getRoom(null, "UPDATE_MEMBERS");
     e.target.value = null;
   };
@@ -175,6 +176,27 @@ function UpdateEvent() {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const onDownload = async () => {
+    try {
+      const data = await dowloadMemberCSVFileAPI(id);
+      const url = window.URL.createObjectURL(
+        new Blob([data], { type: "text/csv" })
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `members-list.csv`);
+
+      // Append to html link element page
+      document.body.appendChild(link);
+
+      // Start download
+      link.click();
+
+      // Clean up and remove the link
+      link.parentNode.removeChild(link);
+    } catch {}
   };
 
   return (
@@ -400,29 +422,36 @@ function UpdateEvent() {
                 google account at least once
               </p>
             </div>
-            <div>
-              <Button variant="outlined">
-                <label>
-                  Import by xlsx file
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      onFileChange(e);
-                    }}
-                    hidden
-                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                  />
-                </label>
-              </Button>
-              <p className="text-gray-400 font-thin text-sm">
-                Only files in our{" "}
-                <span
-                  className="font-bold cursor-pointer hover:text-gray-500"
-                  onClick={AboutFormatSwal}
-                >
-                  format
-                </span>
-              </p>
+            <div className="flex gap-2">
+              <div>
+                <Button variant="outlined">
+                  <label>
+                    Import by xlsx file
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        onFileChange(e);
+                      }}
+                      hidden
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    />
+                  </label>
+                </Button>
+                <p className="text-gray-400 font-thin text-sm">
+                  Only files in our
+                  <span
+                    className="font-bold cursor-pointer hover:text-gray-500"
+                    onClick={AboutFormatSwal}
+                  >
+                    format
+                  </span>
+                </p>
+              </div>
+              <div>
+                <Button variant="contained" onClick={onDownload}>
+                  Export to csv
+                </Button>
+              </div>
             </div>
           </div>
           <div

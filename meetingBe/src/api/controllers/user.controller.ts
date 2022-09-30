@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import { Request, Response } from "express";
-import { UserReadDto } from "../../Dtos/user-read.dto";
+import { UserReadDetailDto } from "../../Dtos/user-read-detail.dto";
 import { UserCreateDto } from "../../Dtos/user-create.dto";
 import UserChangeDto from "../../Dtos/user-change.dto";
 import UserService from "../../services/user.service";
@@ -25,7 +25,7 @@ export default () => {
       const user = await userService.findUserById(userId as string);
       return res
         .status(200)
-        .json({ status: 200, data: UserReadDto.fromUser(user) });
+        .json({ status: 200, data: UserReadDetailDto.fromUser(user) });
     } catch {
       return res
         .status(500)
@@ -54,7 +54,7 @@ export default () => {
     const userId = req.userData.userId;
     try {
       const user = await userService.findUserById(userId);
-      const userRead = UserReadDto.fromUser(user);
+      const userRead = UserReadDetailDto.fromUser(user);
       return res.status(200).json({ status: 200, data: userRead });
     } catch (err) {
       return res

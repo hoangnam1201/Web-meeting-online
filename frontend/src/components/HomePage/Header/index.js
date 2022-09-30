@@ -13,7 +13,6 @@ import {
   actionSetUserInfo,
 } from "../../../store/actions/userInfoAction";
 import Scroll from "react-scroll";
-import { Button } from "@mui/material";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
@@ -56,7 +55,13 @@ const Header = React.memo(({ type = 0, ...rest }) => {
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
               <Link to="/" className="navbar-brand">
-                <img width="150" height="100" src={imgLogo} alt="" referrerPolicy="no-referrer" />
+                <img
+                  width="150"
+                  height="100"
+                  src={imgLogo}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                />
               </Link>
               <div
                 className="collapse navbar-collapse mr-10"
@@ -105,6 +110,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                       <img
                         src={currentUser?.user?.picture}
                         alt=""
+                        referrerPolicy="no-referrer"
                         className="cursor-pointer rounded-full w-12"
                       ></img>
                     ) : (

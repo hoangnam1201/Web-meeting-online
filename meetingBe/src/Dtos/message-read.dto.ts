@@ -1,10 +1,10 @@
 import { Message } from "../models/message.model";
 import { User } from "../models/user.model";
-import { UserReadDto } from "./user-read.dto";
+import { UserReadDetailDto } from "./user-read-detail.dto";
 
 export class MessageReadDto {
   _id: any;
-  sender: UserReadDto;
+  sender: UserReadDetailDto;
   message: string;
   files: { fileId: string; name: string }[];
   like: [{ option: number }];
@@ -13,7 +13,7 @@ export class MessageReadDto {
   static fromMessage(message: Message): MessageReadDto {
     const messageRead = new MessageReadDto();
     messageRead._id = message._id;
-    messageRead.sender = UserReadDto.fromUser(message.sender as User);
+    messageRead.sender = UserReadDetailDto.fromUser(message.sender as User);
     messageRead.message = message.message;
     messageRead.like = message.like;
     messageRead.files = message.files;

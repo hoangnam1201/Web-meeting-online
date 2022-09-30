@@ -1,7 +1,7 @@
 import { ObjectId } from "mongoose";
 import { Room } from "../models/room.model";
 import { User } from "../models/user.model";
-import { UserReadDto } from "./user-read.dto";
+import { UserReadDetailDto } from "./user-read-detail.dto";
 
 export class RoomReadDto {
   _id: string;
@@ -11,13 +11,13 @@ export class RoomReadDto {
   endDate: number;
   memberCount: number;
   floors: ObjectId[];
-  owner: UserReadDto;
+  owner: UserReadDetailDto;
 
   static fromRoom(room: Room) {
     const roomRead = new RoomReadDto();
     roomRead._id = room._id.toString();
     roomRead.name = room.name;
-    roomRead.owner = UserReadDto.fromUser(room.owner as User);
+    roomRead.owner = UserReadDetailDto.fromUser(room.owner as User);
     roomRead.description = room.description;
     roomRead.startDate = room.startDate;
     roomRead.endDate = room.endDate;

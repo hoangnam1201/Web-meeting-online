@@ -3,7 +3,10 @@ import { validationResult } from "express-validator";
 import { RoomCreateDto } from "../../Dtos/room-create.dto";
 import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
 import { RoomReadDto } from "../../Dtos/room-read.dto";
+import { UserReadDetailDto } from "../../Dtos/user-read-detail.dto";
+import { UserReadDto } from "../../Dtos/user-read.dto";
 import { Room } from "../../models/room.model";
+import { User } from "../../models/user.model";
 import FileService from "../../services/file.service";
 import MailService from "../../services/mail.service";
 import RoomService from "../../services/room.service";
@@ -176,13 +179,6 @@ export default () => {
       if (!user)
         return res.status(400).json({ status: 400, error: "Not Found" });
       await mailService.sendInvitation(roomId, user.email);
-      // const notification = await notificationService.createType12N(
-      //   userId,
-      //   notificationService.Type.receiptInvitation,
-      //   authId,
-      //   roomId
-      // );
-      // req.app.io.to(userId).emit("notification", notification);
       res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
@@ -201,17 +197,6 @@ export default () => {
         return total + " " + currentUser.email;
       }, "");
       await mailService.sendInvitation(roomId, ids);
-      // await Promise.all(
-      //   userIds.map(async (id: string) => {
-      //     const notification = await notificationService.createType12N(
-      //       id,
-      //       notificationService.Type.receiptInvitation,
-      //       authId,
-      //       roomId
-      //     );
-      //     req.app.io.to(id).emit("notification", notification);
-      //   })
-      // );
       res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
@@ -230,17 +215,6 @@ export default () => {
         return total + " " + currentUser.email;
       }, "");
       await mailService.sendExpulsion(roomId, ids);
-      // await Promise.all(
-      //   userIds.map(async (id: string) => {
-      //     const notification = await notificationService.createType12N(
-      //       id,
-      //       notificationService.Type.isRemoved,
-      //       authId,
-      //       roomId
-      //     );
-      //     req.app.io.to(id).emit("notification", notification);
-      //   })
-      // );
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
@@ -280,17 +254,6 @@ export default () => {
         return total + " " + currentUser.email;
       }, "");
       await mailService.sendInvitation(roomId, ids);
-      // await Promise.all(
-      //   userIds.map(async (id: string) => {
-      //     const notification = await notificationService.createType12N(
-      //       id,
-      //       notificationService.Type.receiptInvitation,
-      //       authId,
-      //       roomId
-      //     );
-      //     req.app.io.to(id).emit("notification", notification);
-      //   })
-      // );
       res.status(200).json({ status: 200, data: null });
     } catch {
       return res
@@ -308,13 +271,6 @@ export default () => {
       if (!user)
         return res.status(400).json({ status: 400, error: "Not Found" });
       await mailService.sendExpulsion(roomId, user.email);
-      // const notification = await notificationService.createType12N(
-      //   userId as string,
-      //   notificationService.Type.isRemoved,
-      //   authId,
-      //   roomId
-      // );
-      // req.app.io.to(userId).emit("notification", notification);
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
       console.log(err);
@@ -322,6 +278,24 @@ export default () => {
         .status(500)
         .json({ status: 500, error: "Internal Server Error" });
     }
+  };
+
+  const exportToCSV = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      const room = await roomService.getDetail(roomId);
+      const membersReadDto = UserReadDto.fromArrayUser(room.members as User[]);
+      const stream = fileService.jsonToExcel(membersReadDto);
+
+      //response
+      res.setHeader(
+        "Content-disposition",
+        "attachment; filename=" + `members-${roomId}.scv`
+      );
+      res.setHeader("Content-type", "text/csv");
+
+      stream.pipe(res);
+    } catch {}
   };
 
   return {
@@ -338,5 +312,6 @@ export default () => {
     getRoomById,
     deleteRoom,
     deleteFloor,
+    exportToCSV,
   };
 };

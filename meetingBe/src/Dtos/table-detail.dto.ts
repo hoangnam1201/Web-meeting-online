@@ -1,4 +1,4 @@
-import { UserReadDto } from "./user-read.dto";
+import { UserReadDetailDto } from "./user-read-detail.dto";
 import { Table } from "../models/table.model";
 import { User } from "../models/user.model";
 import { UserReadCallDto } from "./user-read-call.dto";
@@ -7,7 +7,7 @@ export class TableDetailDto {
   _id: any;
   name: string;
   users: UserReadCallDto[];
-  members: UserReadDto[];
+  members: UserReadDetailDto[];
   numberOfSeat: number;
   floor: string;
 
@@ -17,7 +17,7 @@ export class TableDetailDto {
     tableDetail.name = table.name;
     tableDetail.numberOfSeat = table.numberOfSeat;
     tableDetail.users = UserReadCallDto.fromArrayUser(table.users as User[]);
-    tableDetail.members = UserReadDto.fromArrayUser(table.members as User[]);
+    tableDetail.members = UserReadDetailDto.fromArrayUser(table.members as User[]);
     tableDetail.floor = table.floor.toString();
     return tableDetail;
   }
