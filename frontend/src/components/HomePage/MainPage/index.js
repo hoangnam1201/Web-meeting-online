@@ -87,7 +87,7 @@ const MainPage = () => {
         component="div"
         maxWidth={false}
       >
-        <h1 className={classes.title}>Thiết lập cho các nhóm hiện đại</h1>
+        <h1 className={classes.title}>Set up for modern groups</h1>
         <Grid
           container
           spacing={4}
@@ -99,10 +99,10 @@ const MainPage = () => {
               <img width="100" height="100" src={iconCheck} alt="iconcheck" />
             </div>
             <div className={classes.textContent}>
-              <h4 className={classes.title2}>Video và âm thanh HD</h4>
+              <h4 className={classes.title2}>Video and Audio HD</h4>
               <p>
-                Mang video và âm thanh HD tới cuộc họp của bạn với hỗ trợ lên
-                tới 1000 người tham gia video và 49 video trên màn hình.
+                Bring video and audio to your meeting with up support up to 100
+                video participants and 10 on-screen videos.
               </p>
             </div>
           </Grid>
@@ -111,10 +111,10 @@ const MainPage = () => {
               <img width="100" height="100" src={iconCheck} alt="iconcheck" />
             </div>
             <div className={classes.textContent}>
-              <h4 className={classes.title2}>Công cụ cộng tác tích hợp</h4>
+              <h4 className={classes.title2}>Built-in collaboration tools</h4>
               <p>
-                Nhiều người tham gia có thể đồng loạt chia sẻ màn hình của mình
-                và đồng chú thích cho một cuộc họp có nhiều lượt tương tác hơn.
+                Multiple participants can simultaneously share their screen and
+                co-annotate a meeting with more engagement.
               </p>
             </div>
           </Grid>
@@ -123,10 +123,10 @@ const MainPage = () => {
               <img width="100" height="100" src={iconCheck} alt="iconcheck" />
             </div>
             <div className={classes.textContent}>
-              <h4 className={classes.title2}>Dành cho Kết nối</h4>
+              <h4 className={classes.title2}>For Connections</h4>
               <p>
-                Bộ lọc, cảm xúc, thăm dò ý kiến, giơ tay, và chia sẻ nhạc hoặc
-                vidieo giúp cuộc hợp trở nên thú vị và hấp dẫn hơn.
+                Filters, emotions, polls, raise your hand, and share music or
+                video makes meetings more interesting and engaging.
               </p>
             </div>
           </Grid>
@@ -135,10 +135,10 @@ const MainPage = () => {
               <img width="75" height="75" src={iconCheck} alt="iconcheck" />
             </div>
             <div className={classes.textContent}>
-              <h4 className={classes.title2}>Bản ghi lại và bản chép</h4>
+              <h4 className={classes.title2}>Record and transcipt</h4>
               <p>
-                Ghi lại cuộc họp của bạn vào thiết bị hoặc trên đám mây, với bản
-                chép dễ dàng tìm kiếm.
+                Record your meetings to your device or in the cloud, with copy
+                easy search.
               </p>
             </div>
           </Grid>
@@ -147,11 +147,8 @@ const MainPage = () => {
               <img width="50" height="50" src={iconCheck} alt="iconcheck" />
             </div>
             <div className={classes.textContent}>
-              <h4 className={classes.title2}>Lên lịch khoa học</h4>
-              <p>
-                Hỗ trợ lên lịch hoặc bắt đầu cuộc họp từ Outlook, Gmail hoặc
-                iCal.
-              </p>
+              <h4 className={classes.title2}>Science calendar</h4>
+              <p>Support to schedule or start a meeting from Outlook, Gmail</p>
             </div>
           </Grid>
           <Grid item xs={2} sm={4} md={4} className={classes.groupText}>
@@ -159,11 +156,11 @@ const MainPage = () => {
               <img width="125" height="125" src={iconCheck} alt="iconcheck" />
             </div>
             <div className={classes.textContent}>
-              <h4 className={classes.title2}>Trò chuyện Nhóm</h4>
+              <h4 className={classes.title2}>Group Chat</h4>
               <p>
-                Trò chuyện theo nhóm, lịch sử dễ dàng tìm kiếm, chia sẻ tệp tin
-                tích hợp và lưu trữ trong 10 năm. Nâng cấp dễ dàng từ cuộc gọi
-                một-một hoặc gọi nhóm.
+                Group chat, easy search history, file sharing integrated and
+                stored for 1 years. Upgrade easily from call one-to-one or group
+                call.
               </p>
             </div>
           </Grid>
@@ -199,25 +196,24 @@ const MainPage = () => {
             <div className={classes.textContent}>
               <h2 className={classes.title2}>UTE Meeting</h2>
               <p>
-                Sở hữu tất cả các dịch vụ Meetings, Phone và Chat trên mọi thiết
-                bị.
+                Get all Meetings, Phone and Chat services on any device bag.
               </p>
               <ul className={classes.ul}>
                 <li>
-                  Nâng cấp cuộc trò chuyện hoặc cuộc gọi điện thoại thành cuộc
-                  họp chỉ bằng một cú nhấp
+                  Upgrade a conversation or phone call to a call one-click
+                  meeting
                 </li>
                 <li>
-                  Hưởng các dịch vụ đầu ngành với video và âm thanh chất lượng
-                  cao nhất
+                  Enjoy industry-leading services with quality video and audio
+                  tallest
                 </li>
                 <li>
-                  Các ứng dụng được cung cấp trên nền tảng Windows, MacOS, Linux
-                  cũng như iOS và Android OS
+                  Applications are provided on Windows, MacOS, Linux platforms
+                  as well as iOS and Android OS
                 </li>
               </ul>
               <Button variant="contained" color="warning">
-                Bắt đầu sử dụng dịch vụ ngay hôm nay
+                Start using the service today
               </Button>
             </div>
           </Grid>

@@ -79,8 +79,8 @@ const DialogActionsMui = withStyles(() => ({
   },
 }))(DialogActions);
 const schema = yup.object().shape({
-  name: yup.string().required("Vui lòng nhập tên!!"),
-  description: yup.string().required("Vui lòng nhập mô tả !!!"),
+  name: yup.string().required("Please input your room name !!"),
+  description: yup.string().required("Please input description !!!"),
 });
 
 const ManageDialog = (props) => {
@@ -129,7 +129,7 @@ const ManageDialog = (props) => {
         setOpenDialog(false);
         Swal.fire({
           icon: "success",
-          title: "Tạo room thành công",
+          title: "Create roon successfull !",
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
@@ -165,7 +165,7 @@ const ManageDialog = (props) => {
         setOpenDialog(false);
         Swal.fire({
           icon: "success",
-          title: "Cập nhật thành công",
+          title: "Update room successfull !",
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
@@ -208,7 +208,7 @@ const ManageDialog = (props) => {
                     required
                     fullWidth
                     id="name"
-                    label="Tên phòng"
+                    label="Room name"
                     name="name"
                     autoComplete="name"
                     inputRef={register}
@@ -225,7 +225,7 @@ const ManageDialog = (props) => {
                     required
                     fullWidth
                     id="description"
-                    label="Mô tả"
+                    label="Description"
                     name="description"
                     autoComplete="description"
                     inputRef={register}
@@ -241,7 +241,7 @@ const ManageDialog = (props) => {
                     <DesktopDatePicker
                       margin="dense"
                       id="date-picker-dialog-register"
-                      label="Ngày bắt đầu"
+                      label="Start Date"
                       inputFormat="MM/dd/yyyy"
                       name="startDate"
                       value={new Date(startDate)}
@@ -258,7 +258,7 @@ const ManageDialog = (props) => {
                     <DesktopDatePicker
                       margin="dense"
                       id="date-picker-dialog-register2"
-                      label="Ngày kết thúc"
+                      label="End Date"
                       inputFormat="MM/dd/yyyy"
                       name="endDate"
                       value={new Date(endDate)}

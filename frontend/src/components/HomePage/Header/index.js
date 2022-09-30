@@ -40,8 +40,8 @@ const Header = React.memo(({ type = 0, ...rest }) => {
       history.push("/auth/login");
       Swal.fire({
         icon: "success",
-        title: "Đăng xuất thành công",
-        text: "Cảm ơn bạn đã sử dụng UTE Meeting",
+        title: "Logout successfull !!",
+        text: "Thank you for using UTE Meeting",
         showConfirmButton: false,
         timer: 1500,
       });
@@ -130,11 +130,11 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                           </li>
                           <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
                             <Link underline="none" to="/user/profile">
-                              Thông tin cá nhân
+                              Profile
                             </Link>
                           </li>
                           <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
-                            <button onClick={handleLogout}>Đăng xuất</button>
+                            <button onClick={handleLogout}>Log out</button>
                           </li>
                         </ul>
                       </div>

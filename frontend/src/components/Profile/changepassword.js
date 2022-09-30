@@ -39,12 +39,12 @@ const useStyles = makeStyles(() => ({
 }));
 
 const schema = yup.object().shape({
-  oldPassword: yup.string().required("Vui lòng nhập lại password cũ !"),
-  password: yup.string().required("Vui lòng nhập password mới !"),
+  oldPassword: yup.string().required("Please input old password !"),
+  password: yup.string().required("Please input new password !"),
   passwordConfirmation: yup
     .string()
-    .required("Vui lòng nhập lại password !")
-    .oneOf([yup.ref("password")], "Mật khẩu không khớp !"),
+    .required("Please input confirm password !")
+    .oneOf([yup.ref("password")], "Password incorrect !"),
 });
 
 export default function ChangePassword() {
@@ -53,9 +53,9 @@ export default function ChangePassword() {
     resolver: yupResolver(schema),
   });
   const classes = useStyles();
-  const accessToken = localStorage
-    ? JSON.parse(localStorage.getItem("user"))
-    : "";
+  // const accessToken = localStorage
+  //   ? JSON.parse(localStorage.getItem("user"))
+  //   : "";
   const [loading, setLoading] = useState(false);
   const [errorNotify, setErrorNotify] = useState(null);
   const [cookies] = useCookies(["u_auth"]);
@@ -88,7 +88,7 @@ export default function ChangePassword() {
         setLoading(false);
         Swal.fire({
           icon: "success",
-          title: "Cập nhật thành công",
+          title: "Update password successfull !",
           timer: 1500,
           showConfirmButton: false,
         });
@@ -109,12 +109,8 @@ export default function ChangePassword() {
   return (
     <>
       <Helmet>
-        <title>UTE Meeting - Đổi mật khẩu</title>
-        <meta
-          charSet="utf-8"
-          name="description"
-          content="Trang hồ sơ cá nhân"
-        />
+        <title>UTE Meeting - Change password</title>
+        <meta charSet="utf-8" name="description" content="changepassword" />
       </Helmet>
       <Box className={classes.loaderBox}>
         <ScaleLoader
@@ -140,7 +136,7 @@ export default function ChangePassword() {
             fullWidth
             type="password"
             id="oldPassword"
-            label="Mật khẩu cũ"
+            label="Old Password"
             name="oldPassword"
             autoComplete="oldPassword"
             inputRef={register}
@@ -157,7 +153,7 @@ export default function ChangePassword() {
             required
             fullWidth
             id="password"
-            label="Mật khẩu mới"
+            label="New Password"
             name="password"
             autoComplete="password"
             inputRef={register}
@@ -174,7 +170,7 @@ export default function ChangePassword() {
             fullWidth
             type="password"
             id="passwordConfirmation"
-            label="Xác nhận lại mật khẩu"
+            label="Confirm Password"
             name="passwordConfirmation"
             autoComplete="passwordConfirmation"
             inputRef={register}
@@ -197,7 +193,7 @@ export default function ChangePassword() {
             color="primary"
             className={classes.button}
           >
-            Thay đổi
+            Update
           </LoadingButton>
         </form>
       </Container>
