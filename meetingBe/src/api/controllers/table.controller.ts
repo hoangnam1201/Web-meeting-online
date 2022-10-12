@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { TableCreateDto } from "../../Dtos/table-create.dto";
+import { TableReadCSVDto } from "../../Dtos/table-read-csv.dto";
+import { FileRequest } from "../../interfaces/fileRequest";
+import FileService from "../../services/file.service";
+import RoomService from "../../services/room.service";
 import TableService from "../../services/table.service";
 
 export default () => {
   const tableService = TableService();
+  const fileService = FileService();
+  const roomService = RoomService();
 
   const createTable = async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -97,6 +103,11 @@ export default () => {
   };
 
   const getTablesInRoomAndFloor = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: 400, errors: errors.array() });
+    }
+
     const roomId = req.params.roomId;
     const floor = req.query.floor;
     try {
@@ -133,7 +144,76 @@ export default () => {
     }
   };
 
+  const addMembersByFile = async (req: FileRequest, res: Response) => {
+    const roomId = req.params.roomId;
+    const file = req.files?.importFile;
+
+    try {
+      const room = await roomService.findById(roomId);
+      if (!room)
+        return res.status(400).json({ status: 400, error: "not found room" });
+      if (!room.floors.length)
+        return res
+          .status(400)
+          .json({ status: 400, error: "room have to leatest one floor" });
+
+      await tableService.removeAllTableInRoom(roomId);
+      const data = fileService.excelToJson(file.data);
+      const tables = data.reduce(
+        (total, current: { group_table: string; id: string }) => {
+          total[current.group_table] = total[current.group_table] || [];
+          total[current.group_table].push(current.id);
+          return total;
+        },
+        Object.create(null)
+      );
+      const AddTables = Object.keys(tables).reduce((data, key: string) => {
+        const members = tables[key];
+        const table = {
+          name: key,
+          numberOfSeat: members.length < 9 ? members.length : 8,
+          floor: room.floors[0],
+          room: roomId,
+          members,
+        };
+        data.push(table);
+        return data;
+      }, []);
+      console.log(AddTables);
+      await tableService.create(AddTables);
+      res.status(200).json({ status: 200, data: null });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const exportToCSV = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      const tables = await tableService.getAllMemberTables(roomId);
+      const tableRead = TableReadCSVDto.fromArray(tables);
+      console.log(tableRead.merges);
+      const stream = fileService.jsonToExcel(tableRead.data, tableRead.merges);
+
+      //response
+      res.setHeader(
+        "Content-disposition",
+        "attachment; filename=" + `group-${roomId}.xlsx`
+      );
+      res.setHeader(
+        "Content-type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      stream.pipe(res);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Interal Server Error", status: 200 });
+    }
+  };
+
   return {
+    addMembersByFile,
     createTable,
     saveMember,
     deleteTable,
@@ -144,5 +224,6 @@ export default () => {
     getTable,
     getTablesInRoom,
     getTablesInRoomAndFloor,
+    exportToCSV,
   };
 };

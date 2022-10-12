@@ -45,16 +45,32 @@ export default () => {
           ...xldata,
         ];
       });
+      console.log(xldata);
       return xldata;
     } catch {
       throw new Error("Internal Server Error");
     }
   };
 
-  const jsonToExcel = (data: object[]) => {
+  const jsonToExcel = (
+    data: object[],
+    merges: { s: { r: number; c: number }; e: { r: number; c: number } }[]
+  ) => {
     try {
+      console.log(data);
       const workSheet = XLSX.utils.json_to_sheet(data);
-      return XLSX.stream.to_csv(workSheet);
+      workSheet["!merges"] = merges;
+      console.log(XLSX.utils.sheet_to_json(workSheet));
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, workSheet, "sheet1");
+      const buffer = XLSX.write(wb, { bookType: "xlsx", type: "buffer" });
+      const stream = new Readable();
+      stream.push(buffer);
+      stream.push(null);
+
+      // return XLSX.stream.to_csv(workSheet);
+      return stream;
     } catch {
       throw new Error("Internal Server Error");
     }

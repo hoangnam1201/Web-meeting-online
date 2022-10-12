@@ -178,26 +178,12 @@ function UpdateEvent() {
     }
   };
 
-  const onDownload = async () => {
-    try {
-      const data = await dowloadMemberCSVFileAPI(id);
-      const url = window.URL.createObjectURL(
-        new Blob([data], { type: "text/csv" })
-      );
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `members-list.csv`);
-
-      // Append to html link element page
-      document.body.appendChild(link);
-
-      // Start download
-      link.click();
-
-      // Clean up and remove the link
-      link.parentNode.removeChild(link);
-    } catch {}
-  };
+  function s2ab(s) {
+    var buf = new ArrayBuffer(s.length);
+    var view = new Uint8Array(buf);
+    for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+    return buf;
+  }
 
   return (
     <div>
@@ -343,9 +329,8 @@ function UpdateEvent() {
                       dispatch(tableSelectFloorAction(id, f));
                     }}
                     key={f}
-                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
-                      tables?.currentFloor === f && "shadow-lg bg-gray-200"
-                    }`}
+                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${tables?.currentFloor === f && "shadow-lg bg-gray-200"
+                      }`}
                   >
                     Floor {index}
                   </button>
@@ -438,9 +423,9 @@ function UpdateEvent() {
                   </label>
                 </Button>
                 <p className="text-gray-400 font-thin text-sm">
-                  Only files in our
+                  Only files in our 
                   <span
-                    className="font-bold cursor-pointer hover:text-gray-500"
+                    className="font-bold cursor-pointer hover:text-gray-500 mx-1"
                     onClick={AboutFormatSwal}
                   >
                     format
@@ -448,8 +433,10 @@ function UpdateEvent() {
                 </p>
               </div>
               <div>
-                <Button variant="contained" onClick={onDownload}>
-                  Export to csv
+                <Button variant="contained">
+                  <a href={`${process.env.REACT_APP_HOST_BASE}/api/room/members/download-csv/${id}`} download='user-list.xlsx'>
+                    Export
+                  </a>
                 </Button>
               </div>
             </div>

@@ -5,16 +5,13 @@ import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
 import { RoomReadDto } from "../../Dtos/room-read.dto";
 import { UserReadDetailDto } from "../../Dtos/user-read-detail.dto";
 import { UserReadDto } from "../../Dtos/user-read.dto";
+import { FileRequest } from "../../interfaces/fileRequest";
 import { Room } from "../../models/room.model";
 import { User } from "../../models/user.model";
 import FileService from "../../services/file.service";
 import MailService from "../../services/mail.service";
 import RoomService from "../../services/room.service";
 import UserService from "../../services/user.service";
-
-interface FileRequest extends Request {
-  files: any;
-}
 
 export default () => {
   const roomService = RoomService();
@@ -226,17 +223,6 @@ export default () => {
   const addMembersByFile = async (req: FileRequest, res: Response) => {
     const roomId = req.params.roomId;
     const file = req.files?.importFile;
-    if (!file)
-      return res
-        .status(400)
-        .json({ status: 400, error: "import file is required" });
-    if (
-      file.mimetype !==
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-      return res
-        .status(400)
-        .json({ status: 400, error: "invalied import file" });
 
     try {
       await roomService.removeAllMembers(roomId);
@@ -285,17 +271,24 @@ export default () => {
     try {
       const room = await roomService.getDetail(roomId);
       const membersReadDto = UserReadDto.fromArrayUser(room.members as User[]);
-      const stream = fileService.jsonToExcel(membersReadDto);
+      const stream = fileService.jsonToExcel(membersReadDto, []);
 
       //response
       res.setHeader(
         "Content-disposition",
-        "attachment; filename=" + `members-${roomId}.scv`
+        "attachment; filename=" + `members-${roomId}.xlsx`
       );
-      res.setHeader("Content-type", "text/csv");
+      res.setHeader(
+        "Content-type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
 
       stream.pipe(res);
-    } catch {}
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, error: "Internal Server Error" });
+    }
   };
 
   return {

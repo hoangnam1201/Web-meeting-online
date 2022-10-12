@@ -2,6 +2,7 @@ import { Router } from "express";
 import { body, param, query } from "express-validator";
 import RoomController from "../controllers/room.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
+import { checkXLSXFile } from "../middlewares/checkXLSXFile.middeware";
 import RoomValidator from "../validations/room.validator";
 
 const roomRoute = Router();
@@ -61,7 +62,11 @@ roomRoute.delete(
 );
 roomRoute.post(
   "/members/add-members-by-file/:roomId",
-  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],
+  [
+    AuthMiddlesware.verifyToken,
+    AuthMiddlesware.checkClassOwnership,
+    checkXLSXFile,
+  ],
   roomController.addMembersByFile
 );
 roomRoute.post(

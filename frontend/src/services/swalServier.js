@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import importFileImage from "../assets/importFile.png";
+import importGroupByFile from "../assets/importGroupByFile.PNG";
 
 export const countTime = (title, html, time, callback) => {
   let timerInterval;
@@ -101,7 +102,15 @@ export const buzzSwal = (text) => {
 export const AboutFormatSwal = () => {
   Swal.fire({
     title: "Format files",
-    text: "The file could have multiple sheets and require an 'Email' or 'email' column",
+    text: "It only read 'Email' or 'email' column",
     imageUrl: importFileImage,
   });
 };
+
+export const AboutFormatGroupFileSwal = () => {
+  Swal.fire({
+    title: "Format files",
+    text: "It only read 'id' and 'group_table' column",
+    imageUrl: importGroupByFile,
+  });
+}

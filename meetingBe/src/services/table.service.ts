@@ -4,7 +4,7 @@ import roomModel from "../models/room.model";
 import tableModel from "../models/table.model";
 
 export default () => {
-  const create = (tableData: TableCreateDto) => {
+  const create = (tableData: TableCreateDto | TableCreateDto[]) => {
     return tableModel.create(tableData);
   };
 
@@ -150,7 +150,19 @@ export default () => {
       });
   };
 
+  const getAllMemberTables = (roomId: string) => {
+    return tableModel
+      .find({ room: roomId })
+      .select("name")
+      .populate({ path: "members" });
+  };
+
+  const removeAllTableInRoom = (roomId: string) => {
+    return tableModel.remove({ room: roomId });
+  };
+
   return {
+    removeAllTableInRoom,
     findAndClearJoiner,
     getById,
     create,
@@ -164,6 +176,7 @@ export default () => {
     removeUser,
     getDetail,
     getTablesInRoom,
+    getAllMemberTables,
     searchMember,
   };
 };

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { query } from "express-validator";
 import TablerController from "../controllers/table.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
+import { checkXLSXFile } from "../middlewares/checkXLSXFile.middeware";
 import TableValidator from "../validations/table.validator";
 
 const tableRoute = Router();
@@ -57,6 +58,12 @@ tableRoute.get(
   tableController.getMemberTables
 );
 
+tableRoute.post(
+  "/members/add-by-file/:roomId",
+  [AuthMiddlesware.verifyToken, checkXLSXFile],
+  tableController.addMembersByFile
+);
+
 tableRoute.get(
   "/in-room-and-floor/:roomId",
   [
@@ -65,5 +72,7 @@ tableRoute.get(
   ],
   tableController.getTablesInRoomAndFloor
 );
+
+tableRoute.get("/members/download-csv/:roomId", tableController.exportToCSV);
 
 export default tableRoute;

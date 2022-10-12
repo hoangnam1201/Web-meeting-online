@@ -43,3 +43,11 @@ export const addMemberTableAPI = (tableId, userId) => {
 export const removeMemberTableAPI = (tableId, userId) => {
   return instance.put("/table/remove-user/" + tableId, { userId });
 };
+
+export const downloadMemberTableCSVAPI = (roomId) => {
+  return instance.get("/table/members/download-csv/" + roomId);
+}
+
+export const addMemberTableByFileAPI = (roomId, data) => {
+  return instance.post('/table/members/add-by-file/' + roomId, data)
+}
