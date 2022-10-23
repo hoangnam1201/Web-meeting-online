@@ -336,7 +336,6 @@ export default (ioRoom: any, io: any) => {
           floor: previousFloor,
         });
       }
-
       //join new table
       await tableService.addJoiner(roomId, tableId, userId);
 

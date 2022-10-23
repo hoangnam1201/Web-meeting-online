@@ -48,6 +48,7 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
               src={user?.picture}
               alt=""
               width={50}
+              referrerPolicy="no-referrer"
               height={50}
             />
           </button>
@@ -55,7 +56,7 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
           <div>
             <button onClick={clickHandler} className="outline-none">
               <Avatar
-                onClick={() => {}}
+                onClick={() => { }}
                 name={user?.name}
                 size="50"
                 round={true}

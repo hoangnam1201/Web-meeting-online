@@ -95,7 +95,7 @@ export const roomCallJoinTable = (id, mediaStatus) => {
     roomCall.socket.emit(
       "table:join",
       { tableId: id },
-      roomCall.myID,
+      roomCall.myId,
       mediaStatus,
       () => {
         dispatch(roomCallSetJoinLoading(false))
