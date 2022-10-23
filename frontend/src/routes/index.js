@@ -6,7 +6,6 @@ import MyEvent from "../components/MyEvent";
 import UpdateEvent from "../components/updateEvent";
 import RoomCall from "../components/roomCall";
 import GroupManagement from "../components/groupManagement";
-import RecordPreview from "../components/RecordPreview";
 import TableManagement from "../components/tableManagement";
 
 export const userRoute = [
@@ -25,7 +24,6 @@ export const userRoute = [
     path: "/user/update-event/:id",
     component: UpdateEvent,
   },
-  { exact: true, path: "/user/record-preview", component: RecordPreview },
 ];
 
 export const roomRoute = [

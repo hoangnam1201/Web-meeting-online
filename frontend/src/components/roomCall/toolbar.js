@@ -23,22 +23,15 @@ import { confirmPresent, confirmSwal } from "../../services/swalServier";
 import { Link, useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
 import { useReactMediaRecorder } from "react-media-recorder";
-import { useCookies } from "react-cookie";
 import { LinearProgress } from "@mui/material";
 
-const Toolbar = ({
-  connection,
-  mediaStatus,
-  userJoined,
-  ...rest
-}) => {
+const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const currentUser = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const history = useHistory();
   const { status, startRecording, stopRecording, mediaBlobUrl } =
     useReactMediaRecorder({ screen: true });
-  const [cookies, setCookies, removeCookies] = useCookies(["urlBlob"]);
 
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
@@ -46,24 +39,22 @@ const Toolbar = ({
 
   useEffect(() => {
     if (status === "stopped") {
-      setCookies("urlBlob", mediaBlobUrl, { path: "/" });
+      downloadRecord(mediaBlobUrl);
     }
   }, [mediaBlobUrl]);
 
+  const downloadRecord = (urlBlob) => {
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    a.href = urlBlob;
+    a.download = "test.mp4";
+    a.click();
+    a.remove();
+  };
+
   const turnOnRecord = () => {
-    if (cookies.urlBlob) {
-      confirmSwal(
-        "Start recording",
-        "The old recording will be deleted",
-        () => {
-          startRecording();
-          removeCookies("urlBlob");
-        }
-      );
-      return;
-    }
     startRecording();
-    removeCookies("urlBlob");
   };
   const turnOffAudio = () => {
     connection.current.turnOffAudio();
@@ -93,28 +84,43 @@ const Toolbar = ({
 
   const joinTableHandler = () => {
     if (roomCall && roomCall.selectedTable && !roomCall.joinLoading) {
-      dispatch(roomCallJoinTable(roomCall.selectedTable, mediaStatus))
+      dispatch(roomCallJoinTable(roomCall.selectedTable, mediaStatus));
     }
-  }
+  };
   const cancelSeleted = () => {
-    if (!roomCall.joinLoading)
-      dispatch(setSeletedTable(null));
-  }
+    if (!roomCall.joinLoading) dispatch(setSeletedTable(null));
+  };
 
   return (
     <div {...rest}>
-      {roomCall?.selectedTable && <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full transform z-10 shadow bg-white py-1 px-10" >
-        <div className="flex items-center gap-4">
-          <p className=" whitespace-nowrap max-w-xs text-ellipsis overflow-hidden">you is selecting <b>{roomCall?.selectedTable}</b></p>
-          <div className="flex gap-2">
-            <button className="p-1 px-4 bg-gray-500 hover:bg-gray-600 text-white shadow-md rounded" onClick={joinTableHandler} disabled={roomCall?.joinLoading}>join</button>
-            <button className="p-1 shadow-md" onClick={cancelSeleted} disabled={roomCall?.joinLoading}>cancel</button>
+      {roomCall?.selectedTable && (
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full transform z-10 shadow bg-white py-1 px-10">
+          <div className="flex items-center gap-4">
+            <p className=" whitespace-nowrap max-w-xs text-ellipsis overflow-hidden">
+              you is selecting <b>{roomCall?.selectedTable}</b>
+            </p>
+            <div className="flex gap-2">
+              <button
+                className="p-1 px-4 bg-gray-500 hover:bg-gray-600 text-white shadow-md rounded"
+                onClick={joinTableHandler}
+                disabled={roomCall?.joinLoading}
+              >
+                join
+              </button>
+              <button
+                className="p-1 shadow-md"
+                onClick={cancelSeleted}
+                disabled={roomCall?.joinLoading}
+              >
+                cancel
+              </button>
+            </div>
+          </div>
+          <div className={`${!roomCall?.joinLoading && "invisible"}`}>
+            <LinearProgress />
           </div>
         </div>
-        <div className={`${!roomCall?.joinLoading && 'invisible'}`}>
-          <LinearProgress />
-        </div>
-      </div>}
+      )}
       <div className="relative flex py-2 text-gray-500 shadow mt-2">
         {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
           <div className="border-r-2 border-gray-400 px-3 flex items-center">
@@ -131,13 +137,7 @@ const Toolbar = ({
                 >
                   divide into tables
                 </button>
-                {cookies.urlBlob && (
-                  <div className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap">
-                    <Link to="/user/record-preview" target="_blank">
-                      preview record
-                    </Link>
-                  </div>
-                )}
+
                 {status !== "recording" ? (
                   <button
                     className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
