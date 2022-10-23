@@ -237,7 +237,7 @@ export default (ioRoom: any, io: any) => {
 
   const sendMessage = async function (
     data: { files: [{ data: Buffer; name: string }]; msgString: string },
-    callBack: (status: string) => void
+    callBack: (isSuccess: boolean) => void
   ) {
     const socket = this;
     const userId = socket.data.userData.userId;
@@ -259,16 +259,19 @@ export default (ioRoom: any, io: any) => {
       ioRoom
         .to(roomId)
         .emit("room:message", MessageReadDto.fromMessage(message));
-      callBack && callBack("success");
+      callBack && callBack(true);
     } catch {
-      callBack && callBack("error to send message");
+      callBack && callBack(false);
     }
   };
 
-  const sendTableMessage = async function (data: {
-    files: [{ data: Buffer; name: string }];
-    msgString: string;
-  }) {
+  const sendTableMessage = async function (
+    data: {
+      files: [{ data: Buffer; name: string }];
+      msgString: string;
+    },
+    callBack: (isSuccess: boolean) => void
+  ) {
     const socket = this;
     const userId = socket.data.userData.userId;
     const tableId = socket.data.tableId;
@@ -281,6 +284,7 @@ export default (ioRoom: any, io: any) => {
       createAt: new Date(),
     };
     ioRoom.to(tableId).emit("table:message", message);
+    callBack && callBack(true);
   };
 
   const getMessages = async function (pageIndex = 0) {
@@ -297,7 +301,8 @@ export default (ioRoom: any, io: any) => {
   const joinTable = async function (
     location: { tableId: string; floor: string },
     peerId: string,
-    media: { audio: boolean; video: boolean }
+    media: { audio: boolean; video: boolean },
+    callback: (isSuccess: boolean) => void
   ) {
     const socket: Socket = this;
     const userId = socket.data.userData.userId;
@@ -316,6 +321,7 @@ export default (ioRoom: any, io: any) => {
       // check previous tables
       const previousTableId = socket.data.tableId;
       checkPrevious: if (previousTableId) {
+        ioRoom.to(previousTableId).emit("table:user-leave", { userId, peerId });
         socket.leave(previousTableId);
         const table = await tableService.removeJoiner(previousTableId, userId);
         const previousFloor = table.floor.toString();
@@ -329,7 +335,6 @@ export default (ioRoom: any, io: any) => {
           tables: TableReadDto.fromArray(tables),
           floor: previousFloor,
         });
-        ioRoom.to(previousTableId).emit("table:user-leave", { userId, peerId });
       }
 
       //join new table
@@ -358,11 +363,12 @@ export default (ioRoom: any, io: any) => {
         media,
       });
 
+      callback && callback(true);
       socket.join(tableId);
       socket.data.tableId = tableId;
       socket.data.peerId = peerId;
-      socket.emit("table:join-success", tableId);
     } catch (err) {
+      callback && callback(false);
       socket.emit("table:err", err);
     }
   };
@@ -517,7 +523,7 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  const leaveTable = async function name(peerId: string) {
+  const leaveTable = async function (peerId: string) {
     const socket: Socket = this;
     const userId = socket.data.userData.userId;
     const roomId = socket.data.roomId;

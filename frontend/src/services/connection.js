@@ -10,17 +10,20 @@ import sound1 from "../sounds/meet-message-sound-1.mp3";
 import { renewToken } from "../api/user.api";
 import {
   roomAddRequestAction,
+  roomCallSetPeerId,
   roomSetRoomInfoAction,
   roomSetSocketAction,
+  roomShowChatAction,
+  roomShowLobbyAction,
 } from "../store/actions/roomCallAction";
 
 var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
 
 const peerEndPoint = {
-  host: "localhost",
+  host: process.env.REACT_APP_HOST_NAME,
   path: "/peerjs/meeting",
-  port: 3002,
+  port: process.env.REACT_APP_HOST_PORT,
 };
 const socketRoomEndPoint = process.env.REACT_APP_HOST_BASE + "/socket/rooms";
 const cookies = new Cookies();
@@ -51,7 +54,7 @@ class Connection {
   //peers
   peers = {};
   //room
-  info = null;
+  // info = null;
   //messages
   roomMessages = [];
   tableMessages = [];
@@ -120,16 +123,15 @@ class Connection {
     });
 
     this.socket.on("room:user-joined", (users) => {
-      console.log("joiners", users);
       this.joiners = users;
       this.setting.updateInstance("joiners", users);
     });
 
     this.socket.on("room:info", (room) => {
-      this.info = room;
       this.access = true;
       this.setting.updateInstance("access", this.access);
-      this.setting.updateInstance("info", this.info);
+      // this.info = room;
+      // this.setting.updateInstance("info", this.info);
       store.dispatch(roomSetRoomInfoAction(room));
     });
 
@@ -156,8 +158,6 @@ class Connection {
     this.socket.on("room:divide-tables", (tables) => {
       this.clearPeers();
       store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
-      // this.tables = tables;
-      // this.setting.updateInstance("tables", [...this.tables]);
 
       this.myStream.stream?.getTracks().forEach((tr) => {
         tr.stop();
@@ -167,11 +167,9 @@ class Connection {
 
       const currentUser = store.getState().userReducer?.user;
 
-      console.log(tables);
       const table = tables.find((t) => {
         return t.members.find((m) => m._id === currentUser._id);
       });
-      console.log(table);
       if (!table) {
         return confirmSwal(
           "Error to join table",
@@ -214,11 +212,12 @@ class Connection {
     });
 
     this.socket.on("room:buzz", (text) => {
+      store.dispatch(roomShowLobbyAction(true));
+      store.dispatch(roomShowChatAction(true));
       buzzSwal(text);
     });
 
     this.socket.on("room:present", ({ time, tables }) => {
-      console.log("present");
       // this.tables = tables;
       this.clearPeers();
       this.streamDatas = {};
@@ -274,7 +273,6 @@ class Connection {
       });
 
       call.on("close", () => {
-        console.log("close");
         this.peers[call.peer]?.close();
         delete this.streamDatas[call.peer];
         this.setting.updateInstance("streamDatas", {
@@ -438,6 +436,7 @@ class Connection {
   initializePeersEvents = () => {
     this.myPeer.on("open", (id) => {
       this.myID = id;
+      store.dispatch(roomCallSetPeerId(id));
       this.setting.updateInstance(
         "canAccess",
         this.socket.connected && this.myID && this.myStream.stream
@@ -621,10 +620,10 @@ class Connection {
     return myNavigator({
       video: video
         ? {
-            frameRate: quality,
-            width: { min: 640, ideal: 1280, max: 1920 },
-            height: { min: 480, ideal: 720, max: 1080 },
-          }
+          frameRate: quality,
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 },
+        }
         : false,
       audio: audio,
     });

@@ -13,9 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { confirmSwal } from "../../../services/swalServier";
 import { useHistory } from "react-router-dom";
 
-const Toolbar = ({ roomInfo, connection, mediaStatus, ...rest }) => {
+const Toolbar = ({ connection, mediaStatus, ...rest }) => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer);
+  const roomCall = useSelector(state => state.roomCall);
   const history = useHistory();
 
   const turnOffAudio = () => {
@@ -41,12 +42,12 @@ const Toolbar = ({ roomInfo, connection, mediaStatus, ...rest }) => {
   return (
     <div className="absolute top-full transform -translate-y-full flex justify-center w-full">
       <div className="flex bg-gray-700 rounded-t-xl ">
-        {roomInfo?.owner._id === currentUser?.user._id && (
+        {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
           <div className="border-r-2 border-gray-400 px-4">
             <button
               className="p-2 text-white focus:outline-none text-sm"
               onClick={() => {
-                connection.current.socket.emit("present:stop");
+                roomCall.socket.emit("present:stop");
               }}
             >
               <div>
@@ -81,9 +82,8 @@ const Toolbar = ({ roomInfo, connection, mediaStatus, ...rest }) => {
           <IconButton onClick={() => shareScreen()}>
             <ScreenShareIcon
               fontSize="large"
-              className={`${
-                connection.current.isShare ? "text-blue-500" : "text-white"
-              }`}
+              className={`${connection.current.isShare ? "text-blue-500" : "text-white"
+                }`}
             />
           </IconButton>
           <IconButton

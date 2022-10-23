@@ -13,8 +13,10 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  roomCallJoinTable,
   roomShowChatAction,
   roomShowLobbyAction,
+  setSeletedTable,
 } from "../../store/actions/roomCallAction";
 import { sendMessageAction } from "../../store/actions/messageAction";
 import { confirmPresent, confirmSwal } from "../../services/swalServier";
@@ -22,11 +24,11 @@ import { Link, useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { useCookies } from "react-cookie";
+import { LinearProgress } from "@mui/material";
 
 const Toolbar = ({
   connection,
   mediaStatus,
-  roomInfo,
   userJoined,
   ...rest
 }) => {
@@ -85,14 +87,36 @@ const Toolbar = ({
 
   const onPresent = () => {
     confirmPresent(() => {
-      connection.current.socket.emit("room:present", 8);
+      roomCall.socket.emit("room:present", 8);
     });
   };
 
+  const joinTableHandler = () => {
+    if (roomCall && roomCall.selectedTable && !roomCall.joinLoading) {
+      dispatch(roomCallJoinTable(roomCall.selectedTable, mediaStatus))
+    }
+  }
+  const cancelSeleted = () => {
+    if (!roomCall.joinLoading)
+      dispatch(setSeletedTable(null));
+  }
+
   return (
     <div {...rest}>
-      <div className="relative flex py-2 text-gray-500">
-        {roomInfo?.owner._id === currentUser?.user._id && (
+      {roomCall?.selectedTable && <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full transform z-10 shadow bg-white py-1 px-10" >
+        <div className="flex items-center gap-4">
+          <p className=" whitespace-nowrap max-w-xs text-ellipsis overflow-hidden">you is selecting <b>{roomCall?.selectedTable}</b></p>
+          <div className="flex gap-2">
+            <button className="p-1 px-4 bg-gray-500 hover:bg-gray-600 text-white shadow-md rounded" onClick={joinTableHandler} disabled={roomCall?.joinLoading}>join</button>
+            <button className="p-1 shadow-md" onClick={cancelSeleted} disabled={roomCall?.joinLoading}>cancel</button>
+          </div>
+        </div>
+        <div className={`${!roomCall?.joinLoading && 'invisible'}`}>
+          <LinearProgress />
+        </div>
+      </div>}
+      <div className="relative flex py-2 text-gray-500 shadow mt-2">
+        {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
           <div className="border-r-2 border-gray-400 px-3 flex items-center">
             <div className=" relative group px-2 py-2">
               <MoreVertIcon />
@@ -101,7 +125,7 @@ const Toolbar = ({
                   className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
                   onClick={() => {
                     confirmSwal("Divide Into Tables", "", () => {
-                      connection.current.socket.emit("room:divide-tables");
+                      roomCall.socket.emit("room:divide-tables");
                     });
                   }}
                 >
@@ -131,14 +155,14 @@ const Toolbar = ({
                 )}
 
                 <Link
-                  to={`/room/groups/${roomInfo._id}`}
+                  to={`/room/groups/${roomCall?.roomInfo._id}`}
                   target="_blank"
                   className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
                 >
                   Groups management
                 </Link>
                 <Link
-                  to={`/user/update-event/${roomInfo._id}`}
+                  to={`/user/update-event/${roomCall?.roomInfo._id}`}
                   target="_blank"
                   className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
                 >

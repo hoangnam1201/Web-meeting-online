@@ -13,7 +13,6 @@ const RoomCall = () => {
   const [canAccess, setCanAccess] = useState(false);
   const [access, setAccess] = useState(false);
   const [roomTables, setRoomTables] = useState([]);
-  const [roomInfo, setRoomInfo] = useState(null);
   const [currentFloor, setCurrentFloor] = useState(null);
   const history = useHistory();
   const [userJoined, setUserJoined] = useState([]);
@@ -44,8 +43,6 @@ const RoomCall = () => {
         return setAccess(data);
       case "tables":
         return setRoomTables(data);
-      case "info":
-        return setRoomInfo(data);
       case "joiners":
         return setUserJoined(data);
       case "join-err":
@@ -71,7 +68,6 @@ const RoomCall = () => {
       ) : (
         <RoomDetail
           connection={connection}
-          roomInfo={roomInfo}
           streamDatas={streamDatas}
           roomMessages={roomMessages}
           myStream={myStream}

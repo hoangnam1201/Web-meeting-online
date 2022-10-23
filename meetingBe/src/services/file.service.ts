@@ -45,7 +45,6 @@ export default () => {
           ...xldata,
         ];
       });
-      console.log(xldata);
       return xldata;
     } catch {
       throw new Error("Internal Server Error");
@@ -57,10 +56,8 @@ export default () => {
     merges: { s: { r: number; c: number }; e: { r: number; c: number } }[]
   ) => {
     try {
-      console.log(data);
       const workSheet = XLSX.utils.json_to_sheet(data);
       workSheet["!merges"] = merges;
-      console.log(XLSX.utils.sheet_to_json(workSheet));
 
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, workSheet, "sheet1");

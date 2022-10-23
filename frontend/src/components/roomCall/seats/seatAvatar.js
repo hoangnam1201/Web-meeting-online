@@ -34,7 +34,6 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
   const BuzzHandler = (e, id) => {
     e.stopPropagation();
     SendBuzzSwal((value) => {
-      console.log(value, id);
       roomCallState?.socket.emit("room:buzz", id, value);
     });
   };

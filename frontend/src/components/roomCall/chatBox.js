@@ -1,7 +1,5 @@
 import React, {
-  useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -9,7 +7,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Button from "@mui/material/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { roomShowChatAction } from "../../store/actions/roomCallAction";
+import { roomCallSendMessage, roomCallSendTableMessage, roomShowChatAction, } from "../../store/actions/roomCallAction";
 import { Waypoint } from "react-waypoint";
 import LinearProgress from "@mui/material/LinearProgress";
 import { sendMessageAction } from "../../store/actions/messageAction";
@@ -19,11 +17,12 @@ import { IconButton } from "@mui/material";
 import Avatar from "react-avatar";
 import moment from "moment";
 
-const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
+const ChatBox = ({ roomMessages, tableMessages, ...rest }) => {
   const [value, setValue] = useState(0);
   const [msgText, setMsgText] = useState("");
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer);
+  const roomCall = useSelector(state => state.roomCall)
   const endRef = useRef(null);
   const [files, setFiles] = useState([]);
 
@@ -53,18 +52,17 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
 
   const handleSendMessage = () => {
     if (!msgText && files.length === 0) return;
-    console.log(value);
     if (value === 1) {
-      connection.current.socket.emit("table:send-message", {
+      dispatch(roomCallSendTableMessage({
         msgString: msgText,
         files: files.map((f) => ({ data: f, name: f.name })),
-      });
+      }))
     }
     if (value === 0) {
-      connection.current.socket.emit("room:send-message", {
+      dispatch(roomCallSendMessage({
         msgString: msgText,
         files: files.map((f) => ({ data: f, name: f.name })),
-      });
+      }))
     }
     setMsgText("");
     setFiles([]);
@@ -141,11 +139,7 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
         </div>
         <div ref={endRef} />
       </div>
-      <div className="h-2 flex-grow-0">
-        <div hidden={!tableMessages?.loading}>
-          <LinearProgress />
-        </div>
-      </div>
+
       {files.length > 0 && (
         <div className="h-8 flex-grow-0 flex-row flex gap-2 mx-2 overflow-x-auto scroll-none">
           {files.map((f, index) => (
@@ -171,6 +165,9 @@ const ChatBox = ({ connection, roomMessages, tableMessages, ...rest }) => {
           ))}
         </div>
       )}
+      <div className={`${!roomCall?.chatLoading && 'invisible'}`}>
+        <LinearProgress />
+      </div>
       <div className="flex h-11 flex-grow-0 px-1">
         <input
           className="px-5 py-2 w-full focus:outline-none bg-gray-100 rounded-full"
@@ -199,9 +196,8 @@ export const Message = React.memo(
     return (
       <div {...rest}>
         <div
-          className={`flex flex-col ${
-            type === 0 ? "items-end" : "items-start"
-          } px-2 overflow-hidden w-full`}
+          className={`flex flex-col ${type === 0 ? "items-end" : "items-start"
+            } px-2 overflow-hidden w-full`}
         >
           <div
             className={`flex p-1 ${type === 0 && "flex-row-reverse"} w-full`}
@@ -229,9 +225,8 @@ export const Message = React.memo(
               </div>
             )}
             <div
-              className={`flex-grow w-0 flex flex-col items-start ${
-                type === 0 && "items-end"
-              }`}
+              className={`flex-grow w-0 flex flex-col items-start ${type === 0 && "items-end"
+                }`}
             >
               {type === 1 && (position === "TOP" || position === "CENTER-END") && (
                 <div
@@ -243,9 +238,8 @@ export const Message = React.memo(
               )}
               {(position === "CENTER" || position === "CENTER-END") && (
                 <div
-                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${
-                    type === 0 ? "bg-blue-100" : "bg-gray-200"
-                  } rounded-lg`}
+                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${type === 0 ? "bg-blue-100" : "bg-gray-200"
+                    } rounded-lg`}
                   style={{ maxWidth: "70%" }}
                 >
                   {msgData.files.map((f, index) => (
@@ -290,13 +284,11 @@ export const Message = React.memo(
               )}
               {position === "TOP" && (
                 <div
-                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${
-                    type === 0 ? "bg-blue-100" : "bg-gray-200"
-                  } ${
-                    type === 0
+                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${type === 0 ? "bg-blue-100" : "bg-gray-200"
+                    } ${type === 0
                       ? "rounded-l-lg rounded-tr-xl"
                       : "rounded-r-lg rounded-tl-xl"
-                  }`}
+                    }`}
                   style={{ maxWidth: "70%" }}
                 >
                   {msgData.files.map((f, index) => (
@@ -317,7 +309,7 @@ export const Message = React.memo(
                       </svg>
                       {f.fileId && (
                         <a
-                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          className=" whitespace-nowrap break-normal overflow-hidden"
                           href={`http://localhost:3002/api/file/download/${f.fileId}`}
                         >
                           {f.name}
@@ -325,7 +317,7 @@ export const Message = React.memo(
                       )}
                       {f.data && (
                         <a
-                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          className=" whitespace-nowrap break-normal overflow-hidden"
                           href={window.URL.createObjectURL(
                             new Blob([f.data], { type: "*/*" })
                           )}
@@ -341,13 +333,11 @@ export const Message = React.memo(
               )}
               {position === "BOTTOM" && (
                 <div
-                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin ${
-                    type === 0 ? "bg-blue-100" : "bg-gray-200"
-                  } ${
-                    type === 0
+                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin ${type === 0 ? "bg-blue-100" : "bg-gray-200"
+                    } ${type === 0
                       ? "rounded-l-lg rounded-br-xl"
                       : "rounded-r-lg rounded-bl-xl"
-                  }`}
+                    }`}
                   style={{ maxWidth: "70%" }}
                 >
                   {msgData.files.map((f, index) => (
@@ -368,7 +358,7 @@ export const Message = React.memo(
                       </svg>
                       {f.fileId && (
                         <a
-                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          className=" whitespace-nowrap break-normal overflow-hidden"
                           href={`http://localhost:3002/api/file/download/${f.fileId}`}
                         >
                           {f.name}
@@ -376,7 +366,7 @@ export const Message = React.memo(
                       )}
                       {f.data && (
                         <a
-                        className=" whitespace-nowrap break-normal overflow-hidden"
+                          className=" whitespace-nowrap break-normal overflow-hidden"
                           href={window.URL.createObjectURL(
                             new Blob([f.data], { type: "*/*" })
                           )}

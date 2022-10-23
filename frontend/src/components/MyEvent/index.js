@@ -89,8 +89,6 @@ const MyEvent = (props) => {
   const classes = useStyles();
   const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
 
-  console.log("listRoom", listRoom);
-
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false);
   const [roomEvent, setRoomEvent] = useState({});

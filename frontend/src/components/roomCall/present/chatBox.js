@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { useDispatch } from "react-redux";
 import {
+  roomCallSendMessage,
   roomRemoveRequestAction,
   roomShowChatAction,
 } from "../../../store/actions/roomCallAction";
@@ -18,11 +19,8 @@ import JoinerList from "../../Lobby/joinerList";
 import RequestList from "../../Lobby/requestList";
 
 const ChatBox = ({
-  connection,
   roomMessages,
   userJoined,
-  userRequests,
-  roomInfo,
 }) => {
   const [tab, setTab] = useState(0);
   const dispatch = useDispatch();
@@ -30,11 +28,11 @@ const ChatBox = ({
   const [msgText, setMsgText] = useState("");
   const endRef = useRef(null);
   const [files, setFiles] = useState([]);
-  const roomCallState = useSelector((state) => state.roomCall);
+  const roomCall = useSelector((state) => state.roomCall);
 
   const replyHandlerAll = () => {
-    Object.values(roomCallState.requests).forEach((request) => {
-      roomCallState?.socket.emit(
+    Object.values(roomCall.requests).forEach((request) => {
+      roomCall?.socket.emit(
         "room:access-request",
         request.socketId,
         request.user._id,
@@ -51,19 +49,19 @@ const ChatBox = ({
   const handleKeydown = (e) => {
     if (e.key === "Enter") {
       setMsgText("");
-      connection.current.socket.emit("room:send-message", {
+      setFiles([]);
+      dispatch(roomCallSendMessage({
         msgString: msgText,
         files: files.map((f) => ({ data: f, name: f.name })),
-      });
+      }))
     }
-    setFiles([]);
     endRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const handleSendMessage = () => {
-    connection.current.socket.emit("room:send-message", {
+    dispatch(roomCallSendMessage({
       msgString: msgText,
       files: files.map((f) => ({ data: f, name: f.name })),
-    });
+    }))
 
     setMsgText("");
     setFiles([]);
@@ -104,7 +102,7 @@ const ChatBox = ({
             style={{ color: "white", padding: "10px" }}
             className="text-white"
           />
-          {roomInfo?.owner._id === currentUser?.user._id ? (
+          {roomCall?.roomInfo?.owner._id === currentUser?.user._id ? (
             <Tab
               label="Requests"
               style={{ color: "white", padding: "10px" }}
@@ -173,7 +171,10 @@ const ChatBox = ({
               ))}
             </div>
           )}
-          <div className="flex h-11 flex-grow-0 px-1 bg-slate-500">
+          <div className={`${!roomCall?.chatLoading && 'invisible'}`}>
+            <LinearProgress />
+          </div>
+          <div className="flex h-12 flex-grow-0 p-1 bg-slate-500">
             <input
               className="px-5 py-2 w-full focus:outline-none bg-gray-100 rounded-full"
               value={msgText}
@@ -191,24 +192,16 @@ const ChatBox = ({
               <SendIcon className="text-white" />
             </IconButton>
           </div>
-          {/* <div className="flex justify-center items-center bg-gray-600 py-4">
-            <input
-              className="mx-4 px-5 py-2 w-full shadow-md focus:outline-none bg-gray-100 rounded-xl"
-              value={msgText}
-              onChange={(e) => setMsgText(e.target.value)}
-              onKeyDown={handleKeydown}
-            />
-          </div> */}
         </div>
       )}
       {tab === 1 && (
-        <div className="flex-grow h-0 flex flex-col scroll-smooth overflow-y-scroll scroll-sm">
+        <div className="flex-grow h-0 flex flex-col scroll-smooth overflow-y-scroll scroll-sm font-bold text-gray-100">
           <JoinerList joiners={userJoined} />
         </div>
       )}
       {tab !== 1 && tab !== 0 && (
         <div className="h-0 flex-grow overflow-y-auto">
-          {roomCallState && Object.values(roomCallState.requests).length > 0 && (
+          {roomCall && Object.values(roomCall.requests).length > 0 && (
             <div className="flex flex-col">
               <div className="px-4 flex justify-start my-2">
                 <button
@@ -218,7 +211,7 @@ const ChatBox = ({
                   ACCEPT ALL
                 </button>
               </div>
-              <RequestList requests={Object.values(roomCallState.requests)} />
+              <RequestList requests={Object.values(roomCall.requests)} />
             </div>
           )}
         </div>

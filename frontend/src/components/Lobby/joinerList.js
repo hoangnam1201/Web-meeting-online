@@ -29,7 +29,6 @@ const JoinerItem = ({ joiner }) => {
 
   const BuzzHandler = (id) => {
     SendBuzzSwal((value) => {
-      console.log(value, id);
       roomCallState?.socket.emit("room:buzz", id, value);
     });
   };

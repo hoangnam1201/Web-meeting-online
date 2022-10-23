@@ -7,9 +7,11 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { useParams } from "react-router";
 import { getRoomAPI } from "../../api/room.api";
+import { useSelector } from "react-redux";
 
 const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
   const myVideo = useRef(null);
+  const roomCall = useSelector(state => state.roomCall);
   const [media, setMedia] = useState({ audio: false, video: false });
   const [roomInfo, setRoomInfo] = useState(null);
   const { id } = useParams();
@@ -44,7 +46,7 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
   }, [myStream]);
 
   const joinRoomHandler = () => {
-    connection.current.socket.emit("room:join", id);
+    roomCall.socket.emit("room:join", id);
   };
 
   return (

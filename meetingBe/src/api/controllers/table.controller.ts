@@ -179,11 +179,11 @@ export default () => {
         data.push(table);
         return data;
       }, []);
-      console.log(AddTables);
       await tableService.create(AddTables);
       res.status(200).json({ status: 200, data: null });
     } catch (e) {
       console.log(e);
+      res.status(500).json({ error: "Interal Server Error", status: 200 });
     }
   };
 
@@ -192,7 +192,6 @@ export default () => {
     try {
       const tables = await tableService.getAllMemberTables(roomId);
       const tableRead = TableReadCSVDto.fromArray(tables);
-      console.log(tableRead.merges);
       const stream = fileService.jsonToExcel(tableRead.data, tableRead.merges);
 
       //response

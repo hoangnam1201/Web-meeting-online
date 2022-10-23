@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import VideoContainer from "./videoContainer";
 
 const Present = ({
-  roomInfo,
   mediaStatus,
   open,
   connection,
@@ -43,9 +42,8 @@ const Present = ({
               style={{ minHeight: "500px" }}
             >
               <div
-                className={`h-full bg-gray-700 rounded-lg ${
-                  roomCall?.showChat ? " w-9/12" : "w-full"
-                }`}
+                className={`h-full bg-gray-700 rounded-lg ${roomCall?.showChat ? " w-9/12" : "w-full"
+                  }`}
               >
                 <VideoContainer
                   myStream={myStream}
@@ -57,10 +55,8 @@ const Present = ({
                 <div className="w-3/12 h-full bg-gray-700 rounded-lg overflow-hidden">
                   <ChatBox
                     roomMessages={roomMessages}
-                    connection={connection}
                     userJoined={userJoined}
                     userRequests={userRequests}
-                    roomInfo={roomInfo}
                   />
                 </div>
               )}
@@ -68,7 +64,6 @@ const Present = ({
             <Toolbar
               connection={connection}
               mediaStatus={mediaStatus}
-              roomInfo={roomInfo}
             />
           </div>
         </div>
