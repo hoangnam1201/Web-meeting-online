@@ -1,30 +1,29 @@
 import { Router } from "express";
 import UserController from "../controllers/user.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
-import UserValidator from "../validations/user.validator";
+import {
+  changeInforValidator,
+  changePasswordValidator,
+  userCreateValidator,
+} from "../validations/user.validator";
 
 const userRoute = Router();
 const userController = UserController();
-const userValidator = new UserValidator();
 
 userRoute.get(
   "/get-detail",
   AuthMiddlesware.verifyToken,
   userController.getDetail
 );
-userRoute.post(
-  "/register",
-  userValidator.userCreateValidator(),
-  userController.register
-);
+userRoute.post("/register", userCreateValidator(), userController.register);
 userRoute.put(
   "/change-infor",
-  [AuthMiddlesware.verifyToken, ...userValidator.changeInforValidator()],
+  [AuthMiddlesware.verifyToken, ...changeInforValidator()],
   userController.changeInfor
 );
 userRoute.put(
   "/change-password",
-  [AuthMiddlesware.verifyToken, ...userValidator.changePasswordValidator()],
+  [AuthMiddlesware.verifyToken, ...changePasswordValidator()],
   userController.changePassword
 );
 userRoute.get(

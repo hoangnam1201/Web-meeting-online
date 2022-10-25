@@ -3,14 +3,20 @@ import { query } from "express-validator";
 import TablerController from "../controllers/table.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
 import { checkXLSXFile } from "../middlewares/checkXLSXFile.middeware";
-import TableValidator from "../validations/table.validator";
+import { tableCreateValidator, tableUpdateValidator } from "../validations/table.validator";
 
 const tableRoute = Router();
 const tableController = TablerController();
 
 tableRoute.post(
   "",
-  [AuthMiddlesware.verifyToken, ...TableValidator.tablerCreateValidator()],
+  [AuthMiddlesware.verifyToken, ...tableCreateValidator()],
+  tableController.createTable
+);
+
+tableRoute.put(
+  "",
+  [AuthMiddlesware.verifyToken, ...tableUpdateValidator()],
   tableController.createTable
 );
 

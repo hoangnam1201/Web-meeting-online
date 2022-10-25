@@ -3,14 +3,14 @@ import { body, param, query } from "express-validator";
 import RoomController from "../controllers/room.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
 import { checkXLSXFile } from "../middlewares/checkXLSXFile.middeware";
-import RoomValidator from "../validations/room.validator";
+import { changeRoomValidator, createRoomValidator } from "../validations/room.validator";
 
 const roomRoute = Router();
 const roomController = RoomController();
 
 roomRoute.post(
   "",
-  [AuthMiddlesware.verifyToken, ...RoomValidator.createRoomValidator()],
+  [AuthMiddlesware.verifyToken, ...createRoomValidator()],
   roomController.createRoom
 );
 roomRoute.delete(
@@ -23,7 +23,7 @@ roomRoute.put(
   [
     AuthMiddlesware.verifyToken,
     AuthMiddlesware.checkClassOwnership,
-    ...RoomValidator.changeRoomValidator(),
+    ...changeRoomValidator(),
   ],
   roomController.changeRoom
 );

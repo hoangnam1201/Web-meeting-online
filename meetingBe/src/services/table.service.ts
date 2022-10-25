@@ -1,5 +1,6 @@
 import mongoose, { ObjectId } from "mongoose";
 import { TableCreateDto } from "../Dtos/table-create.dto";
+import { TableUpdateDto } from "../Dtos/table-update.dto";
 import roomModel from "../models/room.model";
 import tableModel from "../models/table.model";
 
@@ -14,6 +15,10 @@ export default () => {
         $set: { members: "$users" },
       },
     ]);
+  };
+
+  const update = (ids: string[] | string, TableData: TableUpdateDto) => {
+    return tableModel.updateMany({ _id: { $in: ids } }, TableData);
   };
 
   const removeTable = (tableId: string) => {
@@ -166,6 +171,7 @@ export default () => {
     findAndClearJoiner,
     getById,
     create,
+    update,
     addJoiner,
     removeJoiner,
     getTablesByRoomAndFloor,

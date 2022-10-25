@@ -13,6 +13,8 @@ import {
   getTabelsAction,
   removeTableAction,
   tableSelectFloorAction,
+  tableSelectTableAction,
+  tableSetAllSelectedTablesAction,
 } from "../../store/actions/tableActions";
 import LinearProgress from "@mui/material/LinearProgress";
 import AsyncSelect from "react-select/async";
@@ -255,7 +257,9 @@ function UpdateEvent() {
             className="flex flex-col col-span-2 p-4"
             style={{ height: "700px" }}
           >
-            <div className="grid grid-cols-3 px-4 py-1 bg-gray-200 rounded-md">
+            <div className="grid grid-cols-3 px-4 py-1 bg-gray-200 rounded-md relative">
+              <input type='checkbox' className={`p-2 rounded-full absolute top-0 -left-1 transform translate-y-1/2 -translate-x-full`}
+                onClick={() => { dispatch(tableSetAllSelectedTablesAction()) }} checked={tables?.selectedTables.length ? true : false} />
               <div className="col-span-2 text-left border-r-2 border-gray-300">
                 name
               </div>
@@ -264,8 +268,9 @@ function UpdateEvent() {
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
               {tables?.items?.map((s) => (
                 <div
-                  className="grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm"
+                  className={`hover:bg-gray-50 grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm ${tables?.selectedTables.indexOf(s._id) !== -1 && 'border-2'}`}
                   key={s._id}
+                  onClick={() => { dispatch(tableSelectTableAction(s._id)) }}
                 >
                   <div className="col-span-2 text-left border-r-2 border-gray-300">
                     {s.name}
@@ -423,7 +428,7 @@ function UpdateEvent() {
                   </label>
                 </Button>
                 <p className="text-gray-400 font-thin text-sm">
-                  Only files in our 
+                  Only files in our
                   <span
                     className="font-bold cursor-pointer hover:text-gray-500 mx-1"
                     onClick={AboutFormatSwal}
@@ -499,7 +504,7 @@ function UpdateEvent() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

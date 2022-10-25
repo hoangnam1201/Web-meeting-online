@@ -212,8 +212,6 @@ class Connection {
     });
 
     this.socket.on("room:buzz", (text) => {
-      store.dispatch(roomShowLobbyAction(true));
-      store.dispatch(roomShowChatAction(true));
       buzzSwal(text);
     });
 

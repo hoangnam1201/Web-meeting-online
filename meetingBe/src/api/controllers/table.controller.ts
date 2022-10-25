@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { TableCreateDto } from "../../Dtos/table-create.dto";
 import { TableReadCSVDto } from "../../Dtos/table-read-csv.dto";
+import { TableUpdateDto } from "../../Dtos/table-update.dto";
 import { FileRequest } from "../../interfaces/fileRequest";
 import FileService from "../../services/file.service";
 import RoomService from "../../services/room.service";
@@ -20,6 +21,23 @@ export default () => {
     try {
       const tableCreate = TableCreateDto.fromTable(req.body);
       await tableService.create(tableCreate);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Enternal Server Error" });
+    }
+  };
+
+  const updateTable = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    const { ids } = req.body;
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: 400, errors: errors.array() });
+    }
+    try {
+      const tableCreate = TableUpdateDto.fromTable(req.body);
+      await tableService.update(ids, tableCreate);
       return res.status(200).json({ status: 200, data: null });
     } catch {
       return res
@@ -192,7 +210,7 @@ export default () => {
     try {
       const tables = await tableService.getAllMemberTables(roomId);
       const tableRead = TableReadCSVDto.fromArray(tables);
-      const stream = fileService.jsonToExcel(tableRead.data, tableRead.merges);
+      const stream = fileService.jsonToExcel(tableRead.data, null);
 
       //response
       res.setHeader(
@@ -216,6 +234,7 @@ export default () => {
     createTable,
     saveMember,
     deleteTable,
+    updateTable,
     getMemberTables,
     searchMember,
     removeUser,
