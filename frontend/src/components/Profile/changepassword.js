@@ -48,7 +48,7 @@ const schema = yup.object().shape({
 });
 
 export default function ChangePassword() {
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
@@ -139,7 +139,7 @@ export default function ChangePassword() {
             label="Old Password"
             name="oldPassword"
             autoComplete="oldPassword"
-            inputRef={register}
+            {...register('oldPassword')}
             error={!!errors.oldPassword}
             helperText={errors?.oldPassword?.message}
             value={password.oldPassword}
@@ -156,7 +156,7 @@ export default function ChangePassword() {
             label="New Password"
             name="password"
             autoComplete="password"
-            inputRef={register}
+            {...register('password')}
             error={!!errors.password}
             helperText={errors?.password?.message}
             value={password.password}
@@ -173,7 +173,7 @@ export default function ChangePassword() {
             label="Confirm Password"
             name="passwordConfirmation"
             autoComplete="passwordConfirmation"
-            inputRef={register}
+            {...register('passwordConfirmation')}
             error={!!errors.passwordConfirmation}
             helperText={errors?.passwordConfirmation?.message}
             value={password.passwordConfirmation}

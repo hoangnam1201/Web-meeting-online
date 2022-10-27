@@ -63,8 +63,7 @@ export default (ioRoom: any, io: any) => {
           socket.data.floor = room.floors[0].toString();
         }
 
-        if (room.isPresent)
-          ioRoom.to(roomId).emit("room:present", { time: 1, tables });
+        if (room.isPresent) socket.emit("room:present", { time: 1, tables });
 
         const messages = await messageService.getMessages(roomId, 30, 0);
         socket.emit("room:messages", MessageReadDto.fromArray(messages));
@@ -175,8 +174,7 @@ export default (ioRoom: any, io: any) => {
         clientSocket.data.floor = room.floors[0].toString();
       }
 
-      if (room.isPresent)
-        ioRoom.to(roomId).emit("room:present", { time: 1, tables });
+      if (room.isPresent) socket.emit("room:present", { time: 1, tables });
 
       const messages = await messageService.getMessages(roomId, 20, 0);
       ioRoom

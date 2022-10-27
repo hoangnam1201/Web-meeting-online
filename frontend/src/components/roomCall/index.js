@@ -3,9 +3,12 @@ import Connection from "../../services/connection";
 import CheckMedia from "./checkMedia";
 import RoomDetail from "./roomDetail";
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getUserInfo } from "../../store/actions/userInfoAction";
 
 const RoomCall = () => {
   const connection = useRef(null);
+  const dispatch = useDispatch();
   const [roomMessages, setRoomMessage] = useState([]);
   const [tableMessages, setTableMessage] = useState([]);
   const [streamDatas, setStreamDatas] = useState({});
@@ -22,6 +25,7 @@ const RoomCall = () => {
   useEffect(() => {
     connection.current = new Connection({ updateInstance, history });
     connection.current.initMyStream();
+    dispatch(getUserInfo());
     return () => {
       connection.current.destoryDisconnect();
     };

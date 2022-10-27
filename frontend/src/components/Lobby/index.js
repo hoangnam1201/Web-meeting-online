@@ -27,12 +27,11 @@ const LobbyUser = (props) => {
   return (
     <>
       <div
-        className={`fixed top-0 left-0 flex flex-col z-50 h-screen bg-white overflow-x-hidden shadow-md transition-all duration-300 ${
-          openLobby ? "w-72" : "w-0"
-        }`}
+        className={`fixed top-0 left-0 flex flex-col z-50 h-screen bg-white overflow-x-hidden shadow-md transition-all duration-300 ${openLobby ? "w-72" : "w-0"
+          }`}
       >
         <div className="shadow mb-2">
-          {roomCall?.roomInfo?.owner._id === currentUser?.user._id ? (
+          {roomCall?.roomInfo?.owner?._id === currentUser?.user?._id ? (
             <Tabs value={tab} onChange={(e, newTab) => setTab(newTab)}>
               <Tab label="users" />
               <Tab label="request" />

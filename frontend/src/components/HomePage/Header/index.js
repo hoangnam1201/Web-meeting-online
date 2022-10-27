@@ -9,10 +9,10 @@ import { useSelector } from "react-redux";
 import { getInfoAPI, logoutAPI } from "../../../api/user.api";
 import { useDispatch } from "react-redux";
 import {
-  actionRemoveUserInfo,
-  actionSetUserInfo,
+  actionRemoveUserInfo, getUserInfo,
 } from "../../../store/actions/userInfoAction";
 import Scroll from "react-scroll";
+import { CircularProgress } from "@mui/material";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
@@ -26,9 +26,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
   useEffect(() => {
     if (type === 1 && currentUser) {
       if (!currentUser?.user) {
-        getInfoAPI().then((res) => {
-          dispatch(actionSetUserInfo(res.data));
-        });
+        dispatch(getUserInfo());
       }
     }
   }, [type]);
@@ -106,7 +104,10 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                     className="relative p-2"
                     onClick={() => setShowAvatarMenu(!showAvatarMenu)}
                   >
-                    {currentUser?.user?.picture ? (
+                    {currentUser?.loading && <div>
+                      <CircularProgress size='3rem' />
+                    </div>}
+                    {!currentUser?.loading && (currentUser?.user?.picture ? (
                       <img
                         src={currentUser?.user?.picture}
                         alt=""
@@ -120,7 +121,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                         round={true}
                         className="cursor-pointer"
                       ></Avatar>
-                    )}
+                    ))}
 
                     {showAvatarMenu && (
                       <div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">

@@ -74,7 +74,7 @@ const schema = yup.object().shape({
 });
 
 export default function Profiles() {
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
@@ -185,8 +185,8 @@ export default function Profiles() {
             label="Fullname"
             name="name"
             autoComplete="name"
-            inputRef={register}
-            error={!!errors.name}
+            {...register('name')}
+            error={!!errors?.name}
             helperText={errors?.name?.message}
             value={info?.name}
             onChange={handleInfoChange}
@@ -202,7 +202,7 @@ export default function Profiles() {
             label="Phone number"
             name="phone"
             autoComplete="phone"
-            inputRef={register}
+            {...register('phone')}
             error={!!errors.phone}
             helperText={errors?.phone?.message}
             value={info?.phone}

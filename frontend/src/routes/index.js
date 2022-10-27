@@ -24,23 +24,23 @@ export const userRoute = [
     path: "/user/update-event/:id",
     component: UpdateEvent,
   },
+  {
+    exact: true,
+    path: "/user/management-groups/:roomId",
+    component: GroupManagement,
+  },
+  {
+    exact: true,
+    path: "/user/management-tables/:id",
+    component: TableManagement,
+  },
 ];
 
 export const roomRoute = [
   {
     exact: true,
-    path: "/room/groups/:roomId",
-    component: GroupManagement,
-  },
-  {
-    exact: true,
     path: "/room/:id",
     component: RoomCall,
-  },
-  {
-    exact: true,
-    path: "/room/tables/:id",
-    component: TableManagement,
   },
 ];
 

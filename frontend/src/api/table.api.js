@@ -18,8 +18,8 @@ export const deleteTableAPI = (id) => {
   return instance.delete("/table/" + id);
 };
 
-export const updateTableAPI = (id, data) => {
-  return instance.put("/table/" + id, data);
+export const updateTableAPI = (ids, data) => {
+  return instance.put("/table/", { ids, ...data });
 };
 
 export const saveTableMembersAPI = (roomId) => {

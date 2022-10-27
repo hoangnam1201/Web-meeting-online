@@ -506,6 +506,12 @@ class Connection {
     });
   };
 
+  clearTableMessages = () => {
+    this.tableMessages = [];
+    this.setting.updateInstance("table:messages", [...this.tableMessages]);
+  }
+
+
   destoryDisconnect = () => {
     this.isMeetting = false;
     this.socket?.offAny();

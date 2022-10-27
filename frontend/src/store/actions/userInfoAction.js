@@ -1,15 +1,32 @@
-export const SET_USER_INFO = 'user/SET_USER_INFO';
-export const REMOVE_USER_INFO = 'user/SET_USER_INFO';
+import { getInfoAPI } from "../../api/user.api";
 
-export const actionSetUserInfo = (payload) => {
-    return {
-        type: SET_USER_INFO,
-        payload
-    }
+export const USER_SET_USER_INFO = 'USER_SET_USER_INFO';
+export const USER_LOADING = 'USER_LOADING';
+
+const setUserInfo = (payload) => {
+  return {
+    type: USER_SET_USER_INFO,
+    payload
+  }
+}
+
+const setUserLoading = () => {
+  return {
+    type: USER_LOADING
+  }
+}
+
+export const getUserInfo = () => {
+  return (dispatch) => {
+    dispatch(setUserLoading())
+    getInfoAPI().then((res) => {
+      dispatch(setUserInfo(res.data));
+    });
+  }
 }
 
 export const actionRemoveUserInfo = () => {
-    return {
-        type: SET_USER_INFO
-    }
+  return (dispatch) => {
+    dispatch(setUserInfo(null));
+  }
 }

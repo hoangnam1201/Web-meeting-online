@@ -84,6 +84,8 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
 
   const joinTableHandler = () => {
     if (roomCall && roomCall.selectedTable && !roomCall.joinLoading) {
+      connection.current.clearTableMessages();
+      connection.current.clearPeers();
       dispatch(roomCallJoinTable(roomCall.selectedTable, mediaStatus));
     }
   };
@@ -94,7 +96,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   return (
     <div {...rest}>
       {roomCall?.selectedTable && (
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full transform z-10 shadow bg-white py-1 px-10">
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full transform z-10 shadow-lg bg-white py-1 px-10 ">
           <div className="flex items-center gap-4">
             <p className=" whitespace-nowrap max-w-xs text-ellipsis overflow-hidden">
               you is selecting <b>{roomCall?.selectedTable}</b>
@@ -121,143 +123,147 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
           </div>
         </div>
       )}
-      <div className="relative flex py-2 text-gray-500 shadow mt-2">
-        {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
-          <div className="border-r-2 border-gray-400 px-3 flex items-center">
-            <div className=" relative group px-2 py-2">
-              <MoreVertIcon />
-              <div className="hidden flex-col absolute z-10 top-0 left-0 transform bg-white -translate-y-full -translate-x-1/2 shadow-md group-hover:flex rounded-md">
-                <button
-                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                  onClick={() => {
-                    confirmSwal("Divide Into Tables", "", () => {
-                      roomCall.socket.emit("room:divide-tables");
-                    });
-                  }}
-                >
-                  divide into tables
-                </button>
-
-                {status !== "recording" ? (
+      <div className="shadow mt-2 p-2 group">
+        <div className="flex relative max-h-0 group-hover:max-h-96 duration-1000 transition-all overflow-hidden hover:overflow-visible">
+          {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
+            <div className="border-r-2 border-gray-400 px-3 flex items-center static">
+              <div className="relative">
+                <div className="peer text-gray-500 p-2">
+                  <MoreVertIcon />
+                </div>
+                <div className="hidden flex-col absolute z-50 top-0 left-0 transform bg-white -translate-y-full -translate-x-1/2 shadow-md peer-hover:flex hover:flex rounded-md">
                   <button
                     className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                    onClick={turnOnRecord}
+                    onClick={() => {
+                      confirmSwal("Divide Into Tables", "", () => {
+                        roomCall.socket.emit("room:divide-tables");
+                      });
+                    }}
                   >
-                    Record meeting
+                    divide into tables
                   </button>
-                ) : (
-                  <button
-                    className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                    onClick={stopRecording}
-                  >
-                    Stop recording
-                  </button>
-                )}
 
-                <Link
-                  to={`/room/groups/${roomCall?.roomInfo._id}`}
-                  target="_blank"
-                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                >
-                  Groups management
-                </Link>
-                <Link
-                  to={`/user/update-event/${roomCall?.roomInfo._id}`}
-                  target="_blank"
-                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
-                >
-                  Room Setting
-                </Link>
+                  {status !== "recording" ? (
+                    <button
+                      className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                      onClick={turnOnRecord}
+                    >
+                      Record meeting
+                    </button>
+                  ) : (
+                    <button
+                      className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                      onClick={stopRecording}
+                    >
+                      Stop recording
+                    </button>
+                  )}
+
+                  <Link
+                    to={`/user/management-groups/${roomCall?.roomInfo._id}`}
+                    target="_blank"
+                    className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                  >
+                    Groups management
+                  </Link>
+                  <Link
+                    to={`/user/update-event/${roomCall?.roomInfo._id}`}
+                    target="_blank"
+                    className="p-2 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-200 whitespace-nowrap"
+                  >
+                    Room Setting
+                  </Link>
+                </div>
               </div>
+              <button
+                className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
+                onClick={onPresent}
+              >
+                <div>
+                  <PresentToAllIcon className="text-gray-500" />
+                </div>
+                present
+              </button>
             </div>
-            <button
-              className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
-              onClick={onPresent}
-            >
-              <div>
-                <PresentToAllIcon className="text-gray-500" />
-              </div>
-              present
-            </button>
-          </div>
-        )}
-        <div className="flex gap-4 px-4">
-          {mediaStatus.audio ? (
-            <IconButton onClick={turnOffAudio}>
-              <MicIcon className="text-blue-500" fontSize="large" />
-            </IconButton>
-          ) : (
-            <IconButton onClick={turnOnAudio}>
-              <MicOffIcon className="text-red-600" fontSize="large" />
-            </IconButton>
           )}
-          {mediaStatus.video ? (
-            <IconButton
-              onClick={turnOffVideo}
-              disabled={connection.current.isShare}
-            >
-              <PhotoCameraFrontIcon
-                className="text-blue-500"
+          <div className="flex gap-4 px-4">
+            {mediaStatus.audio ? (
+              <IconButton onClick={turnOffAudio}>
+                <MicIcon className="text-blue-500" fontSize="large" />
+              </IconButton>
+            ) : (
+              <IconButton onClick={turnOnAudio}>
+                <MicOffIcon className="text-red-600" fontSize="large" />
+              </IconButton>
+            )}
+            {mediaStatus.video ? (
+              <IconButton
+                onClick={turnOffVideo}
+                disabled={connection.current.isShare}
+              >
+                <PhotoCameraFrontIcon
+                  className="text-blue-500"
+                  fontSize="large"
+                />
+              </IconButton>
+            ) : (
+              <IconButton onClick={turnOnVideo}>
+                <VideocamOff className="text-red-600" fontSize="large" />
+              </IconButton>
+            )}
+            <IconButton onClick={shareScreen}>
+              <ScreenShareIcon
                 fontSize="large"
+                className={`${connection.current.isShare && "text-blue-500"}`}
               />
             </IconButton>
-          ) : (
-            <IconButton onClick={turnOnVideo}>
-              <VideocamOff className="text-red-600" fontSize="large" />
-            </IconButton>
-          )}
-          <IconButton onClick={shareScreen}>
-            <ScreenShareIcon
-              fontSize="large"
-              className={`${connection.current.isShare && "text-blue-500"}`}
-            />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              if (roomCall) dispatch(roomShowChatAction(!roomCall.showChat));
-              dispatch(sendMessageAction());
-            }}
-          >
-            {stateMessage && !roomCall.showChat ? (
-              <Badge color="primary" variant="dot">
+            <IconButton
+              onClick={() => {
+                if (roomCall) dispatch(roomShowChatAction(!roomCall.showChat));
+                dispatch(sendMessageAction());
+              }}
+            >
+              {stateMessage && !roomCall.showChat ? (
+                <Badge color="primary" variant="dot">
+                  <ChatIcon fontSize="large" />
+                </Badge>
+              ) : (
                 <ChatIcon fontSize="large" />
-              </Badge>
+              )}
+            </IconButton>
+            {roomCall?.showLobby ? (
+              <IconButton onClick={() => dispatch(roomShowLobbyAction(false))}>
+                <PeopleIcon className="text-blue-500" fontSize="large" />
+              </IconButton>
             ) : (
-              <ChatIcon fontSize="large" />
+              <IconButton onClick={() => dispatch(roomShowLobbyAction(true))}>
+                <PeopleIcon fontSize="large" />
+              </IconButton>
             )}
-          </IconButton>
-          {roomCall?.showLobby ? (
-            <IconButton onClick={() => dispatch(roomShowLobbyAction(false))}>
-              <PeopleIcon className="text-blue-500" fontSize="large" />
-            </IconButton>
-          ) : (
-            <IconButton onClick={() => dispatch(roomShowLobbyAction(true))}>
-              <PeopleIcon fontSize="large" />
-            </IconButton>
-          )}
-          <div className="border-l-2 border-gray-400 px-3 flex">
-            <button
-              className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
-              onClick={() => connection.current.leaveTable()}
-            >
-              <div>
-                <EventSeatIcon className="text-gray-500" />
-              </div>
-              exit table
-            </button>
-            <button
-              className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
-              onClick={() =>
-                confirmSwal("Are you sure?", "", () => {
-                  history.push("/user/my-event");
-                })
-              }
-            >
-              <div>
-                <LogoutSharpIcon className="text-gray-500" />
-              </div>
-              exit room
-            </button>
+            <div className="border-l-2 border-gray-400 px-3 flex">
+              <button
+                className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
+                onClick={() => connection.current.leaveTable()}
+              >
+                <div>
+                  <EventSeatIcon className="text-gray-500" />
+                </div>
+                exit table
+              </button>
+              <button
+                className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
+                onClick={() =>
+                  confirmSwal("Are you sure?", "", () => {
+                    history.push("/user/my-event");
+                  })
+                }
+              >
+                <div>
+                  <LogoutSharpIcon className="text-gray-500" />
+                </div>
+                exit room
+              </button>
+            </div>
           </div>
         </div>
       </div>

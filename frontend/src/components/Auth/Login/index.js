@@ -19,23 +19,27 @@ const schema = yup.object().shape({
 
 function Login(props) {
   const history = useHistory();
-  const [cookies, setCookies, removeCookies] = useCookies(["u_auth"]);
+  const [cookies, setCookies] = useCookies(["u_auth"]);
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState(null);
   const location = useLocation();
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
   });
 
   const onSubmit = (data) => {
+    console.log(data)
     setLoading(true);
 
     loginAPI(data)
       .then((result) => {
+        console.log(result)
         setLoading(false);
         setLoginError(null);
-        setCookies("u_auth", result, { path: "/" });
+        const expires = new Date();
+        expires.setTime(expires.getTime() + (240 * 3600 * 1000))
+        setCookies("u_auth", result, { path: "/", expires });
         const path = location.state?.targetPath;
         history.push(path ? path : "/user/my-event");
         path && history.replace({ ...history?.location, state: null });
@@ -60,7 +64,9 @@ function Login(props) {
       .then((res) => {
         setLoading(false);
         setLoginError(null);
-        setCookies("u_auth", res, { path: "/" });
+        const expires = new Date();
+        expires.setTime(expires.getTime() + (240 * 3600 * 1000))
+        setCookies("u_auth", res, { path: "/", expires });
         const path = location.state?.targetPath;
         history.push(path ? path : "/user/my-event");
         path && history.replace({ ...history?.location, state: null });
@@ -131,7 +137,7 @@ function Login(props) {
               name="username"
               color="warning"
               autoComplete="username"
-              inputRef={register}
+              {...register('username')}
               error={!!errors.username}
               helperText={
                 errors?.username?.message ? errors?.username?.message : " "
@@ -146,7 +152,7 @@ function Login(props) {
               name="password"
               label="Password*:"
               id="password"
-              inputRef={register}
+              {...register('password')}
               error={!!errors.password}
               helperText={
                 errors?.password?.message ? errors?.password?.message : " "

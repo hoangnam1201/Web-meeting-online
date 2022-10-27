@@ -91,7 +91,7 @@ const CreateDialog = (props) => {
   const { id } = useParams();
   const [tableError, setTableError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, errors, reset } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
@@ -176,8 +176,8 @@ const CreateDialog = (props) => {
                   type="text"
                   name="name"
                   label="Name"
-                  inputRef={register}
-                  error={!!errors.name}
+                  {...register('name')}
+                  error={!!errors?.name}
                   // value={tableInfo?.name}
                   helperText={errors?.name?.message}
                   onChange={handleChange}
@@ -189,8 +189,8 @@ const CreateDialog = (props) => {
                   variant="outlined"
                   type="number"
                   name="numberOfSeat"
+                  {...register("numberOfSeat")}
                   label="Number of seats"
-                  inputRef={register}
                   error={!!errors.numberOfSeat}
                   helperText={errors?.numberOfSeat?.message}
                   onChange={handleChange}

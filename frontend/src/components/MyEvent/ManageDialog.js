@@ -92,7 +92,7 @@ const ManageDialog = (props) => {
   const [endDate, setEndDate] = useState(Date.now());
   const [roomError, setRoomError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
@@ -211,8 +211,8 @@ const ManageDialog = (props) => {
                     label="Room name"
                     name="name"
                     autoComplete="name"
-                    inputRef={register}
-                    error={!!errors.name}
+                    {...register('name')}
+                    error={!!errors?.name}
                     helperText={errors?.name?.message}
                     value={roomEvent.name}
                     onChange={handleChange}
@@ -228,8 +228,8 @@ const ManageDialog = (props) => {
                     label="Description"
                     name="description"
                     autoComplete="description"
-                    inputRef={register}
-                    error={!!errors.description}
+                    {...register('description')}
+                    error={!!errors?.description}
                     helperText={errors?.description?.message}
                     value={roomEvent.description}
                     onChange={handleChange}

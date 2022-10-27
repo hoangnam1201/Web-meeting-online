@@ -67,19 +67,17 @@ function App() {
             </DefautLayout>
           </UserAuth>
           <UserAuth path="/room">
-            <DefautLayout logged={true}>
-              <Switch>
-                {roomRoute.map((route, index) => (
-                  <Route
-                    path={route.path}
-                    exact={route.exact}
-                    component={route.component}
-                    key={index}
-                  />
-                ))}
-                <Route path="*" exact component={Error} />
-              </Switch>
-            </DefautLayout>
+            <Switch>
+              {roomRoute.map((route, index) => (
+                <Route
+                  path={route.path}
+                  exact={route.exact}
+                  component={route.component}
+                  key={index}
+                />
+              ))}
+              <Route path="*" exact component={Error} />
+            </Switch>
           </UserAuth>
           <UnAuth>
             <DefautLayout logged={false}>

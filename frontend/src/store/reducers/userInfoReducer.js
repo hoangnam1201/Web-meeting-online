@@ -1,16 +1,16 @@
-import { REMOVE_USER_INFO, SET_USER_INFO } from "../actions/userInfoAction";
+import { USER_LOADING, USER_SET_USER_INFO } from "../actions/userInfoAction";
 
 const initialState = {
-  loaded: false,
+  loading: false,
   user: null
 }
 
 export const userReducer = (state = initialState, { type, payload }) => {
   switch (type) {
-    case SET_USER_INFO:
-      return { user: payload, loaded: true };
-    case REMOVE_USER_INFO:
-      return { user: null, loaded: false };
+    case USER_SET_USER_INFO:
+      return { user: payload, loading: false };
+    case USER_LOADING:
+      return { ...state, loading: true }
     default:
       return state;
   }

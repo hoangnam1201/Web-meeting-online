@@ -40,7 +40,7 @@ const schema = yup.object().shape({
 function Register(props) {
   const history = useHistory();
 
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
@@ -112,7 +112,7 @@ function Register(props) {
               name="username"
               color="warning"
               autoComplete="username"
-              inputRef={register}
+              {...register('username')}
               error={!!errors.username}
               helperText={
                 errors?.username?.message ? errors?.username?.message : " "
@@ -129,7 +129,7 @@ function Register(props) {
               type={"password"}
               id="password"
               autoComplete="password"
-              inputRef={register}
+              {...register('password')}
               error={!!errors.password}
               helperText={
                 errors?.password?.message ? errors?.password?.message : " "
@@ -146,7 +146,7 @@ function Register(props) {
               type={"password"}
               id="passwordConfirmation"
               autoComplete="passwordConfirmation"
-              inputRef={register}
+              {...register('passwordConfirmation')}
               error={!!errors.passwordConfirmation}
               helperText={
                 errors?.passwordConfirmation?.message
@@ -164,8 +164,8 @@ function Register(props) {
               label="Name*:"
               id="name"
               autoComplete="name"
-              inputRef={register}
-              error={!!errors.name}
+              {...register('name')}
+              error={!!errors?.name}
               helperText={errors?.name?.message ? errors?.name?.message : " "}
             />
             <TextField
@@ -178,7 +178,7 @@ function Register(props) {
               id="email"
               color="warning"
               autoComplete="email"
-              inputRef={register}
+              {...register('email')}
               error={!!errors.email}
               helperText={errors?.email?.message ? errors?.email?.message : " "}
             />
@@ -193,7 +193,7 @@ function Register(props) {
               id="phone"
               color="warning"
               autoComplete="phone"
-              inputRef={register}
+              {...register('phone')}
               error={!!errors.phone}
               helperText={errors?.phone?.message ? errors?.phone?.message : " "}
             />

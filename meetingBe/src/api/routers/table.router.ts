@@ -17,7 +17,7 @@ tableRoute.post(
 tableRoute.put(
   "",
   [AuthMiddlesware.verifyToken, ...tableUpdateValidator()],
-  tableController.createTable
+  tableController.updateTable
 );
 
 tableRoute.delete(

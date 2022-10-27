@@ -1,10 +1,7 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Link, useParams } from "react-router-dom";
-import * as yup from "yup";
 import { Button, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -15,6 +12,7 @@ import {
   tableSelectFloorAction,
   tableSelectTableAction,
   tableSetAllSelectedTablesAction,
+  updateTableAction,
 } from "../../store/actions/tableActions";
 import LinearProgress from "@mui/material/LinearProgress";
 import AsyncSelect from "react-select/async";
@@ -31,17 +29,12 @@ import {
 } from "../../api/room.api";
 import { setGlobalNotification } from "../../store/reducers/globalNotificationReducer";
 import { AboutFormatSwal, confirmSwal } from "../../services/swalServier";
-import { LoadingButton } from "@mui/lab";
-
-const roomSchema = yup.object().shape({
-  name: yup.string().min(5).required(),
-  numberOfSeat: yup.number().min(1).max(8).required(),
-});
+import { LoadingButton } from "@mui/lab"
+import { useForm } from "react-hook-form";
 
 function UpdateEvent() {
   const { id } = useParams();
   const tables = useSelector((state) => state.tables);
-  const formRef = useRef(null);
   const dispatch = useDispatch();
   const [room, setRoom] = useState(null);
   const [notFound, setNotFound] = useState(false);
@@ -51,14 +44,30 @@ function UpdateEvent() {
   //floors
   const [floorsLoading, setFloorsLoading] = useState(false);
   //
-  const { register, handleSubmit, errors, reset } = useForm({
-    mode: "onBlur",
-    resolver: yupResolver(roomSchema),
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    getValues,
+    setValue } = useForm({
+      mode: 'onChange',
+    });
 
   useEffect(() => {
     getRoom("START", "ALL");
   }, []);
+
+  useLayoutEffect(() => {
+    if (!tables || !tables.items) return;
+    if (!tables.selectedTables.length)
+      reset();
+    if (tables.selectedTables.length > 1) {
+      return reset({ floor: tables?.currentFloor });
+    }
+    const t = { ...tables.items.find((t) => t._id === tables.selectedTables[0]) }
+    reset({ name: t.name, numberOfSeat: t.numberOfSeat, floor: t.floor });
+  }, [tables?.selectedTables])
 
   const getRoom = async (position, loadingType) => {
     try {
@@ -87,6 +96,11 @@ function UpdateEvent() {
     dispatch(addTableAction(table));
     reset();
   };
+
+  const updateTable = (data) => {
+    dispatch(updateTableAction(data, id));
+    reset();
+  }
 
   const onDelete = (tableId) => {
     Swal.fire({
@@ -180,13 +194,6 @@ function UpdateEvent() {
     }
   };
 
-  function s2ab(s) {
-    var buf = new ArrayBuffer(s.length);
-    var view = new Uint8Array(buf);
-    for (var i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-    return buf;
-  }
-
   return (
     <div>
       <div className="text-xl text-left p-4 font-semibold text-gray-500 flex items-center gap-4 border-b-2">
@@ -242,7 +249,7 @@ function UpdateEvent() {
                   divide the group
                 </p>
               </div>
-              <Link to={`/room/tables/${id}`} className="mr-4">
+              <Link to={`/user/management-tables/${id}`} className="mr-4">
                 <Button
                   className=" min-w-max"
                   variant="outlined"
@@ -259,7 +266,7 @@ function UpdateEvent() {
           >
             <div className="grid grid-cols-3 px-4 py-1 bg-gray-200 rounded-md relative">
               <input type='checkbox' className={`p-2 rounded-full absolute top-0 -left-1 transform translate-y-1/2 -translate-x-full`}
-                onClick={() => { dispatch(tableSetAllSelectedTablesAction()) }} checked={tables?.selectedTables.length ? true : false} />
+                onChange={() => { dispatch(tableSetAllSelectedTablesAction()) }} checked={tables?.selectedTables.length ? true : false} />
               <div className="col-span-2 text-left border-r-2 border-gray-300">
                 name
               </div>
@@ -268,7 +275,7 @@ function UpdateEvent() {
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
               {tables?.items?.map((s) => (
                 <div
-                  className={`hover:bg-gray-50 grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm ${tables?.selectedTables.indexOf(s._id) !== -1 && 'border-2'}`}
+                  className={`hover:bg-gray-50 grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm ${tables?.selectedTables.indexOf(s._id) !== -1 && 'border-2 border-gray-400'}`}
                   key={s._id}
                   onClick={() => { dispatch(tableSelectTableAction(s._id)) }}
                 >
@@ -348,38 +355,69 @@ function UpdateEvent() {
               Table
             </div>
             <form
-              ref={formRef}
               className="flex flex-col gap-4"
-              onSubmit={handleSubmit(createTable)}
-              noValidate
             >
               <TextField
                 fullWidth
+                label="name"
+                InputLabelProps={{ shrink: true }}
                 variant="outlined"
                 type="text"
-                name="name"
-                label="name"
-                inputRef={register}
-                error={!!errors.name}
+                {...register('name', {
+                  required: tables?.selectedTables.length > 1 ? null : 'required',
+                  minLength: tables?.selectedTables.length > 1 ? null : { value: 5, message: 'min length is 5' }
+                })}
+                disabled={tables?.selectedTables.length > 1}
+                error={!!errors?.name}
                 helperText={errors?.name?.message}
               />
               <TextField
                 fullWidth
                 variant="outlined"
+                label="Number of seats"
+                InputLabelProps={{ shrink: true }}
                 type="number"
-                name="numberOfSeat"
-                label="number of seats"
-                inputRef={register}
+                disabled={tables?.selectedTables.length > 1}
+                InputProps={{ inputProps: { min: 1, max: 8 } }}
+                {...register('numberOfSeat', {
+                  required: tables?.selectedTables.length > 1 ? null : 'required',
+                  max: tables?.selectedTables.length > 1 ? null : { value: 8, message: 'max seats is 8' },
+                  min: tables?.selectedTables.length > 1 ? null : { value: 1, message: 'min seats is 1' },
+                })}
                 error={!!errors.numberOfSeat}
                 helperText={errors?.numberOfSeat?.message}
               />
-              <LoadingButton
+              {!!tables?.selectedTables.length && <div className="flex flex-wrap gap-2">
+                {room?.floors?.map((f, index) => {
+                  const vFloor = getValues('floor');
+                  return <button
+                    type="button"
+                    key={index}
+                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${vFloor === f && "shadow-lg bg-gray-200"
+                      }`}
+                    onClick={() => setValue('floor', f, { shouldDirty: true, shouldTouch: true, shouldValidate: true })}
+                  >
+                    {tables?.currentFloor !== f ? `floor ${index}` : 'current'}
+                  </button>
+                })}
+              </div>}
+              {tables?.selectedTables.length === 0 ? <LoadingButton
                 variant="contained"
-                type="submit"
+                type="button"
                 loading={tables?.loading}
+                onClick={handleSubmit(createTable)}
               >
                 Add
-              </LoadingButton>
+              </LoadingButton> :
+                <LoadingButton
+                  variant="contained"
+                  type="button"
+                  color="inherit"
+                  loading={tables?.loading}
+                  onClick={handleSubmit(updateTable)}
+                >
+                  Update
+                </LoadingButton>}
             </form>
           </div>
         </div>
@@ -392,7 +430,7 @@ function UpdateEvent() {
             </p>
           </div>
           <div className="flex justify-start">
-            <Link to={`/room/groups/${id}`} target="_blank">
+            <Link to={`/user/management-groups/${id}`} target="_blank">
               <Button variant="contained" type="submit">
                 Manage groups
               </Button>

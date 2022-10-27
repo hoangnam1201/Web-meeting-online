@@ -2,6 +2,7 @@ import {
   createTableAPI,
   deleteTableAPI,
   getTablesByRoomAndFloorAPI,
+  updateTableAPI,
 } from "../../api/table.api";
 
 export const TABLE_REQUEST = "TABLE_REQUEST";
@@ -32,7 +33,7 @@ const tableSetSelectedTables = (ids) => {
 
 const tableError = (msg) => {
   return {
-    type: TABLE_SUCCESS,
+    type: TABLE_ERROR,
     payload: msg,
   };
 };
@@ -95,6 +96,19 @@ export const addTableAction = (table) => {
     try {
       await createTableAPI(table);
       dispatch(getTabelsAction(table.room, table.floor));
+    } catch (err) {
+      dispatch(tableError(err.response?.data?.err));
+    }
+  };
+};
+
+export const updateTableAction = (data, roomId) => {
+  return async (dispatch, getState) => {
+    dispatch(tableRequest());
+    const tables = getState().tables;
+    try {
+      await updateTableAPI(tables.selectedTables, data);
+      dispatch(getTabelsAction(roomId, tables.currentFloor));
     } catch (err) {
       dispatch(tableError(err.response?.data?.err));
     }

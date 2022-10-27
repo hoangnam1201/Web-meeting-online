@@ -35,6 +35,7 @@ export default () => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: 400, errors: errors.array() });
     }
+    console.log(req.body)
     try {
       const tableCreate = TableUpdateDto.fromTable(req.body);
       await tableService.update(ids, tableCreate);

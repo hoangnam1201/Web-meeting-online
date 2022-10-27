@@ -40,7 +40,7 @@ const RoomDetail = ({
   }, [myStream]);
 
   return (
-    <div className="min-h-screen relative bg-gray-100 pb-20">
+    <div className="min-h-screen relative bg-blue-50 pb-20">
       {!roomCall?.roomInfo?.isPresent && (
         <>
           <VideoTableContainer
@@ -53,7 +53,7 @@ const RoomDetail = ({
         </>
       )}
       <div
-        className="text-xl font-semibold py-4 bg-gray-100 text-gray-500"
+        className="text-xl font-semibold py-4 text-gray-500"
       >
         {roomCall?.roomInfo?.name}
       </div>
