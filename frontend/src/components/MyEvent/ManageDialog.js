@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,8 +6,7 @@ import {
   DialogActions,
   TextField,
   Grid,
-  Alert,
-  Box,
+  LinearProgress,
 } from "@mui/material";
 import { withStyles, makeStyles } from "@mui/styles";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -17,12 +16,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Swal from "sweetalert2";
-import { useDispatch } from "react-redux";
-import { actGetRoom } from "./modules/action";
-import { useCookies } from "react-cookie";
-import { createRoomApi, updateRoomApi } from "../../api/room.api";
+import { useDispatch, useSelector } from "react-redux";
+import { addRoomAction, updateRoomAction } from "./modules/action";
 import { LoadingButton } from "@mui/lab";
-import { ScaleLoader } from "react-spinners";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -52,16 +48,7 @@ const DialogTitleMui = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
     <DialogTitle className={classes.root} {...other}>
-      <h6>{children}</h6>
-      {/* {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null} */}
+      <p>{children}</p>
     </DialogTitle>
   );
 });
@@ -85,97 +72,74 @@ const schema = yup.object().shape({
 
 const ManageDialog = (props) => {
   const classes = useStyles();
-  const { openDialog, setOpenDialog, handleCloseDialog, modal } = props;
-  const [cookies] = useCookies(["u_auth"]);
+  const { openDialog, setOpenDialog, handleCloseDialog, modal, roomEvent } =
+    props;
+
   const dispatch = useDispatch();
-  const [startDate, setStartData] = useState(Date.now());
-  const [endDate, setEndDate] = useState(Date.now());
-  const [roomError, setRoomError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm({
+
+  const room = useSelector((state) => state.listRoomReducer);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
-  const [roomEvent, setRoomEvent] = useState({ ...props.roomEvent });
+  // const [roomEvent, setRoomEvent] = useState({ ...props.roomEvent });
 
-  const handleChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setRoomEvent({
-      ...roomEvent,
-      [name]: value,
-    });
-  };
+  // useEffect(() => {
+  //   setRoomEvent(props.roomEvent);
+  // }, [props.roomEvent]);
   useEffect(() => {
-    setRoomEvent(props.roomEvent);
-  }, [props.roomEvent]);
+    if (roomEvent) {
+      reset({
+        name: roomEvent.name,
+        description: roomEvent.description,
+        startDate: roomEvent.startDate,
+        endDate: roomEvent.endDate,
+      });
+    } else {
+      reset({
+        startDate: new Date().getTime(),
+        endDate: new Date().getTime(),
+      });
+    }
+  }, [roomEvent]);
   const handleDateChange = (date) => {
-    setStartData(date.getTime());
+    setValue("startDate", date.getTime(), { shouldValidate: true });
   };
   const handleDateChange2 = (date) => {
-    setEndDate(date.getTime());
+    setValue("endDate", date.getTime(), { shouldValidate: true });
   };
-  const onAddSubmit = () => {
-    setLoading(true);
-    const data = {
-      name: roomEvent.name,
-      description: roomEvent.description,
-      startDate: startDate,
-      endDate: endDate,
-    };
-    createRoomApi(data)
-      .then(() => {
-        setLoading(false);
+  const onAddSubmit = (data) => {
+    dispatch(
+      addRoomAction(data, () => {
         setOpenDialog(false);
         Swal.fire({
           icon: "success",
           title: "Create roon successfull !",
           timer: 1500,
           showConfirmButton: false,
-        }).then(() => {
-          dispatch(actGetRoom());
         });
       })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error.response);
-        // setOpenDialog(false);
-        if (error?.response?.data?.msg) {
-          setRoomError(error?.response?.data?.msg);
-        }
-        if (error?.response?.data?.errors[0].msg) {
-          setRoomError(error?.response?.data?.errors[0].msg);
-        }
-        if (error?.response?.data?.err) {
-          setRoomError(error?.response?.data?.err);
-        }
-      });
+    );
   };
-  const onUpdateSubmit = () => {
-    setLoading(true);
-    const data = {
-      name: roomEvent.name,
-      description: roomEvent.description,
-      startDate: startDate,
-      endDate: endDate,
-    };
-    updateRoomApi(roomEvent._id, data)
-      .then(() => {
-        setLoading(false);
+  const onUpdateSubmit = (data) => {
+    dispatch(
+      updateRoomAction(roomEvent._id, data, () => {
         setOpenDialog(false);
         Swal.fire({
           icon: "success",
           title: "Update room successfull !",
           timer: 1500,
           showConfirmButton: false,
-        }).then(() => {
-          dispatch(actGetRoom());
         });
       })
-      .catch((error) => {
-        setLoading(false);
-        setOpenDialog(false);
-      });
+    );
   };
 
   return (
@@ -187,19 +151,10 @@ const ManageDialog = (props) => {
           onClose={handleCloseDialog}
           open={openDialog}
         >
-          <Box className="z-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <ScaleLoader
-              color="#f50057"
-              loading={loading}
-              height={45}
-              width={5}
-              radius={10}
-              margin={4}
-            />
-          </Box>
+          {room?.loading && <LinearProgress />}
           <DialogTitleMui>{modal.title}</DialogTitleMui>
           <DialogContentMui dividers>
-            <form className={classes.form} noValidate>
+            <form className={classes.form}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
@@ -211,11 +166,9 @@ const ManageDialog = (props) => {
                     label="Room name"
                     name="name"
                     autoComplete="name"
-                    {...register('name')}
+                    {...register("name")}
                     error={!!errors?.name}
                     helperText={errors?.name?.message}
-                    value={roomEvent.name}
-                    onChange={handleChange}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -228,11 +181,9 @@ const ManageDialog = (props) => {
                     label="Description"
                     name="description"
                     autoComplete="description"
-                    {...register('description')}
+                    {...register("description")}
                     error={!!errors?.description}
                     helperText={errors?.description?.message}
-                    value={roomEvent.description}
-                    onChange={handleChange}
                   />
                 </Grid>
 
@@ -244,7 +195,7 @@ const ManageDialog = (props) => {
                       label="Start Date"
                       inputFormat="MM/dd/yyyy"
                       name="startDate"
-                      value={new Date(startDate)}
+                      value={new Date(getValues("startDate"))}
                       onChange={handleDateChange}
                       className={classes.datePicker}
                       renderInput={(params) => (
@@ -261,7 +212,7 @@ const ManageDialog = (props) => {
                       label="End Date"
                       inputFormat="MM/dd/yyyy"
                       name="endDate"
-                      value={new Date(endDate)}
+                      value={new Date(getValues("endDate"))}
                       onChange={handleDateChange2}
                       className={classes.datePicker}
                       renderInput={(params) => (
@@ -274,13 +225,13 @@ const ManageDialog = (props) => {
             </form>
           </DialogContentMui>
           <DialogActionsMui>
-            {roomError ? (
+            {/* {roomError ? (
               <Alert style={{ marginTop: "15px" }} severity="error">
                 {roomError}
               </Alert>
-            ) : null}
+            ) : null} */}
             <LoadingButton
-              loading={loading}
+              loading={room?.loading}
               loadingPosition="start"
               type="submit"
               className={classes.button}

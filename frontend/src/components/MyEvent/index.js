@@ -11,10 +11,10 @@ import {
   CardContent,
   CardMedia,
   IconButton,
-  Box,
+  CircularProgress,
 } from "@mui/material";
 import ImgMeeting from "../../assets/meeting.jpg";
-import { Link } from "react-router-dom";
+import Link from "react-router-dom/Link";
 import { Helmet } from "react-helmet";
 import ManageDialog from "./ManageDialog";
 import EditIcon from "@mui/icons-material/Edit";
@@ -22,11 +22,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
-import { actGetRoom } from "./modules/action";
+import { actGetRoom, deleteRoomAction } from "./modules/action";
 import meetingIcon from "../../assets/meetingIcon1.png";
-import { deleteRoomAPI, getInvitedRoomAPI } from "../../api/room.api";
+import { getInvitedRoomAPI } from "../../api/room.api";
 import { renewToken } from "../../api/user.api";
-import { ScaleLoader } from "react-spinners";
 import PersonIcon from "@mui/icons-material/Person";
 
 const useStyles = makeStyles({
@@ -87,13 +86,13 @@ const useStyles = makeStyles({
 });
 const MyEvent = (props) => {
   const classes = useStyles();
-  const listRoom = useSelector((state) => state.listRoomReducer?.data?.data);
+  const listRoom = useSelector((state) => state.listRoomReducer);
+  console.log(listRoom);
 
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false);
   const [roomEvent, setRoomEvent] = useState({});
   const [invitedRoom, setInvitedRoom] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState({
     title: "",
     button: "",
@@ -119,7 +118,7 @@ const MyEvent = (props) => {
       button: "Create",
       id: "tao",
     });
-    setRoomEvent({});
+    setRoomEvent(null);
     setOpenDialog(true);
   };
   const handleUpdate = (roomEvent) => {
@@ -150,45 +149,34 @@ const MyEvent = (props) => {
       cancelButtonText: "Cancel",
     }).then((swalRes) => {
       if (swalRes.isConfirmed) {
-        setLoading(true);
-        deleteRoomAPI(roomID)
-          .then((result) => {
-            setLoading(false);
+        dispatch(
+          deleteRoomAction(roomID, () => {
             Swal.fire({
               icon: "success",
               title: "Delete successfull !",
               showConfirmButton: false,
               timer: 1500,
-            }).then(() => {
-              dispatch(actGetRoom());
             });
           })
-          .catch((error) => {
-            setLoading(false);
-            Swal.fire({
-              icon: "error",
-              title: error.response.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          });
+        );
       }
     });
   };
 
   return (
     <>
-      <Box className="z-100 inline-block fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      {/* <Box className="z-100 inline-block fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        {console.log(listRoom?.loading)}
         <ScaleLoader
           color="#f50057"
-          loading={loading}
+          loading={listRoom?.loading}
           height={45}
           width={5}
           radius={10}
           margin={4}
         />
-      </Box>
-      <div className={`${classes.root} ${loading ? `opacity-50` : null}`}>
+      </Box> */}
+      <div className={classes.root}>
         <Helmet>
           <title>My Event</title>
           <meta charSet="utf-8" name="description" content="Home" />
@@ -224,13 +212,14 @@ const MyEvent = (props) => {
             </Grid>
 
             <div className="mt-5">
+              {listRoom?.loading && <CircularProgress />}
               <Grid
                 container
                 spacing={4}
                 className={classes.courseListContainer}
               >
-                {listRoom?.length > 0 ? (
-                  listRoom?.map((room, index) => (
+                {listRoom?.data?.length > 0 ? (
+                  listRoom?.data?.map((room, index) => (
                     <Grid item lg={3} md={4} sm={6} xs={12} key={index}>
                       <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
                         <Link to={`/room/${room._id}`}>
@@ -299,10 +288,12 @@ const MyEvent = (props) => {
                   ))
                 ) : (
                   <Grid item md={9}>
-                    <div className="flex justify-center flex-col items-center">
-                      <img src={meetingIcon} width={100} height={100} />
-                      <h2 className="font-bold">You have no events !!!</h2>
-                    </div>
+                    {listRoom.data && (
+                      <div className="flex justify-center flex-col items-center">
+                        <img src={meetingIcon} width={100} height={100} />
+                        <h2 className="font-bold">You have no events !!!</h2>
+                      </div>
+                    )}
                   </Grid>
                 )}
               </Grid>

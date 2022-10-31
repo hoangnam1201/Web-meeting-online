@@ -10,7 +10,6 @@ export const listRoomReducer = (state = initialState, { payload, type }) => {
   switch (type) {
     case actionTypes.GET_ROOM_REQUEST:
       state.loading = true;
-      state.data = null;
       state.error = null;
       return { ...state };
     case actionTypes.GET_ROOM_SUCCESS:
@@ -24,6 +23,6 @@ export const listRoomReducer = (state = initialState, { payload, type }) => {
       state.error = payload;
       return { ...state };
     default:
-      return { ...state };
+      return state;
   }
 };
