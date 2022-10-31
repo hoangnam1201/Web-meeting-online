@@ -261,7 +261,7 @@ export const Message = React.memo(
                       {f.fileId && (
                         <a
                           className=" whitespace-nowrap break-normal overflow-hidden"
-                          href={`http://localhost:3002/api/file/download/${f.fileId}`}
+                          href={`${process.env.REACT_APP_HOST_BASE}/api/file/download/${f.fileId}`}
                         >
                           {f.name}
                         </a>
@@ -310,7 +310,7 @@ export const Message = React.memo(
                       {f.fileId && (
                         <a
                           className=" whitespace-nowrap break-normal overflow-hidden"
-                          href={`http://localhost:3002/api/file/download/${f.fileId}`}
+                          href={`${process.env.REACT_APP_HOST_BASE}/api/file/download/${f.fileId}`}
                         >
                           {f.name}
                         </a>
@@ -359,7 +359,7 @@ export const Message = React.memo(
                       {f.fileId && (
                         <a
                           className=" whitespace-nowrap break-normal overflow-hidden"
-                          href={`http://localhost:3002/api/file/download/${f.fileId}`}
+                          href={`${process.env.REACT_APP_HOST_BASE}/api/file/download/${f.fileId}`}
                         >
                           {f.name}
                         </a>

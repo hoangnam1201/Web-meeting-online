@@ -1,0 +1,46 @@
+services:
+  db-mongo:
+    image: mongo
+    volumes:
+      - ./mongodata:/data/db
+    networks:
+      - backend
+  be:
+    image: lamtvu/utemeetingbe
+    environment:
+      - PORT=3002
+      - HOST_DB=mongodb://db-mongo:27017/meetingdb
+      - HOST_SERVER=http://localhost:3002
+      - HOST_FRONTEND=http://locahost:3000
+      - CLIENT_ID=825659946153-qk4v8ckvnve80n8jonc310onr2jua1qq.apps.googleusercontent.com
+      - ACCESS_TOKEN_SECRET=RUWKFBw2qR4UhWCilrwrvWGh1olht8Kj4jVBwzrMUEiaxPOxMdhT8Bq0cXfQaXG3bgv+9FYd1n5xyP22J7mxnw==
+      - ACCESS_TOKEN_LIFE=5m
+      - REFRESH_TOKEN_SECRET=RUWKFBw2qR4UhWCilrwrvWGh1olht8Kj4jVBwzrMUEiaxPOxMdhT8Bq0cXfQaXG3bgv+9FYd1n5xyP22J7mxnw==
+      - REFRESH_TOKEN_LIFE=10d
+      - USER_EMAIL=techlms.vn@gmail.com
+      - PASSWORD_EMAIL=ikfefgeaeofvwbti
+    ports:
+      - "3002:3002"
+    depends_on:
+      - db-mongo
+    networks:
+      - backend
+  fe:
+    image: lamtvu/utemeetingfe
+    environment:
+      - REACT_APP_CLIENT_ID=825659946153-qk4v8ckvnve80n8jonc310onr2jua1qq.apps.googleusercontent.com
+      - REACT_APP_HOST_BASE=http://localhost:3002
+      - REACT_APP_HOST_NAME=localhost
+      - REACT_APP_HOST_PORT=3002
+    ports:
+      - "3000:3000"
+    depends_on:
+      - be
+    networks:
+      - frontend
+networks:
+  backend:
+  frontend:
+
+
+        
