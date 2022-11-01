@@ -29,7 +29,7 @@ import {
 } from "../../api/room.api";
 import { setGlobalNotification } from "../../store/reducers/globalNotificationReducer";
 import { AboutFormatSwal, confirmSwal } from "../../services/swalServier";
-import { LoadingButton } from "@mui/lab"
+import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 
 function UpdateEvent() {
@@ -50,9 +50,10 @@ function UpdateEvent() {
     formState: { errors },
     reset,
     getValues,
-    setValue } = useForm({
-      mode: 'onChange',
-    });
+    setValue,
+  } = useForm({
+    mode: "onChange",
+  });
 
   useEffect(() => {
     getRoom("START", "ALL");
@@ -60,14 +61,15 @@ function UpdateEvent() {
 
   useLayoutEffect(() => {
     if (!tables || !tables.items) return;
-    if (!tables.selectedTables.length)
-      reset();
+    if (!tables.selectedTables.length) reset();
     if (tables.selectedTables.length > 1) {
       return reset({ floor: tables?.currentFloor });
     }
-    const t = { ...tables.items.find((t) => t._id === tables.selectedTables[0]) }
+    const t = {
+      ...tables.items.find((t) => t._id === tables.selectedTables[0]),
+    };
     reset({ name: t.name, numberOfSeat: t.numberOfSeat, floor: t.floor });
-  }, [tables?.selectedTables])
+  }, [tables?.selectedTables]);
 
   const getRoom = async (position, loadingType) => {
     try {
@@ -100,7 +102,7 @@ function UpdateEvent() {
   const updateTable = (data) => {
     dispatch(updateTableAction(data, id));
     reset();
-  }
+  };
 
   const onDelete = (tableId) => {
     Swal.fire({
@@ -265,8 +267,14 @@ function UpdateEvent() {
             style={{ height: "700px" }}
           >
             <div className="grid grid-cols-3 px-4 py-1 bg-gray-200 rounded-md relative">
-              <input type='checkbox' className={`p-2 rounded-full absolute top-0 -left-1 transform translate-y-1/2 -translate-x-full`}
-                onChange={() => { dispatch(tableSetAllSelectedTablesAction()) }} checked={tables?.selectedTables.length ? true : false} />
+              <input
+                type="checkbox"
+                className={`p-2 rounded-full absolute top-0 -left-1 transform translate-y-1/2 -translate-x-full`}
+                onChange={() => {
+                  dispatch(tableSetAllSelectedTablesAction());
+                }}
+                checked={tables?.selectedTables.length ? true : false}
+              />
               <div className="col-span-2 text-left border-r-2 border-gray-300">
                 name
               </div>
@@ -275,9 +283,14 @@ function UpdateEvent() {
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
               {tables?.items?.map((s) => (
                 <div
-                  className={`hover:bg-gray-50 grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm ${tables?.selectedTables.indexOf(s._id) !== -1 && 'border-2 border-gray-400'}`}
+                  className={`hover:bg-gray-50 grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm ${
+                    tables?.selectedTables.indexOf(s._id) !== -1 &&
+                    "border-2 border-gray-400"
+                  }`}
                   key={s._id}
-                  onClick={() => { dispatch(tableSelectTableAction(s._id)) }}
+                  onClick={() => {
+                    dispatch(tableSelectTableAction(s._id));
+                  }}
                 >
                   <div className="col-span-2 text-left border-r-2 border-gray-300">
                     {s.name}
@@ -341,8 +354,9 @@ function UpdateEvent() {
                       dispatch(tableSelectFloorAction(id, f));
                     }}
                     key={f}
-                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${tables?.currentFloor === f && "shadow-lg bg-gray-200"
-                      }`}
+                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
+                      tables?.currentFloor === f && "shadow-lg bg-gray-200"
+                    }`}
                   >
                     Floor {index}
                   </button>
@@ -354,18 +368,20 @@ function UpdateEvent() {
             <div className="text-left text-md text-gray-500 font-semibold">
               Table
             </div>
-            <form
-              className="flex flex-col gap-4"
-            >
+            <form className="flex flex-col gap-4">
               <TextField
                 fullWidth
                 label="name"
                 InputLabelProps={{ shrink: true }}
                 variant="outlined"
                 type="text"
-                {...register('name', {
-                  required: tables?.selectedTables.length > 1 ? null : 'required',
-                  minLength: tables?.selectedTables.length > 1 ? null : { value: 5, message: 'min length is 5' }
+                {...register("name", {
+                  required:
+                    tables?.selectedTables.length > 1 ? null : "required",
+                  minLength:
+                    tables?.selectedTables.length > 1
+                      ? null
+                      : { value: 5, message: "min length is 5" },
                 })}
                 disabled={tables?.selectedTables.length > 1}
                 error={!!errors?.name}
@@ -379,36 +395,58 @@ function UpdateEvent() {
                 type="number"
                 disabled={tables?.selectedTables.length > 1}
                 InputProps={{ inputProps: { min: 1, max: 8 } }}
-                {...register('numberOfSeat', {
-                  required: tables?.selectedTables.length > 1 ? null : 'required',
-                  max: tables?.selectedTables.length > 1 ? null : { value: 8, message: 'max seats is 8' },
-                  min: tables?.selectedTables.length > 1 ? null : { value: 1, message: 'min seats is 1' },
+                {...register("numberOfSeat", {
+                  required:
+                    tables?.selectedTables.length > 1 ? null : "required",
+                  max:
+                    tables?.selectedTables.length > 1
+                      ? null
+                      : { value: 8, message: "max seats is 8" },
+                  min:
+                    tables?.selectedTables.length > 1
+                      ? null
+                      : { value: 1, message: "min seats is 1" },
                 })}
                 error={!!errors.numberOfSeat}
                 helperText={errors?.numberOfSeat?.message}
               />
-              {!!tables?.selectedTables.length && <div className="flex flex-wrap gap-2">
-                {room?.floors?.map((f, index) => {
-                  const vFloor = getValues('floor');
-                  return <button
-                    type="button"
-                    key={index}
-                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${vFloor === f && "shadow-lg bg-gray-200"
-                      }`}
-                    onClick={() => setValue('floor', f, { shouldDirty: true, shouldTouch: true, shouldValidate: true })}
-                  >
-                    {tables?.currentFloor !== f ? `floor ${index}` : 'current'}
-                  </button>
-                })}
-              </div>}
-              {tables?.selectedTables.length === 0 ? <LoadingButton
-                variant="contained"
-                type="button"
-                loading={tables?.loading}
-                onClick={handleSubmit(createTable)}
-              >
-                Add
-              </LoadingButton> :
+              {!!tables?.selectedTables.length && (
+                <div className="flex flex-wrap gap-2">
+                  {room?.floors?.map((f, index) => {
+                    const vFloor = getValues("floor");
+                    return (
+                      <button
+                        type="button"
+                        key={index}
+                        className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
+                          vFloor === f && "shadow-lg bg-gray-200"
+                        }`}
+                        onClick={() =>
+                          setValue("floor", f, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                            shouldValidate: true,
+                          })
+                        }
+                      >
+                        {tables?.currentFloor !== f
+                          ? `floor ${index}`
+                          : "current"}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {tables?.selectedTables.length === 0 ? (
+                <LoadingButton
+                  variant="contained"
+                  type="button"
+                  loading={tables?.loading}
+                  onClick={handleSubmit(createTable)}
+                >
+                  Add
+                </LoadingButton>
+              ) : (
                 <LoadingButton
                   variant="contained"
                   type="button"
@@ -417,7 +455,8 @@ function UpdateEvent() {
                   onClick={handleSubmit(updateTable)}
                 >
                   Update
-                </LoadingButton>}
+                </LoadingButton>
+              )}
             </form>
           </div>
         </div>
@@ -477,7 +516,10 @@ function UpdateEvent() {
               </div>
               <div>
                 <Button variant="contained">
-                  <a href={`${process.env.REACT_APP_HOST_BASE}/api/room/members/download-csv/${id}`} download='user-list.xlsx'>
+                  <a
+                    href={`${process.env.REACT_APP_HOST_BASE}/api/room/members/download-csv/${id}`}
+                    download="user-list.xlsx"
+                  >
                     Export
                   </a>
                 </Button>
@@ -541,8 +583,59 @@ function UpdateEvent() {
             </div>
           </div>
         </div>
+
+        {/* Manage Quiz */}
+        <div className="shadow-md p-4 mt-4">
+          <div className="py-4 text-left">
+            <p className="text-md font-semibold">Quiz attempt</p>
+            <p className="text-gray-400 font-thin text-sm">
+              The tables management quiz attempt
+            </p>
+          </div>
+          <div className="grid grid-cols-3">
+            <div
+              className="flex flex-col col-span-2"
+              style={{ height: "5 00px" }}
+            >
+              <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-md">
+                <div className="text-left border-r-2 border-gray-500">
+                  Name of quiz
+                </div>
+                <div className="text-left pl-3">Number of questions</div>
+              </div>
+              <div className="flex-grow h-0 overflow-y-auto scroll-sm">
+                <Link
+                  to={`/user/management-quiz/${id}`}
+                  target="_blank"
+                  className="group"
+                >
+                  <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-md mt-4 text-sm text-gray-500 group-hover:bg-slate-300">
+                    <div className="text-left border-r-2 border-gray-300">
+                      Javascipt test quiz
+                    </div>
+                    <div className="text-left pl-3 flex justify-between">
+                      20
+                      <button>
+                        <RemoveIcon fontSize="small" />
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="text-left text-md text-gray-500 font-semibold">
+                Create quiz
+              </div>
+              <div className=" flex flex-col gap-4">
+                <TextField fullWidth label="Name of quiz" />
+                <LoadingButton variant="contained">Add</LoadingButton>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div >
+    </div>
   );
 }
 

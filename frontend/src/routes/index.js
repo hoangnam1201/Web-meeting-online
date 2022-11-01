@@ -7,6 +7,7 @@ import UpdateEvent from "../components/updateEvent";
 import RoomCall from "../components/roomCall";
 import GroupManagement from "../components/groupManagement";
 import TableManagement from "../components/tableManagement";
+import QuizManagement from "../components/quizManagement";
 
 export const userRoute = [
   {
@@ -33,6 +34,11 @@ export const userRoute = [
     exact: true,
     path: "/user/management-tables/:id",
     component: TableManagement,
+  },
+  {
+    exact: true,
+    path: "/user/management-quiz/:id",
+    component: QuizManagement,
   },
 ];
 
