@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ChatIcon from "@mui/icons-material/Chat";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -15,6 +15,7 @@ import { useHistory } from "react-router-dom";
 
 const Toolbar = ({ connection, mediaStatus, ...rest }) => {
   const dispatch = useDispatch();
+  const [autoHidden, setAutoHidden] = useState(false);
   const currentUser = useSelector((state) => state.userReducer);
   const roomCall = useSelector(state => state.roomCall);
   const history = useHistory();
@@ -40,8 +41,8 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
   };
 
   return (
-    <div className="absolute top-full transform -translate-y-full flex justify-center w-full">
-      <div className="flex bg-gray-700 rounded-t-xl ">
+    <div className='absolute bg-gray-700 top-full  b-0 left-1/2 group pt-2 transform -translate-y-full -translate-x-1/2 flex rounded-t-xl '>
+      <div className={`flex ${autoHidden && 'max-h-0 group-hover:max-h-96 duration-1000 transition-all overflow-hidden hover:overflow-visible'}`}>
         {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
           <div className="border-r-2 border-gray-400 px-4">
             <button
@@ -94,9 +95,9 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
             <ChatIcon fontSize="large" className="text-white" />
           </IconButton>
         </div>
-        <div className="border-l-2 border-gray-400 px-3 flex gap-4">
+        <div className="border-l-2 border-gray-400 text-white px-3 flex gap-4 items-center">
           <button
-            className="p-2 text-white focus:outline-none text-sm"
+            className="p-2 focus:outline-none text-sm"
             onClick={() =>
               confirmSwal("Are you sure?", "", () => {
                 history.push("/user/my-event");
@@ -104,10 +105,23 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
             }
           >
             <div>
-              <LogoutSharpIcon className="text-white" />
+              <LogoutSharpIcon/>
             </div>
             exit room
           </button>
+          <div
+            className="p-2 focus:outline-none text-sm "
+          >
+            <label>
+              <input type='checkbox'
+                value={autoHidden}
+                onChange={() => setAutoHidden(!autoHidden)}
+              />
+              <p>
+                auto hiden
+              </p>
+            </label>
+          </div>
         </div>
       </div>
     </div>

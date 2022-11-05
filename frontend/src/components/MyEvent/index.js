@@ -14,7 +14,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import ImgMeeting from "../../assets/meeting.jpg";
-import Link from "react-router-dom/Link";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import ManageDialog from "./ManageDialog";
 import EditIcon from "@mui/icons-material/Edit";

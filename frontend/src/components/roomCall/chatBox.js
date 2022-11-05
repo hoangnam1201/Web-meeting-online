@@ -197,7 +197,7 @@ export const Message = React.memo(
       <div {...rest}>
         <div
           className={`flex flex-col ${type === 0 ? "items-end" : "items-start"
-            } px-2 overflow-hidden w-full`}
+            } px-2 overflow-hidden w-full text-left`}
         >
           <div
             className={`flex p-1 ${type === 0 && "flex-row-reverse"} w-full`}

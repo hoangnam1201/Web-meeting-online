@@ -25,7 +25,7 @@ const peerEndPoint = {
   path: "/peerjs/meeting",
   port: process.env.REACT_APP_HOST_PORT,
 };
-const socketRoomEndPoint = process.env.REACT_APP_HOST_BASE + "/socket/rooms";
+const socketRoomEndPoint = process.env.REACT_APP_SOCKET_HOST + "/rooms";
 const cookies = new Cookies();
 
 const initializePeerConnection = () => {
@@ -35,6 +35,7 @@ const initializePeerConnection = () => {
 const initializeSocketConnection = () => {
   const auth = cookies.get("u_auth");
   return openSocket(socketRoomEndPoint, {
+    transports: ["websocket", "polling"],
     forceNew: true,
     auth: {
       token: "Bearer " + auth.accessToken,

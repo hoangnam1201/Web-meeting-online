@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -9,6 +9,7 @@ import VideocamOff from "@mui/icons-material/VideocamOff";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import LogoutSharpIcon from "@mui/icons-material/LogoutSharp";
+import DoorBackIcon from '@mui/icons-material/DoorBack';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,6 +31,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   const currentUser = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const history = useHistory();
+  const [autoHidden, setAutoHidden] = useState(false);
   const { status, startRecording, stopRecording, mediaBlobUrl } =
     useReactMediaRecorder({ screen: true });
 
@@ -93,6 +95,8 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
     if (!roomCall.joinLoading) dispatch(setSeletedTable(null));
   };
 
+  console.log(autoHidden)
+
   return (
     <div {...rest}>
       {roomCall?.selectedTable && (
@@ -124,7 +128,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
         </div>
       )}
       <div className="shadow mt-2 p-2 group">
-        <div className="flex relative max-h-0 group-hover:max-h-96 duration-1000 transition-all overflow-hidden hover:overflow-visible">
+        <div className={`flex relative ${autoHidden && ' max-h-0 group-hover:max-h-96 duration-1000 transition-all overflow-hidden hover:overflow-visible'}`}>
           {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
             <div className="border-r-2 border-gray-400 px-3 flex items-center static">
               <div className="relative">
@@ -240,7 +244,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
                 <PeopleIcon fontSize="large" />
               </IconButton>
             )}
-            <div className="border-l-2 border-gray-400 px-3 flex">
+            <div className="border-l-2 border-gray-400 px-3 flex items-end">
               <button
                 className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
                 onClick={() => connection.current.leaveTable()}
@@ -263,6 +267,29 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
                 </div>
                 exit room
               </button>
+              {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
+                <button
+                  className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
+                >
+                  <div>
+                    <DoorBackIcon />
+                  </div>
+                  close room
+                </button>
+              )}
+              <div
+                className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
+              >
+                <label>
+                  <input type='checkbox'
+                    value={autoHidden}
+                    onChange={() => setAutoHidden(!autoHidden)}
+                  />
+                  <p>
+                    auto hiden
+                  </p>
+                </label>
+              </div>
             </div>
           </div>
         </div>

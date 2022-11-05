@@ -52,7 +52,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
         <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-dark">
             <div className="container flex justify-between items-center">
-              <Link to="/" className="navbar-brand">
+              <Link to="/" className="navbar-brand min-w-max">
                 <img
                   width="150"
                   height="100"
@@ -72,7 +72,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                         Home
                       </Link>
                     </li>
-                    <li className="nav-item ">
+                    <li className="nav-item">
                       <LinkScroll className="nav-link" to="service">
                         Service
                       </LinkScroll>
@@ -143,11 +143,11 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                   </div>
                 </div>
               ) : (
-                <div className="collapse navbar-collapse mr-10">
+                <div className="collapse navbar-collapse mr-10 flex min-w-min items-center justify-center">
                   <Link to="/auth/login">
                     <button
                       variant="outlined"
-                      className="mr-10 py-2 px-5 rounded text-stone-500 bg-stone-50 shadow hover:bg-stone-200"
+                      className="mr-10 py-2 px-5 rounded text-stone-500 bg-stone-50 shadow hover:bg-stone-200 whitespace-nowrap"
                     >
                       Sign In
                     </button>
@@ -155,7 +155,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                   <Link to="/auth/register">
                     <button
                       variant="outlined"
-                      className="py-2 px-5 rounded bg-stone-400 hover:bg-stone-500 text-white shadow"
+                      className="py-2 px-5 rounded bg-stone-400 hover:bg-stone-500 text-white shadow whitespace-nowrap"
                     >
                       Sign Up
                     </button>
