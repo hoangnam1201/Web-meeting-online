@@ -131,14 +131,16 @@ export const Video = ({ streamData, isPin, ...rest }) => {
       <div className="h-full w-full relative rounded-md overflow-hidden bg-black">
         <video
           ref={videoRef}
-          className={`h-full w-full ${!media.video && 'hidden'}`}
+          className={`h-full w-full ${!media.video && "hidden"}`}
           autoPlay
           muted={true}
         />
         <audio ref={audioRef} autoPlay />
-        <div className="w-full absolute top-1 left-1 z-10 flex justify-between px-3">
-          <div className="flex gap-2">
-            <div className="text-shadow text-white"> {user.name}</div>
+        <div className="w-full absolute top-1 left-1 z-10 flex justify-between items-center px-3">
+          <div className="flex gap-2 w-5/6">
+            <div className="text-shadow text-white text-ellipsis overflow-hidden whitespace-nowrap ">
+              {user.name}
+            </div>
             <div hidden={media.audio}>
               <MicOffIcon className="text-red-500" />
             </div>
