@@ -6,6 +6,8 @@ import { selectedVideoReducer } from "./selectVideoReducer";
 import { notifyMessageReducer } from "./notifyMessageReducer";
 import { TablesReducer } from "./tablesReducer";
 import { globalnofificationReducer } from "./globalNotificationReducer";
+import { quizReducer } from "./quizReducer";
+import { questionReducer } from "./questionReducer";
 
 export const rootReducer = combineReducers({
   userReducer,
@@ -15,4 +17,6 @@ export const rootReducer = combineReducers({
   tables: TablesReducer,
   globalNofification: globalnofificationReducer,
   notifyMessageReducer,
+  quizReducer,
+  questionReducer,
 });
