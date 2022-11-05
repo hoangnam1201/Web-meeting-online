@@ -12,6 +12,7 @@ export class Room {
   members: ObjectId[] | User[];
   joiners: ObjectId[] | User[];
   floors: ObjectId[];
+  state: "CLOSING" | "OPENING" | "BANNING";
 }
 
 const RoomSchema = new Schema<Room>({
@@ -20,6 +21,7 @@ const RoomSchema = new Schema<Room>({
   startDate: Number,
   endDate: Number,
   isPresent: Boolean,
+  state: { type: String, default: "OPENING" },
   floors: [{ type: SchemaTypes.ObjectId }],
   owner: { type: SchemaTypes.ObjectId, ref: "user" },
   members: [{ type: SchemaTypes.ObjectId, ref: "user" }],

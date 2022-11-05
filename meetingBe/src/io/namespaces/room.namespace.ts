@@ -3,7 +3,7 @@ import roomHandler from "../handlers/room.handler";
 import AuthMiddlesware from "../middlewares/auth.middleware";
 
 export default (io: any) => {
-  const roomNamespace = io.of("/socket/rooms");
+  const roomNamespace = io.of("/rooms");
 
   const _roomHandler = roomHandler(roomNamespace, io);
 

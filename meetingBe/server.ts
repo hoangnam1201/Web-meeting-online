@@ -15,6 +15,7 @@ interface ExpressApp extends Express {
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
+const SOCKET_PORT = process.env.SOCKET_PORT || 3001;
 const app: ExpressApp = express();
 const httpServer = createServer(app);
 
@@ -27,18 +28,19 @@ const uri = process.env.HOST_DB || "mongodb://localhost:27017/meetingdb";
 mongoose.connect(uri);
 
 // socketjs
-const io = new Server(httpServer, {
+const io = new Server({
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
   maxHttpBufferSize: 1e8,
-});
+})
 initIOServer(io);
 
 // peerjs
 const peerServer = ExpressPeerServer(httpServer, {
   path: "/meeting",
+  proxied: 'true'
 });
 app.use("/peerjs", peerServer);
 
@@ -50,4 +52,7 @@ app.get("/api/test", (req, res) => {
   res.status(403).json({ a: "a" });
 });
 
+//socket listent
+io.listen(parseInt(SOCKET_PORT.toString()));
+//server listent
 httpServer.listen(PORT, () => console.log("listen on port " + PORT));

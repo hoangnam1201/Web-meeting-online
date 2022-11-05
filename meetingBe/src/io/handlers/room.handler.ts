@@ -25,6 +25,14 @@ export default (ioRoom: any, io: any) => {
     const userId = socket.data.userData.userId;
     const previousRoomId = socket.data.roomId;
     try {
+      const room = await roomService.findById(roomId);
+      console.log(room, "OPENING");
+      if (room.state !== "OPENING") {
+        return socket.emit("room:join-err", {
+          msg: "The room is " + room.state,
+          type: "REQUEST",
+        });
+      }
       const check = await roomService.checkCanAccept(roomId, userId);
       //check previous room
       if (previousRoomId) {
@@ -77,7 +85,6 @@ export default (ioRoom: any, io: any) => {
       });
 
       const user = await userService.findUserById(userId);
-      const room = await roomService.findById(roomId);
       if (user)
         ioRoom.to(room.owner.toString()).emit("room:user-request", {
           user: UserReadDetailDto.fromUser(user),
@@ -128,6 +135,13 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
+  const closeRoom = async function (){
+    const socket: Socket = this;
+    const roomId = socket.data.roomId;
+    const userId = socket.data.userData.userId;
+
+  }
+
   const acceptRequest = async function (
     socketId: string,
     userId: string,
@@ -138,7 +152,8 @@ export default (ioRoom: any, io: any) => {
     const clientSocket = ioRoom.sockets.get(socketId);
 
     if (!accept)
-      return ioRoom.to(socketId).emit("room:join-err", {
+      // return ioRoom.to(socketId).emit("room:join-err", {
+      return socket.to(socketId).emit("room:join-err", {
         msg: "Your request has been declined",
         type: "REFUSE",
       });
@@ -151,7 +166,8 @@ export default (ioRoom: any, io: any) => {
       clientSocket.join(`${roomId}${userId}`);
       clientSocket.data.roomId = roomId;
 
-      ioRoom.to(socketId).emit("room:info", RoomReadDetailDto.fromRoom(room));
+      // ioRoom.to(socketId).emit("room:info", RoomReadDetailDto.fromRoom(room));
+      socket.to(socketId).emit("room:info", RoomReadDetailDto.fromRoom(room));
       ioRoom
         .to(roomId)
         .emit(
@@ -174,7 +190,8 @@ export default (ioRoom: any, io: any) => {
         clientSocket.data.floor = room.floors[0].toString();
       }
 
-      if (room.isPresent) socket.emit("room:present", { time: 1, tables });
+      if (room.isPresent)
+        clientSocket.emit("room:present", { time: 1, tables });
 
       const messages = await messageService.getMessages(roomId, 20, 0);
       ioRoom
