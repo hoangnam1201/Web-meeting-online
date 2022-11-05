@@ -42,7 +42,7 @@ function App() {
                     path={route.path}
                     exact={route.exact}
                     component={route.component}
-                    key={index}
+                    key={route.path}
                   />
                 ))}
                 <Route path="*">
@@ -59,7 +59,7 @@ function App() {
                     path={route.path}
                     exact={route.exact}
                     component={route.component}
-                    key={index}
+                    key={route.path}
                   />
                 ))}
                 <Route path="*" exact component={Error} />
@@ -73,7 +73,7 @@ function App() {
                   path={route.path}
                   exact={route.exact}
                   component={route.component}
-                  key={index}
+                  key={route.path}
                 />
               ))}
               <Route path="*" exact component={Error} />
@@ -87,7 +87,7 @@ function App() {
                     path={route.path}
                     exact={route.exact}
                     component={route.component}
-                    Key={index}
+                    Key={route.path}
                   />
                 ))}
                 <Route path="*" component={Error} />

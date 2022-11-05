@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Link, useParams } from "react-router-dom";
@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import {
   addTableAction,
-  getTabelsAction,
   removeTableAction,
   tableSelectFloorAction,
   tableSelectTableAction,
@@ -22,7 +21,6 @@ import {
   addMembersAPI,
   addMembersByFileAPI,
   deleteFloorAPI,
-  dowloadMemberCSVFileAPI,
   getRoomAPI,
   increaseFloorAPI,
   removeMemberAPI,
@@ -31,10 +29,13 @@ import { setGlobalNotification } from "../../store/reducers/globalNotificationRe
 import { AboutFormatSwal, confirmSwal } from "../../services/swalServier";
 import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
+import QuizManage from "./quiz";
 
 function UpdateEvent() {
   const { id } = useParams();
   const tables = useSelector((state) => state.tables);
+  //quiz
+  const quiz = useSelector((state) => state.quizReducer);
   const dispatch = useDispatch();
   const [room, setRoom] = useState(null);
   const [notFound, setNotFound] = useState(false);
@@ -583,57 +584,7 @@ function UpdateEvent() {
             </div>
           </div>
         </div>
-
-        {/* Manage Quiz */}
-        <div className="shadow-md p-4 mt-4">
-          <div className="py-4 text-left">
-            <p className="text-md font-semibold">Quiz attempt</p>
-            <p className="text-gray-400 font-thin text-sm">
-              The tables management quiz attempt
-            </p>
-          </div>
-          <div className="grid grid-cols-3">
-            <div
-              className="flex flex-col col-span-2"
-              style={{ height: "5 00px" }}
-            >
-              <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-md">
-                <div className="text-left border-r-2 border-gray-500">
-                  Name of quiz
-                </div>
-                <div className="text-left pl-3">Number of questions</div>
-              </div>
-              <div className="flex-grow h-0 overflow-y-auto scroll-sm">
-                <Link
-                  to={`/user/management-quiz/${id}`}
-                  target="_blank"
-                  className="group"
-                >
-                  <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-md mt-4 text-sm text-gray-500 group-hover:bg-slate-300">
-                    <div className="text-left border-r-2 border-gray-300">
-                      Javascipt test quiz
-                    </div>
-                    <div className="text-left pl-3 flex justify-between">
-                      20
-                      <button>
-                        <RemoveIcon fontSize="small" />
-                      </button>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="text-left text-md text-gray-500 font-semibold">
-                Create quiz
-              </div>
-              <div className=" flex flex-col gap-4">
-                <TextField fullWidth label="Name of quiz" />
-                <LoadingButton variant="contained">Add</LoadingButton>
-              </div>
-            </div>
-          </div>
-        </div>
+        <QuizManage roomId={id} />
       </div>
     </div>
   );
