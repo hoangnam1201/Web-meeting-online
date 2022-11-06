@@ -6,7 +6,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>UTE Meeting - Trang chủ</title>
+        <title>UTE Meeting</title>
         <meta charSet="utf-8" name="description" content="Trang chủ" />
       </Helmet>
       <Banner />

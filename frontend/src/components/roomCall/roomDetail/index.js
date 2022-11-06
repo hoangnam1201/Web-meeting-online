@@ -9,6 +9,7 @@ import Toolbar from "../toolbar";
 import PinVideo from "./pinVideo";
 import ListFloor from "./listFloor";
 import ListTable from "./listTable";
+import { roomShowLobbyAction } from "../../../store/actions/roomCallAction";
 
 const RoomDetail = ({
   connection,
@@ -23,6 +24,7 @@ const RoomDetail = ({
   currentFloor,
 }) => {
   const roomCall = useSelector((state) => state.roomCall);
+  const dispatch = useDispatch();
   const [mediaStatus, setMediaStatus] = useState({
     audio: false,
     video: false,
@@ -40,7 +42,10 @@ const RoomDetail = ({
   }, [myStream]);
 
   return (
-    <div className="min-h-screen relative bg-blue-50 pb-20">
+    <div
+      onClick={() => dispatch(roomShowLobbyAction(false))}
+      className="min-h-screen relative bg-blue-50 pb-20"
+    >
       {!roomCall?.roomInfo?.isPresent && (
         <>
           <VideoTableContainer
@@ -52,18 +57,12 @@ const RoomDetail = ({
           <PinVideo />
         </>
       )}
-      <div
-        className="text-xl font-semibold py-4 text-gray-500"
-      >
+      <div className="text-xl font-semibold py-4 text-gray-500">
         {roomCall?.roomInfo?.name}
       </div>
       <div className="px-4 flex flex-col gap-4">
-        <ListTable
-          tables={roomTables}
-        />
-        <ListFloor
-          currentFloor={currentFloor}
-        />
+        <ListTable tables={roomTables} />
+        <ListFloor currentFloor={currentFloor} />
       </div>
       {roomCall?.showChat && (
         <ChatBox
@@ -99,7 +98,5 @@ const RoomDetail = ({
     </div>
   );
 };
-
-
 
 export default RoomDetail;
