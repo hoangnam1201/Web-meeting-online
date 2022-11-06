@@ -33,7 +33,7 @@ const JoinerItem = ({ joiner }) => {
     });
   };
   return (
-    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 px-2">
+    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 text-black px-2">
       <div className="flex items-center gap-4">
         {joiner?.picture ? (
           <img
@@ -49,11 +49,19 @@ const JoinerItem = ({ joiner }) => {
             className="cursor-pointer"
           />
         )}
-        <p className=" whitespace-nowrap">
-          {joiner?.name.length < 15
-            ? joiner?.name
-            : `${joiner?.name.slice(0, 15)}...`}
-        </p>
+        <div className="flex-grow overflow-x-hidden">
+          <p className="whitespace-nowrap text-left font-semibold text-black">
+            {joiner?.name.length < 15
+              ? joiner?.name
+              : `${joiner?.name.slice(0, 15)}...`}
+          </p>
+          <p className=" whitespace-nowrap text-left text-sm text-gray-400">
+            {" "}
+            {joiner?.email.length < 18
+              ? joiner?.email
+              : `${joiner?.email.slice(0, 15)}...`}
+          </p>
+        </div>
       </div>
       <div className="relative">
         <IconButton onClick={() => setOpen(!open)}>
