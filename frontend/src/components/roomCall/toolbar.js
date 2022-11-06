@@ -14,6 +14,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  roomCallCloseRoomAction,
   roomCallJoinTable,
   roomShowChatAction,
   roomShowLobbyAction,
@@ -32,25 +33,28 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [autoHidden, setAutoHidden] = useState(false);
-  const { status, startRecording, stopRecording, mediaBlobUrl } =
-    useReactMediaRecorder({ screen: true });
+  const { status, startRecording, stopRecording } =
+    useReactMediaRecorder({
+      screen: true,
+      audio: true,
+      blobPropertyBag: { type: 'video/mp4' },
+      onStop: (bloburl, blob) => {
+        downloadRecord(bloburl, blob)
+      },
+    });
 
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
   );
 
-  useEffect(() => {
-    if (status === "stopped") {
-      downloadRecord(mediaBlobUrl);
-    }
-  }, [mediaBlobUrl]);
-
-  const downloadRecord = (urlBlob) => {
+  const downloadRecord = async (blobUrl, blob) => {
+    const file = new File([blob], 'aaa.mp4', { type: 'video/mp4' });
+    const urldata = window.URL.createObjectURL(file);
     const a = document.createElement("a");
     document.body.appendChild(a);
     a.style = "display: none";
-    a.href = urlBlob;
-    a.download = "test.mp4";
+    a.href = urldata;
+    a.download = roomCall?.roomInfo._id + ".mp4";
     a.click();
     a.remove();
   };
@@ -270,6 +274,13 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
               {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
                 <button
                   className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
+                  onClick={() => {
+                    confirmSwal('Are you sure?', "close room", () => {
+                      dispatch(roomCallCloseRoomAction(() => {
+                        history.push("/user/my-event");
+                      }))
+                    })
+                  }}
                 >
                   <div>
                     <DoorBackIcon />

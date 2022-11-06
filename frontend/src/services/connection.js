@@ -196,6 +196,12 @@ class Connection {
       );
     });
 
+    this.socket.on("room:disconnect-reason", (reason) => {
+      textSwal(reason, () => {
+        window.location.reload();
+      });
+    })
+
     this.socket.on("table:user-leave", (data) => {
       const { peerId } = data;
       this.peers[peerId]?.close();
@@ -354,6 +360,7 @@ class Connection {
 
     this.socket.on("present:user-leave", (data) => {
       const { peerId } = data;
+      console.log(peerId);
       this.peers[peerId]?.close();
       delete this.streamDatas[peerId];
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
@@ -421,10 +428,10 @@ class Connection {
     });
 
     this.socket.on("disconnect", (reason) => {
-      if (reason === "io server disconnect")
-        textSwal("You are kicked out of room", () => {
-          window.location.reload();
-        });
+      // if (reason === "io server disconnect")
+      //   textSwal("You are kicked out of room", () => {
+      //     window.location.reload();
+      //   });
     });
 
     this.socket.on("error", (err) => {

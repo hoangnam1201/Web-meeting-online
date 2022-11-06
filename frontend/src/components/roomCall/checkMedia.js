@@ -6,14 +6,16 @@ import VideoIcon from "@mui/icons-material/PhotoCameraFront";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { useParams } from "react-router";
-import { getRoomAPI } from "../../api/room.api";
+import { getRoomAPI, updateStateRoomApi } from "../../api/room.api";
 import { useSelector } from "react-redux";
 
 const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
   const myVideo = useRef(null);
   const roomCall = useSelector(state => state.roomCall);
+  const currentUser = useSelector(state => state.userReducer);
   const [media, setMedia] = useState({ audio: false, video: false });
   const [roomInfo, setRoomInfo] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
 
   const turnOffAudio = () => {
@@ -32,11 +34,23 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
     connection.current.turnOnVideo();
   };
 
+  const openRoomHandler = () => {
+    setLoading(true);
+    updateStateRoomApi(id, 'OPENING').then(() => {
+      getRoomInfo()
+    })
+  }
+
   useEffect(() => {
+    getRoomInfo()
+  }, []);
+
+  const getRoomInfo = () => {
     getRoomAPI(id).then((res) => {
+      setLoading(false);
       setRoomInfo(res.data);
     });
-  }, []);
+  }
 
   useEffect(() => {
     if (!myStream.stream) return;
@@ -117,33 +131,53 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
                 </IconButton>
               )}
             </div>
-            {joinError?.type === "REQUEST" && (
-              <div>
-                <CircularProgress />
-                <Alert
-                  style={{ marginTop: "15px" }}
-                  severity="info"
-                  className="my-4"
+            {roomInfo && roomInfo?.state === 'OPENING' ? (
+              joinError?.type === "REQUEST" ? (
+                <div>
+                  <CircularProgress />
+                  <Alert
+                    style={{ marginTop: "15px" }}
+                    severity="info"
+                    className="my-4"
+                  >
+                    {joinError.msg}
+                  </Alert>
+                </div>
+              ) : joinError?.type === "REFUSE" ? (
+                <div>
+                  <Alert style={{ marginTop: "15px" }} severity="error">
+                    {joinError.msg}
+                  </Alert>
+                </div>
+              ) : !joinError && (
+                <Button
+                  onClick={joinRoomHandler}
+                  variant="contained"
+                  className="bg-blue-500"
                 >
-                  {joinError.msg}
-                </Alert>
-              </div>
-            )}
-            {joinError?.type === "REFUSE" && (
+                  Join room
+                </Button>
+              )
+            ) : (
               <div>
-                <Alert style={{ marginTop: "15px" }} severity="error">
-                  {joinError.msg}
+                <Alert severity="warning">
+                  This room is <strong className="lowercase">{roomInfo?.state} </strong>- <strong>Can't join</strong>
                 </Alert>
+                {roomInfo?.owner._id === currentUser?.user._id && (
+                  loading ? (
+                    <CircularProgress />
+                  ) : (
+                    <Button
+                      variant="contained"
+                      className="bg-blue-500 mt-2"
+                      color="secondary"
+                      onClick={openRoomHandler}
+                    >
+                      Open room
+                    </Button>
+                  )
+                )}
               </div>
-            )}
-            {!joinError && (
-              <Button
-                onClick={joinRoomHandler}
-                variant="contained"
-                className="bg-blue-500"
-              >
-                Join room
-              </Button>
             )}
           </>
         ) : (

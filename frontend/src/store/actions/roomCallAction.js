@@ -118,6 +118,18 @@ export const roomCallSendMessage = ({ msgString, files }) => {
   }
 }
 
+export const roomCallCloseRoomAction = (callback) => {
+  return (dispatch, getState) => {
+    const roomCall = getState().roomCall;
+    roomCall.socket.emit(
+      "room:close",
+      () => {
+        callback()
+      }
+    );
+  }
+}
+
 export const roomCallSendTableMessage = ({ msgString, files }) => {
   return (dispatch, getState) => {
     const roomCall = getState().roomCall;

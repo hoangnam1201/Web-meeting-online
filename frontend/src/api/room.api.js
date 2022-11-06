@@ -20,6 +20,10 @@ export const updateRoomApi = (id, data) => {
   return instance.put("/room/" + id, data);
 };
 
+export const updateStateRoomApi = (id, state) => {
+  return instance.put("/room/state/" + id, { state });
+};
+
 export const getRoomAPI = (id) => {
   return instance.get("/room/" + id);
 };
