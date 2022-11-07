@@ -3,7 +3,10 @@ import { body, param, query } from "express-validator";
 import RoomController from "../controllers/room.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
 import { checkXLSXFile } from "../middlewares/checkXLSXFile.middeware";
-import { changeRoomValidator, createRoomValidator } from "../validations/room.validator";
+import {
+  changeRoomValidator,
+  createRoomValidator,
+} from "../validations/room.validator";
 
 const roomRoute = Router();
 const roomController = RoomController();
@@ -26,6 +29,15 @@ roomRoute.put(
     ...changeRoomValidator(),
   ],
   roomController.changeRoom
+);
+roomRoute.put(
+  "/state/:roomId",
+  [
+    AuthMiddlesware.verifyToken,
+    AuthMiddlesware.checkClassOwnership,
+    ...changeRoomValidator(),
+  ],
+  roomController.changeStateRoom
 );
 roomRoute.get(
   "/owned-room",

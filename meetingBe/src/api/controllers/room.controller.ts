@@ -52,6 +52,19 @@ export default () => {
     }
   };
 
+  const changeStateRoom = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    const { state } = req.body;
+    try {
+      await roomService.changeStateRoom(roomId, state);
+      return res.status(200).json({ status: 200, data: null });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ status: 500, error: "Internal Server Error" });
+    }
+  };
+
   const changeRoom = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     const room = req.body;
@@ -300,6 +313,7 @@ export default () => {
     addMembersByFile,
     createRoom,
     changeRoom,
+    changeStateRoom,
     getInvitedRoom,
     getOwnedRoom,
     getRoomById,

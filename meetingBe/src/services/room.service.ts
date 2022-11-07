@@ -29,6 +29,13 @@ export default () => {
     return roomModel.updateOne({ _id: roomId }, roomData);
   };
 
+  const changeStateRoom = (
+    roomId: string,
+    state: "CLOSING" | "OPENING" | "BANNING"
+  ) => {
+    return roomModel.updateOne({ _id: roomId }, { state });
+  };
+
   const inscreaseFloors = (roomId: string) => {
     return roomModel.updateOne(
       { _id: roomId },
@@ -251,6 +258,7 @@ export default () => {
 
   return {
     checkCanAccept,
+    changeStateRoom,
     findById,
     findOneAndAddJoiner,
     findOneAndRemoveJoiner,

@@ -12,6 +12,7 @@ export class RoomReadDto {
   memberCount: number;
   floors: ObjectId[];
   owner: UserReadDetailDto;
+  state: string;
 
   static fromRoom(room: Room) {
     const roomRead = new RoomReadDto();
@@ -23,6 +24,7 @@ export class RoomReadDto {
     roomRead.endDate = room.endDate;
     roomRead.memberCount = room.members.length;
     roomRead.floors = room.floors;
+    roomRead.state = room.state;
     return roomRead;
   }
 

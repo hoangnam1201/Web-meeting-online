@@ -113,6 +113,10 @@ export default (ioRoom: any, io: any) => {
       for (const id of ids) {
         const socketTemp = ioRoom.sockets.get(id);
         if (socketTemp.rooms.has(roomId)) {
+          socketTemp.emit(
+            "room:disconnect-reason",
+            "You are kicked out of room"
+          );
           socketTemp.disconnect();
         }
       }
@@ -135,12 +139,23 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  const closeRoom = async function (){
+  const closeRoom = async function (callback: () => void) {
     const socket: Socket = this;
     const roomId = socket.data.roomId;
     const userId = socket.data.userData.userId;
-
-  }
+    const checkRoom = await roomService.findById(roomId);
+    if (checkRoom.owner.toString() !== userId.toString())
+      return socket.emit(
+        "room:err",
+        "You do not have permission to close room"
+      );
+    await roomService.changeStateRoom(roomId, "CLOSING");
+    socket.broadcast
+      .to(roomId)
+      .emit("room:disconnect-reason", "The room is closed");
+    socket.broadcast.to(roomId).disconnectSockets(true);
+    callback && callback();
+  };
 
   const acceptRequest = async function (
     socketId: string,
@@ -213,8 +228,23 @@ export default (ioRoom: any, io: any) => {
     try {
       const room = await roomService.findOneAndRemoveJoiner(roomId, userId);
       if (!room) return socket.emit("room:bad-request", "not found room");
-      ioRoom.to(roomId).emit("room:user-joined", room.joiners);
+      socket.to(roomId).emit("room:user-joined", room.joiners);
 
+      if (room.isPresent) {
+        //stop presenting if user is owner
+        if (room.owner.toString() === userId.toString()) {
+          const roomInfo = await roomService.findOneAndUpdatePresent(
+            roomId,
+            false
+          );
+          socket
+            .to(roomId)
+            .emit("room:info", RoomReadDetailDto.fromRoom(roomInfo));
+          socket.to(roomId).emit("present:close");
+        }
+        socket.to(roomId).emit("present:user-leave", { userId, peerId });
+        return;
+      }
       const tableId = socket.data.tableId;
       if (tableId) {
         await tableService.removeJoiner(tableId, userId);
@@ -229,22 +259,8 @@ export default (ioRoom: any, io: any) => {
             tables: TableReadDto.fromArray(tables),
             floor,
           });
-        ioRoom.to(tableId).emit("table:user-leave", { userId, peerId });
+        socket.to(tableId).emit("table:user-leave", { userId, peerId });
       }
-
-      //stop presenting if user is owner
-      if (room.isPresent === false) return;
-      if (room.owner.toString() === userId.toString()) {
-        const roomInfo = await roomService.findOneAndUpdatePresent(
-          roomId,
-          false
-        );
-        ioRoom
-          .to(roomId)
-          .emit("room:info", RoomReadDetailDto.fromRoom(roomInfo));
-        ioRoom.to(roomId).emit("present:close");
-      }
-      ioRoom.to(roomId).emit("present:user-leave", { userId, peerId });
     } catch (err) {
       socket.emit("room:err", err);
     }
@@ -602,6 +618,7 @@ export default (ioRoom: any, io: any) => {
     joinPreviousTable,
     joinPresent,
     stopPresenting,
+    closeRoom,
     changeMedia,
     acceptRequest,
     pin,

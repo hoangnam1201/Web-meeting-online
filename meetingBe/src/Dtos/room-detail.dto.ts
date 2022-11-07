@@ -11,6 +11,7 @@ export class RoomReadDetailDto {
   endDate: number;
   isPresent: boolean;
   floors: ObjectId[];
+  state: string;
   owner: UserReadDetailDto;
   members: UserReadDetailDto[];
 
@@ -25,6 +26,7 @@ export class RoomReadDetailDto {
     roomRead.isPresent = room.isPresent;
     roomRead.floors = room.floors;
     roomRead.members = [];
+    roomRead.state = room.state;
     room.members.forEach((user) => {
       roomRead.members = [
         ...roomRead.members,
