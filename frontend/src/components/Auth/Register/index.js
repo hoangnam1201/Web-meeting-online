@@ -6,9 +6,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Link, useHistory } from "react-router-dom";
 import Swal from "sweetalert2";
-import moment from "moment";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { Helmet } from "react-helmet";
 import { registerAPI } from "../../../api/user.api";
 
 const phoneRegExp =
@@ -40,7 +37,11 @@ const schema = yup.object().shape({
 function Register(props) {
   const history = useHistory();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
@@ -112,7 +113,7 @@ function Register(props) {
               name="username"
               color="warning"
               autoComplete="username"
-              {...register('username')}
+              {...register("username")}
               error={!!errors.username}
               helperText={
                 errors?.username?.message ? errors?.username?.message : " "
@@ -129,7 +130,7 @@ function Register(props) {
               type={"password"}
               id="password"
               autoComplete="password"
-              {...register('password')}
+              {...register("password")}
               error={!!errors.password}
               helperText={
                 errors?.password?.message ? errors?.password?.message : " "
@@ -146,7 +147,7 @@ function Register(props) {
               type={"password"}
               id="passwordConfirmation"
               autoComplete="passwordConfirmation"
-              {...register('passwordConfirmation')}
+              {...register("passwordConfirmation")}
               error={!!errors.passwordConfirmation}
               helperText={
                 errors?.passwordConfirmation?.message
@@ -164,7 +165,7 @@ function Register(props) {
               label="Name*:"
               id="name"
               autoComplete="name"
-              {...register('name')}
+              {...register("name")}
               error={!!errors?.name}
               helperText={errors?.name?.message ? errors?.name?.message : " "}
             />
@@ -178,7 +179,7 @@ function Register(props) {
               id="email"
               color="warning"
               autoComplete="email"
-              {...register('email')}
+              {...register("email")}
               error={!!errors.email}
               helperText={errors?.email?.message ? errors?.email?.message : " "}
             />
@@ -193,7 +194,7 @@ function Register(props) {
               id="phone"
               color="warning"
               autoComplete="phone"
-              {...register('phone')}
+              {...register("phone")}
               error={!!errors.phone}
               helperText={errors?.phone?.message ? errors?.phone?.message : " "}
             />

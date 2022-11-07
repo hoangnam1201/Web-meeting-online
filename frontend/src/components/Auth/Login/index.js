@@ -23,22 +23,26 @@ function Login(props) {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState(null);
   const location = useLocation();
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
   });
 
   const onSubmit = (data) => {
-    console.log(data)
+    console.log(data);
     setLoading(true);
 
     loginAPI(data)
       .then((result) => {
-        console.log(result)
+        console.log(result);
         setLoading(false);
         setLoginError(null);
         const expires = new Date();
-        expires.setTime(expires.getTime() + (240 * 3600 * 1000))
+        expires.setTime(expires.getTime() + 240 * 3600 * 1000);
         setCookies("u_auth", result, { path: "/", expires });
         const path = location.state?.targetPath;
         history.push(path ? path : "/user/my-event");
@@ -65,7 +69,7 @@ function Login(props) {
         setLoading(false);
         setLoginError(null);
         const expires = new Date();
-        expires.setTime(expires.getTime() + (240 * 3600 * 1000))
+        expires.setTime(expires.getTime() + 240 * 3600 * 1000);
         setCookies("u_auth", res, { path: "/", expires });
         const path = location.state?.targetPath;
         history.push(path ? path : "/user/my-event");
@@ -101,6 +105,12 @@ function Login(props) {
     );
   }, []);
 
+  const handleLoginKey = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit(onSubmit)();
+    }
+  };
+
   return (
     <div className="min-h-screen flex justify-center items-center bg-orange-50">
       {loading && (
@@ -129,35 +139,38 @@ function Login(props) {
             <p className="text-2xl font-semibold my-1 tracking-wider text-orange-500">
               Sign In
             </p>
-            <TextField
-              margin="none"
-              fullWidth={true}
-              id="username"
-              label="Username*:"
-              name="username"
-              color="warning"
-              autoComplete="username"
-              {...register('username')}
-              error={!!errors.username}
-              helperText={
-                errors?.username?.message ? errors?.username?.message : " "
-              }
-            />
-            <TextField
-              variant="outlined"
-              margin="none"
-              fullWidth
-              color="warning"
-              type="password"
-              name="password"
-              label="Password*:"
-              id="password"
-              {...register('password')}
-              error={!!errors.password}
-              helperText={
-                errors?.password?.message ? errors?.password?.message : " "
-              }
-            />
+            <form onKeyDown={handleLoginKey}>
+              <TextField
+                margin="none"
+                fullWidth={true}
+                id="username"
+                label="Username*:"
+                name="username"
+                color="warning"
+                autoComplete="username"
+                {...register("username")}
+                error={!!errors.username}
+                helperText={
+                  errors?.username?.message ? errors?.username?.message : " "
+                }
+              />
+              <TextField
+                variant="outlined"
+                margin="none"
+                fullWidth
+                color="warning"
+                type="password"
+                name="password"
+                label="Password*:"
+                id="password"
+                {...register("password")}
+                error={!!errors.password}
+                helperText={
+                  errors?.password?.message ? errors?.password?.message : " "
+                }
+              />
+            </form>
+
             {/* // In ra loi neu dang nhap that bai */}
             {loginError ? (
               <Alert className="mb-2" severity="error">
@@ -167,6 +180,7 @@ function Login(props) {
             <div className=" flex flex-col gap-2 items-center">
               <button
                 onClick={handleSubmit(onSubmit)}
+                onKeyDown={handleLoginKey}
                 className="bg-white text-xl py-1 w-full outline-none
                  rounded shadow text-stone-500 tracking-wider hover:bg-stone-100 font-semibold"
               >

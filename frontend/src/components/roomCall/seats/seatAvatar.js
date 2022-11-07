@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Avatar from "react-avatar";
 import { useSelector } from "react-redux";
 import { kickComfirmSwal, SendBuzzSwal } from "../../../services/swalServier";
+import StarIcon from "@mui/icons-material/Star";
 
 const SeatAvatar = React.memo(({ user, ...rest }) => {
   const [open, setOpen] = useState(false);
@@ -42,21 +43,29 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
     <div className="absolute flex items-center" {...rest}>
       {user &&
         (user?.picture ? (
-          <button onClick={clickHandler} className="outline-none">
-            <img
-              className="rounded-full shadow-lg"
-              src={user?.picture}
-              alt=""
-              width={50}
-              referrerPolicy="no-referrer"
-              height={50}
-            />
-          </button>
+          <div>
+            {userSate?.user?._id === roomCallState?.roomInfo?.owner?._id && (
+              <StarIcon
+                fontSize="medium"
+                className="absolute text-yellow-800 top-0 right-0 transform -translate-y-3"
+              />
+            )}
+            <button onClick={clickHandler} className="outline-none">
+              <img
+                className="rounded-full shadow-lg"
+                src={user?.picture}
+                alt=""
+                width={50}
+                referrerPolicy="no-referrer"
+                height={50}
+              />
+            </button>
+          </div>
         ) : (
           <div>
             <button onClick={clickHandler} className="outline-none">
               <Avatar
-                onClick={() => { }}
+                onClick={() => {}}
                 name={user?.name}
                 size="50"
                 round={true}

@@ -34,7 +34,7 @@ const JoinerItem = ({ joiner }) => {
     });
   };
   return (
-    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 text-black px-2">
+    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-800 text-black px-2">
       <div className="flex items-center gap-4">
         {joiner?.picture ? (
           <img
@@ -52,17 +52,19 @@ const JoinerItem = ({ joiner }) => {
         )}
         <div className="flex-grow overflow-x-hidden">
           <div className="flex items-center">
-            <p className="whitespace-nowrap text-left font-semibold text-black">
+            <p className="whitespace-nowrap text-left font-semibold text-gray-100">
               {joiner?.name.length < 15
                 ? joiner?.name
-                : `${joiner?.name.slice(0, 10)}...`}
+                : `${joiner?.name.slice(0, 15)}...`}
             </p>
             {joiner?._id === roomCallState?.roomInfo?.owner?._id && (
               <JoinerTag name="Host" />
             )}
             {joiner?._id === userSate?.user?._id && <JoinerTag name="You" />}
           </div>
+
           <p className=" whitespace-nowrap text-left text-sm text-gray-400">
+            {" "}
             {joiner?.email.length < 18
               ? joiner?.email
               : `${joiner?.email.slice(0, 15)}...`}
@@ -71,7 +73,7 @@ const JoinerItem = ({ joiner }) => {
       </div>
       <div className="relative">
         <IconButton onClick={() => setOpen(!open)}>
-          <MoreVertIcon />
+          <MoreVertIcon className="text-gray-400" />
         </IconButton>
         {open && (
           <div>

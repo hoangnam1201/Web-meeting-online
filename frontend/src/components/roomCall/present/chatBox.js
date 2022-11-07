@@ -15,13 +15,10 @@ import { useSelector } from "react-redux";
 import { LinearProgress } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import JoinerList from "../../Lobby/joinerList";
-import RequestList from "../../Lobby/requestList";
+import JoinerList from "../../JoinerList";
+import RequestList from "../../RequestList";
 
-const ChatBox = ({
-  roomMessages,
-  userJoined,
-}) => {
+const ChatBox = ({ roomMessages, userJoined }) => {
   const [tab, setTab] = useState(0);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.userReducer);
@@ -50,18 +47,22 @@ const ChatBox = ({
     if (e.key === "Enter") {
       setMsgText("");
       setFiles([]);
-      dispatch(roomCallSendMessage({
-        msgString: msgText,
-        files: files.map((f) => ({ data: f, name: f.name })),
-      }))
+      dispatch(
+        roomCallSendMessage({
+          msgString: msgText,
+          files: files.map((f) => ({ data: f, name: f.name })),
+        })
+      );
     }
     endRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const handleSendMessage = () => {
-    dispatch(roomCallSendMessage({
-      msgString: msgText,
-      files: files.map((f) => ({ data: f, name: f.name })),
-    }))
+    dispatch(
+      roomCallSendMessage({
+        msgString: msgText,
+        files: files.map((f) => ({ data: f, name: f.name })),
+      })
+    );
 
     setMsgText("");
     setFiles([]);
@@ -171,7 +172,7 @@ const ChatBox = ({
               ))}
             </div>
           )}
-          <div className={`${!roomCall?.chatLoading && 'invisible'}`}>
+          <div className={`${!roomCall?.chatLoading && "invisible"}`}>
             <LinearProgress />
           </div>
           <div className="flex h-12 flex-grow-0 p-1 bg-slate-500">
@@ -205,7 +206,7 @@ const ChatBox = ({
             <div className="flex flex-col">
               <div className="px-4 flex justify-start my-2">
                 <button
-                  className="shadow-lg text-blue-700 px-4 py-1 text-sm rounded-md hover:bg-gray-100"
+                  className="shadow-lg text-blue-900 bg-slate-400 px-4 py-1 text-sm rounded-md hover:bg-gray-100"
                   onClick={replyHandlerAll}
                 >
                   ACCEPT ALL

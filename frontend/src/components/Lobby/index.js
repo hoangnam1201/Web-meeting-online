@@ -4,10 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import { useDispatch, useSelector } from "react-redux";
 import JoinerList from "./joinerList";
 import RequestList from "./requestList";
-import {
-  roomRemoveRequestAction,
-  roomShowLobbyAction,
-} from "../../store/actions/roomCallAction";
+import { roomRemoveRequestAction } from "../../store/actions/roomCallAction";
 
 const LobbyUser = (props) => {
   const { openLobby, userJoined } = props;
