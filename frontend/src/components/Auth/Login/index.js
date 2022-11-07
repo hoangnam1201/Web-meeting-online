@@ -33,12 +33,9 @@ function Login(props) {
   });
 
   const onSubmit = (data) => {
-    console.log(data);
     setLoading(true);
-
     loginAPI(data)
       .then((result) => {
-        console.log(result);
         setLoading(false);
         setLoginError(null);
         const expires = new Date();
