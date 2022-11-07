@@ -6,9 +6,10 @@ services:
     networks:
       - backend
   be:
-    image: lamtvu/utemeetingbe
+    image: lamtvu/utemeetingbe:1.02
     environment:
       - PORT=3002
+      - SOCKET_PORT=3003
       - HOST_DB=mongodb://db-mongo:27017/meetingdb
       - HOST_SERVER=http://localhost:3002
       - HOST_FRONTEND=http://locahost:3000
@@ -21,17 +22,19 @@ services:
       - PASSWORD_EMAIL=ikfefgeaeofvwbti
     ports:
       - "3002:3002"
+      - "3003:3003"
     depends_on:
       - db-mongo
     networks:
       - backend
   fe:
-    image: lamtvu/utemeetingfe
+    image: lamtvu/utemeetingfe:1.02
     environment:
       - REACT_APP_CLIENT_ID=825659946153-qk4v8ckvnve80n8jonc310onr2jua1qq.apps.googleusercontent.com
       - REACT_APP_HOST_BASE=http://localhost:3002
       - REACT_APP_HOST_NAME=localhost
       - REACT_APP_HOST_PORT=3002
+      - REACT_APP_SOCKET_HOST=http://localhost:3003
     ports:
       - "3000:3000"
     depends_on:

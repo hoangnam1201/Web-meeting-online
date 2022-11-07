@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -33,15 +33,21 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [autoHidden, setAutoHidden] = useState(false);
-  const { status, startRecording, stopRecording } =
-    useReactMediaRecorder({
-      screen: true,
-      audio: true,
-      blobPropertyBag: { type: 'video/mp4' },
-      onStop: (bloburl, blob) => {
-        downloadRecord(bloburl, blob)
-      },
-    });
+  const { status, startRecording, stopRecording, clearBlobUrl } = useReactMediaRecorder({
+    screen: true,
+    audio: true,
+    blobPropertyBag: { type: 'video/mp4' },
+    onStop: (bloburl, blob) => {
+      downloadRecord(bloburl, blob)
+    },
+  });
+
+  useEffect(() => {
+    return () => {
+      stopRecording();
+      clearBlobUrl();
+    }
+  }, [])
 
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
@@ -99,7 +105,6 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
     if (!roomCall.joinLoading) dispatch(setSeletedTable(null));
   };
 
-  console.log(autoHidden);
 
   return (
     <div {...rest}>
@@ -133,10 +138,9 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
       )}
       <div className="shadow mt-2 p-2 group">
         <div
-          className={`flex relative ${
-            autoHidden &&
+          className={`flex relative ${autoHidden &&
             " max-h-0 group-hover:max-h-96 duration-1000 transition-all overflow-hidden hover:overflow-visible"
-          }`}
+            }`}
         >
           {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
             <div className="border-r-2 border-gray-400 px-3 flex items-center static">
@@ -277,7 +281,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
                 className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
                 onClick={() =>
                   confirmSwal("Are you sure?", "", () => {
-                    history.push("/user/my-event");
+                    window.location.replace('/user/my-event');
                   })
                 }
               >
@@ -292,7 +296,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
                   onClick={() => {
                     confirmSwal('Are you sure?', "close room", () => {
                       dispatch(roomCallCloseRoomAction(() => {
-                        history.push("/user/my-event");
+                        window.location.replace('/user/my-event');
                       }))
                     })
                   }}
