@@ -63,6 +63,12 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
           </div>
         ) : (
           <div>
+            {userSate?.user?._id === roomCallState?.roomInfo?.owner?._id && (
+              <StarIcon
+                fontSize="medium"
+                className="absolute text-yellow-800 top-0 right-0 transform -translate-y-3"
+              />
+            )}
             <button onClick={clickHandler} className="outline-none">
               <Avatar
                 onClick={() => {}}
