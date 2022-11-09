@@ -22,7 +22,7 @@ const QuestionSchema = new Schema<Question>({
     {
       _id: { type: SchemaTypes.ObjectId, required: true },
       content: { type: String, default: "Content of choice" },
-      isTrue: { type: String, default: false },
+      isTrue: { type: Boolean, default: false },
     },
   ],
 });

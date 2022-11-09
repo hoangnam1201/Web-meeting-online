@@ -36,7 +36,7 @@ services:
       - REACT_APP_HOST_PORT=3002
       - REACT_APP_SOCKET_HOST=http://localhost:3003
     ports:
-      - "3000:3000"
+      - "5000:3000"
     depends_on:
       - be
     networks:

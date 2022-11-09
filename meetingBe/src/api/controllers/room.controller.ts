@@ -3,7 +3,6 @@ import { validationResult } from "express-validator";
 import { RoomCreateDto } from "../../Dtos/room-create.dto";
 import { RoomReadDetailDto } from "../../Dtos/room-detail.dto";
 import { RoomReadDto } from "../../Dtos/room-read.dto";
-import { UserReadDetailDto } from "../../Dtos/user-read-detail.dto";
 import { UserReadDto } from "../../Dtos/user-read.dto";
 import { FileRequest } from "../../interfaces/fileRequest";
 import { Room } from "../../models/room.model";
@@ -52,11 +51,51 @@ export default () => {
     }
   };
 
+  const getRooms = async (req: Request, res: Response) => {
+    const { ownerId, take = 10, page = 0 } = req.query;
+    try {
+      const roomData = await roomService.getRooms(
+        ownerId && ownerId.toString(),
+        parseInt(take as string),
+        parseInt(page as string)
+      );
+      return res.status(200).json({
+        status: 200,
+        data: {
+          count: roomData[0].count || 0,
+          records: RoomReadDto.fromArray(roomData[0].records),
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        status: 500,
+        msg: "Internal Server Error",
+      });
+    }
+  };
+
   const changeStateRoom = async (req: Request, res: Response) => {
     const roomId = req.params.roomId;
     const { state } = req.body;
     try {
+      if (state !== "OPENING" && state !== "CLOSING")
+        return res
+          .status(400)
+          .json({ status: 400, error: "State is 'CLOSING' or 'OPENING'" });
       await roomService.changeStateRoom(roomId, state);
+      return res.status(200).json({ status: 200, data: null });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ status: 500, error: "Internal Server Error" });
+    }
+  };
+
+  const BanRoom = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      await roomService.changeStateRoom(roomId, "BANNING");
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
@@ -141,8 +180,8 @@ export default () => {
       return res.status(200).json({
         status: 200,
         data: {
-          count: roomData[0].count,
-          results: RoomReadDto.fromArray(roomData[0].results),
+          count: roomData[0].count || 0,
+          records: RoomReadDto.fromArray(roomData[0].records),
         },
       });
     } catch (err) {
@@ -314,9 +353,11 @@ export default () => {
     createRoom,
     changeRoom,
     changeStateRoom,
+    BanRoom,
     getInvitedRoom,
     getOwnedRoom,
     getRoomById,
+    getRooms,
     deleteRoom,
     deleteFloor,
     exportToCSV,

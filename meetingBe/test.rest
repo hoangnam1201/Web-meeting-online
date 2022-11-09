@@ -41,7 +41,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1N
 //get by quiz by quiz id
 GET http://localhost:3002/api/quiz/6363f43a6ab7fc08a3e07a87 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJpYXQiOjE2Njc0OTQ0MDksImV4cCI6MTY2NzQ5NTYwOX0.MXf_fg9GMivMwKKxQRKhfWqsYHm5Oor6D2RtK3bPefU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY2NzkwOTUwMCwiZXhwIjoxNjY3OTEwNzAwfQ.GqIn2_mge93Vcow_TSVvPIz9XmhFuiIG0q2eHt_gdZA
 
 
 ###
@@ -49,7 +49,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1N
 // type = ONE or MULTIPLE
 POST http://localhost:3002/api/quiz/question HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJpYXQiOjE2Njc0OTgwOTUsImV4cCI6MTY2NzQ5OTI5NX0.LhcGLbw3a50gW3s1qB0Lv5FlGPe5ZrwKgNlrCdVj3HI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2Njc5MzM1ODksImV4cCI6MTY2NzkzNDc4OX0.x_NlbOLI_mA_h86pvTgcXl9EACdOS9Avlil1LqTlokM
 
 {
   "quiz": "6363f43a6ab7fc08a3e07a87",
@@ -58,7 +58,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1N
   "choices":[
     { "content":"2", "isTrue": true },
     { "content":"3", "isTrue": false },
-    { "content":"4", "isTrue": false }
+    { "content":"4", "isTrue": true }
   ]
 }
 
@@ -67,19 +67,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1N
 // type = ONE or MULTIPLE
 PUT  http://localhost:3002/api/quiz/question/6364008d1a29da93e5237bf4 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJpYXQiOjE2Njc0OTgwOTUsImV4cCI6MTY2NzQ5OTI5NX0.LhcGLbw3a50gW3s1qB0Lv5FlGPe5ZrwKgNlrCdVj3HI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2Njc5MzI5NjAsImV4cCI6MTY2NzkzNDE2MH0.Rq4rfEDGtCdh-5uugbCegCCus1DIKs8drZGpbfC52sk
 
 {
   "quiz": "6363f43a6ab7fc08a3e07a87",
   "content": "1+1=?",
-  "type": "ONE",
+  "type": "MULTIPLE",
   "choices": [
-    { "content":"5", "isTrue": true },
+    { "content":"5", "isTrue": false },
     { "content":"3", "isTrue": false },
-    { "content":"4", "isTrue": false },
+    { "content":"4", "isTrue": true },
     { "content":"2", "isTrue": true }
   ]
 }
+
+###
 
 
 ###
@@ -92,7 +94,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1N
 //get all quetions in quiz id
 GET  http://localhost:3002/api/quiz/question/get-all-questions-in-quiz/6363f43a6ab7fc08a3e07a87 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJpYXQiOjE2Njc0OTgwOTUsImV4cCI6MTY2NzQ5OTI5NX0.LhcGLbw3a50gW3s1qB0Lv5FlGPe5ZrwKgNlrCdVj3HI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2Njc5Nzc3MTAsImV4cCI6MTY2Nzk3ODkxMH0.aE7mksFYFkXvKtLYASCNFEwTIK204MFBYDDvSSckDQM
 
 ###
 //Get by question id
@@ -100,12 +102,72 @@ GET  http://localhost:3002/api/quiz/question/6364008e1a29da93e5237bf9 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJpYXQiOjE2Njc0OTgwOTUsImV4cCI6MTY2NzQ5OTI5NX0.LhcGLbw3a50gW3s1qB0Lv5FlGPe5ZrwKgNlrCdVj3HI
 
-//-----------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------Submission-----------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------//
+
+### create submission
+POST   http://localhost:3002/api/submission/6363f43a6ab7fc08a3e07a87 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY2NzkwOTUwMCwiZXhwIjoxNjY3OTEwNzAwfQ.GqIn2_mge93Vcow_TSVvPIz9XmhFuiIG0q2eHt_gdZA
+
+### get submission by id
+GET  http://localhost:3002/api/submission/636a4986c2e9949ebc6e17d5 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjgwMDc5MjYsImV4cCI6MTY2ODAwOTEyNn0.w8GjRiKC3ic3pCh9VkalSZ9S26egTyTXmogPUDrgyv8
+
+### get scores in quiz
+GET  http://localhost:3002/api/submission/scores/6363f43a6ab7fc08a3e07a87 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjgwMDI1MjYsImV4cCI6MTY2ODAwMzcyNn0.Jue2YPWudKTZ2V43OsiltCrIRbvBaE0UgIYNGWG0520
+
+### get submissions in quiz
+GET  http://localhost:3002/api/submission/submissions-in-quiz/6363f43a6ab7fc08a3e07a87 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjgwMDgyNzQsImV4cCI6MTY2ODAwOTQ3NH0.yxshKV-cjOMasRsEiU7lz7nc5dv8e2g3uFqLSzunfH4
+
+### get submission by quiz
+GET  http://localhost:3002/api/submission/submission-by-quiz/6363f43a6ab7fc08a3e07a87 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjgwMDgyNzQsImV4cCI6MTY2ODAwOTQ3NH0.yxshKV-cjOMasRsEiU7lz7nc5dv8e2g3uFqLSzunfH4
+
+
+### submit answers
+POST   http://localhost:3002/api/submission/submit-answers/636a4986c2e9949ebc6e17d5 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjgwMDU4MTUsImV4cCI6MTY2ODAwNzAxNX0.nevn4AgXqbNQLtVtWi3ppCL21EqPUaotYME31U2qsEo
+
+{
+  "answers":[
+    {
+      "questionId": "636aa5a39ebb2983fdc0241d",
+      "answerIds": ["636aa5a39ebb2983fdc0241a"]
+    },
+    {
+      "questionId": "636aa5a49ebb2983fdc02422",
+      "answerIds": ["636aa5a49ebb2983fdc0241f"]
+    },
+    {
+      "questionId": "636aa5b09ebb2983fdc0242c",
+      "answerIds": ["636aa5b09ebb2983fdc02429","636aa5b09ebb2983fdc0242a","636aa5b09ebb2983fdc0242b"]
+    }
+  ]
+}
+
+
+
+//------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------File-----------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------//
 ###
 //downloadfile
 GET  http://localhost:3002/api/file/download/630cffe9c3c1dd21edda11e6 HTTP/1.1
 Content-Type: application/json
 
+//------------------------------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------USER-----------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------//
 ###
 GET  http://localhost:3002/api/auth/token HTTP/1.1
 Content-Type: application/json
@@ -140,6 +202,30 @@ GET  http://localhost:3002/api/auth/get-verify-email HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzA3NDgyOGY5NTA5MTJmNTYzNTMwZmQiLCJpYXQiOjE2NjE0MjE2MTksImV4cCI6MTY2MTQyODgxOX0.wZptutXa8uf3NOmV1HaW6-EVJlmAGJ7dHg5mns7uEa4
 
+//get users
+###
+GET http://localhost:3002/api/user?take=10&page=0
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY2NzgzOTg2NiwiZXhwIjoxNjY3ODQxMDY2fQ.CyptFclG5utAyIAfL5eBsvhRfBi_ZNwKo5398YY2870
+
+//update permission
+//ROLE = USER | ADMIN | HOST
+###
+GET http://localhost:3002/api/user/update-permission
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY2NzgzOTg2NiwiZXhwIjoxNjY3ODQxMDY2fQ.CyptFclG5utAyIAfL5eBsvhRfBi_ZNwKo5398YY2870
+
+{
+  "ids": [
+    "6345735428da9e182927f2e9",
+    "6345784728da9e182927f368",
+    "6345786128da9e182927f373",
+    "6345b90aef023709c62c330c"
+  ],
+  "permission": {
+    "role": "USER"
+  }
+}
 
 //get person imformation
 ###
@@ -177,14 +263,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTUxZ
 ###
 POST http://localhost:3002/api/room HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY2NzkxOTkzMCwiZXhwIjoxNjY3OTIxMTMwfQ.2Zo881E15ffntMrrxdbTl3KpLCaIvbRPfRjV3R6hVqk
 
 {
-    "name":"meeting room",
+    "name":"meeting room new",
     "description": "ta",
     "startDate": 123123123123,
     "endDate": 193213123123
 }
+
+//---------------------get rooms
+###
+GET http://localhost:3002/api/room?ownerId=6345784728da9e182927f368 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
+
+//---------------------ban room
+###
+PUT http://localhost:3002/api/room/ban-room/6345784728da9e182927f368 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
+
 
 //---------------------delete room
 ###

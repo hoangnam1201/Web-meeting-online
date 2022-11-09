@@ -9,6 +9,8 @@ export class UserReadDetailDto {
   picture: string;
   isVerify: boolean;
   createdAt: Date;
+  role: string;
+  maxNoE: number;
 
   static fromUser(user: User): UserReadDetailDto {
     const userRead = new UserReadDetailDto();
@@ -20,6 +22,8 @@ export class UserReadDetailDto {
     userRead.picture = user.picture;
     userRead.isVerify = user.isVerify;
     userRead.createdAt = user.createdAt;
+    userRead.role = user.role;
+    userRead.maxNoE = user.maxNoE;
     return userRead;
   }
 

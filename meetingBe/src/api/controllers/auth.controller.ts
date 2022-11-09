@@ -26,7 +26,7 @@ export default () => {
   const getToken = async (req: Request, res: Response) => {
     try {
       const accessToken = await jwtService.generateToken(
-        { userId: req.userData.userId },
+        { userId: req.userData.userId},
         accessTokenSecret,
         accessTokenLife
       );
@@ -57,12 +57,12 @@ export default () => {
       const user = await userService.findUserByEmail(payload.email);
       if (user) {
         const accessToken = await jwtService.generateToken(
-          { userId: user._id },
+          { userId: user._id},
           accessTokenSecret,
           accessTokenLife
         );
         const refreshToken = await jwtService.generateToken(
-          { userId: user._id },
+          { userId: user._id},
           refreshTokenSecret,
           refreshTokenLife
         );
@@ -76,12 +76,12 @@ export default () => {
         });
         await user.save();
         const accessToken = await jwtService.generateToken(
-          { userId: user._id },
+          { userId: user._id},
           accessTokenSecret,
           accessTokenLife
         );
         const refreshToken = await jwtService.generateToken(
-          { userId: user._id },
+          { userId: user._id},
           refreshTokenSecret,
           refreshTokenLife
         );
@@ -89,7 +89,6 @@ export default () => {
         return res.json({ accessToken, refreshToken });
       }
     } catch (err) {
-      console.log(err)
       return res.status(401).json({ status: 401, msg: "Invalid Token" });
     }
   };
@@ -114,6 +113,7 @@ export default () => {
         return res.status(400).json({ err: "invalid password" });
       const userData = {
         userId: user._id,
+        role: user.role,
       };
       const accessToken = await jwtService.generateToken(
         userData,
@@ -129,7 +129,6 @@ export default () => {
 
       return res.json({ accessToken, refreshToken });
     } catch (err) {
-      console.log(err);
       return res
         .status(500)
         .json({ status: 500, msg: "Internal Server Error" });

@@ -5,6 +5,7 @@ import roomRoute from "./room.router";
 import tableRoute from "./table.router";
 import fileRouter from "./file.router";
 import quizRouter from "./quiz.router";
+import submissionRouter from "./submission.router";
 
 const initRouter = (app: Express) => {
   app.use("/api/auth", authRoute);
@@ -13,6 +14,7 @@ const initRouter = (app: Express) => {
   app.use("/api/table", tableRoute);
   app.use("/api/file", fileRouter);
   app.use("/api/quiz", quizRouter);
+  app.use("/api/submission", submissionRouter);
 };
 
 export default initRouter;

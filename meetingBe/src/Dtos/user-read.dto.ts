@@ -6,7 +6,8 @@ export class UserReadDto {
   phone: string;
   email: string;
 
-  static fromUser(user: User): UserReadDto {
+  static fromUser(user: User): UserReadDto | null {
+    if (!user) return null;
     const userRead = new UserReadDto();
     userRead.id = user._id.toString();
     userRead.name = user.name;

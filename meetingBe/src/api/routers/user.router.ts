@@ -11,6 +11,16 @@ const userRoute = Router();
 const userController = UserController();
 
 userRoute.get(
+  "",
+  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkHostPermission],
+  userController.getUsers
+);
+userRoute.get(
+  "/update-permission",
+  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkAdminPermission],
+  userController.updatePermission
+);
+userRoute.get(
   "/get-detail",
   AuthMiddlesware.verifyToken,
   userController.getDetail

@@ -11,7 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/mongoose": "^5.11.97",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "dotenv": "^10.0.0",
@@ -22,7 +21,7 @@
     "gridfs-stream": "^1.1.1",
     "jsonwebtoken": "^8.5.1",
     "mime": "^3.0.0",
-    "mongoose": "^6.5.2",
+    "mongoose": "^6.7.2",
     "nodemailer": "^6.7.8",
     "nodemon": "^2.0.12",
     "peer": "^0.6.1",

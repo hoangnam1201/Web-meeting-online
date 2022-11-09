@@ -35,7 +35,7 @@ const initializePeerConnection = () => {
 const initializeSocketConnection = () => {
   const auth = cookies.get("u_auth");
   return openSocket(socketRoomEndPoint, {
-    transports: ["websocket", "polling"],
+    // transports: ["websocket", "polling"],
     forceNew: true,
     auth: {
       token: "Bearer " + auth.accessToken,
@@ -618,18 +618,18 @@ class Connection {
         this.socket.connected && this.myID && this.myStream.stream
       );
       this.setPeersListeners(this.myStream.stream);
-    } catch {
+    } catch (e) {
+      console.log(e)
       console.log("err to get media");
     }
   };
 
   getVideoAudioStream = (video = true, audio = true, quality = 12) => {
-    const myNavigator =
-      navigator.mediaDevices.getUserMedia ||
+    navigator.mediaDevices.getUserMedia = navigator.mediaDevices.getUserMedia ||
       navigator.mediaDevices.webkitGetUserMedia ||
       navigator.mediaDevices.mozGetUserMedia ||
       navigator.mediaDevices.msGetUserMedia;
-    return myNavigator({
+    return navigator.mediaDevices.getUserMedia({
       video: video
         ? {
           frameRate: quality,

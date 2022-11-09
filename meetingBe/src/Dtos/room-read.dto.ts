@@ -15,6 +15,7 @@ export class RoomReadDto {
   state: string;
 
   static fromRoom(room: Room) {
+    if (!room) return room;
     const roomRead = new RoomReadDto();
     roomRead._id = room._id.toString();
     roomRead.name = room.name;
@@ -29,10 +30,6 @@ export class RoomReadDto {
   }
 
   static fromArray(rooms: Room[]) {
-    let roomReads: RoomReadDto[] = [];
-    rooms.forEach((room) => {
-      roomReads = [...roomReads, RoomReadDto.fromRoom(room)];
-    });
-    return roomReads;
+    return rooms.map((r) => this.fromRoom(r));
   }
 }

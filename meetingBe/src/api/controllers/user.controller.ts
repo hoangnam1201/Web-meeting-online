@@ -4,6 +4,7 @@ import { UserReadDetailDto } from "../../Dtos/user-read-detail.dto";
 import { UserCreateDto } from "../../Dtos/user-create.dto";
 import UserChangeDto from "../../Dtos/user-change.dto";
 import UserService from "../../services/user.service";
+import { UserReadPermissionDto } from "../../Dtos/user-read-permission.dto";
 
 export default () => {
   const userService = UserService();
@@ -15,7 +16,44 @@ export default () => {
     } catch {
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "Internal Server Errror" });
+        .json({ status: 500, data: null, error: "internal server errror" });
+    }
+  };
+
+  const updatePermission = async (req: Request, res: Response) => {
+    const { ids, permission } = req.body;
+    try {
+      const users = await userService.updatePermission(ids, permission);
+      return res.status(200).json({ status: 200, data: users });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, data: null, error: "internal server errror" });
+    }
+  };
+
+  const getUsers = async (req: Request, res: Response) => {
+    const { take = 10, page = 0, role, searchStr = "" } = req.query;
+    console.log(role);
+    try {
+      const users = await userService.getUsers(
+        searchStr.toString(),
+        role ? role.toString() : undefined,
+        parseInt(take.toString()),
+        parseInt(page.toString())
+      );
+      return res.status(200).json({
+        status: 200,
+        data: {
+          count: users[0].count,
+          records: UserReadPermissionDto.fromArrayUser(users[0].records),
+        },
+      });
+    } catch (e) {
+      console.log(e);
+      return res
+        .status(500)
+        .json({ status: 500, data: null, error: "internal server errror" });
     }
   };
 
@@ -105,5 +143,7 @@ export default () => {
     getDetail,
     changeInfor,
     changePassword,
+    updatePermission,
+    getUsers,
   };
 };

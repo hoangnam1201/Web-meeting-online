@@ -1,7 +1,7 @@
 import { RoomCreateDto } from "../Dtos/room-create.dto";
 import roomModel from "../models/room.model";
 import userModel from "../models/user.model";
-import mongoose, { ObjectId as ObjectID } from "mongoose";
+import { ObjectId as ObjectID } from "mongoose";
 import { ObjectId } from "mongodb";
 import tableModel from "../models/table.model";
 import messageModel from "../models/message.model";
@@ -87,18 +87,20 @@ export default () => {
     return roomModel.find({ owner: userId }).populate("owner");
   };
 
-  const getPageDataOwnedRooms = (
-    userId: string,
+  const getCountOwnedRooms = (userId: string) => {
+    return roomModel.countDocuments({ owner: userId });
+  };
+
+  const getRooms = (
+    ownerId: string | undefined,
     take: number | undefined,
     page: number | undefined
   ) => {
-    if (!take && !page) {
-      return roomModel.find({ owner: userId }).populate("owner");
-    }
-
+    let matchQuery = {};
+    if (ownerId) matchQuery = { owner: new ObjectId(ownerId) };
     return roomModel
       .aggregate()
-      .match({ owner: new mongoose.Types.ObjectId(userId) })
+      .match(matchQuery)
       .lookup({
         from: "users",
         let: { owner: "$owner" },
@@ -111,7 +113,36 @@ export default () => {
       .unwind("owner")
       .facet({
         count: [{ $count: "count" }],
-        results: [{ $skip: take * page }, { $limit: take }],
+        records: [{ $skip: take * page }, { $limit: take }],
+      })
+      .addFields({ count: { $arrayElemAt: ["$count.count", 0] } });
+  };
+
+  const getPageDataOwnedRooms = (
+    userId: string,
+    take: number | undefined,
+    page: number | undefined
+  ) => {
+    if (!take && !page) {
+      return roomModel.find({ owner: userId }).populate("owner");
+    }
+
+    return roomModel
+      .aggregate()
+      .match({ owner: new ObjectId(userId) })
+      .lookup({
+        from: "users",
+        let: { owner: "$owner" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$_id", "$$owner"] } } },
+          { $project: { _id: 1, name: 1, username: 1, email: 1 } },
+        ],
+        as: "owner",
+      })
+      .unwind("owner")
+      .facet({
+        count: [{ $count: "count" }],
+        records: [{ $skip: take * page }, { $limit: take }],
       })
       .addFields({ count: { $arrayElemAt: ["$count.count", 0] } });
   };
@@ -138,7 +169,7 @@ export default () => {
     }
     return userModel
       .aggregate()
-      .match({ _id: new mongoose.Types.ObjectId(userId) })
+      .match({ _id: new ObjectId(userId) })
       .lookup({
         from: "rooms",
         let: { invitedRooms: "$invitedRooms" },
@@ -158,7 +189,7 @@ export default () => {
           {
             $facet: {
               count: [{ $count: "count" }],
-              results: [{ $skip: take * page }, { $limit: take }],
+              records: [{ $skip: take * page }, { $limit: take }],
             },
           },
           { $addFields: { count: { $arrayElemAt: ["$count.count", 0] } } },
@@ -169,7 +200,7 @@ export default () => {
       .project({
         _id: 0,
         count: "$roomData.count",
-        results: "$roomData.results",
+        records: "$roomData.records",
       });
   };
 
@@ -270,7 +301,9 @@ export default () => {
     deleteRoom,
     changeRoomInfo,
     getPageDataOwnedRooms,
+    getCountOwnedRooms,
     getOwnedRooms,
+    getRooms,
     getPageDataInvitedRooms,
     getInvitedRoom,
     addMember,

@@ -13,14 +13,32 @@ const roomController = RoomController();
 
 roomRoute.post(
   "",
-  [AuthMiddlesware.verifyToken, ...createRoomValidator()],
+  [
+    AuthMiddlesware.verifyToken,
+    AuthMiddlesware.checkPermisstionCreateRoom,
+    ...createRoomValidator(),
+  ],
   roomController.createRoom
 );
+
+roomRoute.get(
+  "",
+  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkAdminPermission],
+  roomController.getRooms
+);
+
+roomRoute.put(
+  "/ban-room/:roomId",
+  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkAdminPermission],
+  roomController.getRooms
+);
+
 roomRoute.delete(
   "/:roomId",
   [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],
   roomController.deleteRoom
 );
+
 roomRoute.put(
   "/:roomId",
   [
@@ -30,6 +48,7 @@ roomRoute.put(
   ],
   roomController.changeRoom
 );
+
 roomRoute.put(
   "/state/:roomId",
   [
@@ -39,21 +58,25 @@ roomRoute.put(
   ],
   roomController.changeStateRoom
 );
+
 roomRoute.get(
   "/owned-room",
   AuthMiddlesware.verifyToken,
   roomController.getOwnedRoom
 );
+
 roomRoute.get(
   "/invited-room",
   AuthMiddlesware.verifyToken,
   roomController.getInvitedRoom
 );
+
 roomRoute.get(
   "/:roomId",
   AuthMiddlesware.verifyToken,
   roomController.getRoomById
 );
+
 roomRoute.post(
   "/members/add-member/:roomId",
   [
@@ -63,6 +86,7 @@ roomRoute.post(
   ],
   roomController.addMember
 );
+
 roomRoute.delete(
   "/members/remove-member/:roomId",
   [
@@ -72,6 +96,7 @@ roomRoute.delete(
   ],
   roomController.removeMember
 );
+
 roomRoute.post(
   "/members/add-members-by-file/:roomId",
   [
@@ -81,6 +106,7 @@ roomRoute.post(
   ],
   roomController.addMembersByFile
 );
+
 roomRoute.post(
   "/members/add-members/:roomId",
   [
@@ -90,6 +116,7 @@ roomRoute.post(
   ],
   roomController.addMembers
 );
+
 roomRoute.delete(
   "/members/remove-members/:roomId",
   [
@@ -99,12 +126,15 @@ roomRoute.delete(
   ],
   roomController.removeMembers
 );
+
 roomRoute.get("/members/download-csv/:roomId", roomController.exportToCSV);
+
 roomRoute.post(
   "/floors/:roomId",
   [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],
   roomController.increaseFloors
 );
+
 roomRoute.delete(
   "/floors/:roomId",
   [

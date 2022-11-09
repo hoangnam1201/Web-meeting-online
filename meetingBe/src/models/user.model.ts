@@ -13,13 +13,14 @@ export class User {
   picture: string;
   updatedAt: Date;
   isVerify: boolean;
+  role: "ADMIN" | "USER" | "HOST";
+  maxNoE: number;
 }
 
 const userSchema = new Schema(
   {
     username: { type: String },
     password: { type: String },
-    // socketId: { type: String, default: "" },
     name: { type: String, required: true },
     isLock: { type: Boolean, default: false },
     phone: { type: String },
@@ -27,6 +28,8 @@ const userSchema = new Schema(
     picture: { type: String, required: false },
     invitedRooms: [{ type: SchemaTypes.ObjectId, ref: "room" }],
     isVerify: { type: Boolean, default: false },
+    maxNoE: {type: Number, default: 0},
+    role: { type: String, default: "USER" },
   },
   { timestamps: {} }
 );
