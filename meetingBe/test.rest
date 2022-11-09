@@ -203,8 +203,9 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzA3NDgyOGY5NTA5MTJmNTYzNTMwZmQiLCJpYXQiOjE2NjE0MjE2MTksImV4cCI6MTY2MTQyODgxOX0.wZptutXa8uf3NOmV1HaW6-EVJlmAGJ7dHg5mns7uEa4
 
 //get users
+//search bằng role và searchStr
 ###
-GET http://localhost:3002/api/user?take=10&page=0
+GET http://localhost:3002/api/user?take=10&page=0&role=ADMIN&searchStr=
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY2NzgzOTg2NiwiZXhwIjoxNjY3ODQxMDY2fQ.CyptFclG5utAyIAfL5eBsvhRfBi_ZNwKo5398YY2870
 
@@ -273,8 +274,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1N
 }
 
 //---------------------get rooms
+//search bằng ownerId
 ###
-GET http://localhost:3002/api/room?ownerId=6345784728da9e182927f368 HTTP/1.1
+GET http://localhost:3002/api/room?ownerId=6345784728da9e182927f368&take=10&page=0 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
 
