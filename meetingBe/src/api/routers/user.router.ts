@@ -15,7 +15,7 @@ userRoute.get(
   [AuthMiddlesware.verifyToken, AuthMiddlesware.checkHostPermission],
   userController.getUsers
 );
-userRoute.get(
+userRoute.put(
   "/update-permission",
   [AuthMiddlesware.verifyToken, AuthMiddlesware.checkAdminPermission],
   userController.updatePermission

@@ -212,7 +212,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1N
 //update permission
 //ROLE = USER | ADMIN | HOST
 ###
-GET http://localhost:3002/api/user/update-permission
+PUT http://localhost:3002/api/user/update-permission
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTY2NzgzOTg2NiwiZXhwIjoxNjY3ODQxMDY2fQ.CyptFclG5utAyIAfL5eBsvhRfBi_ZNwKo5398YY2870
 
