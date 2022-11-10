@@ -7,6 +7,7 @@ export class UserReadPermissionDto {
   email: string;
   role: string;
   maxNoE: number;
+  picture: string
 
   static fromUser(user: User): UserReadPermissionDto {
     const userRead = new UserReadPermissionDto();
@@ -16,6 +17,7 @@ export class UserReadPermissionDto {
     userRead.email = user.email;
     userRead.maxNoE = user.maxNoE;
     userRead.role = user.role;
+    userRead.picture = user.picture;
     return userRead;
   }
 

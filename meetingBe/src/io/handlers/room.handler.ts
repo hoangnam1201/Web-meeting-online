@@ -167,7 +167,6 @@ export default (ioRoom: any, io: any) => {
     const clientSocket = ioRoom.sockets.get(socketId);
 
     if (!accept)
-      // return ioRoom.to(socketId).emit("room:join-err", {
       return socket.to(socketId).emit("room:join-err", {
         msg: "Your request has been declined",
         type: "REFUSE",
@@ -181,7 +180,6 @@ export default (ioRoom: any, io: any) => {
       clientSocket.join(`${roomId}${userId}`);
       clientSocket.data.roomId = roomId;
 
-      // ioRoom.to(socketId).emit("room:info", RoomReadDetailDto.fromRoom(room));
       socket.to(socketId).emit("room:info", RoomReadDetailDto.fromRoom(room));
       ioRoom
         .to(roomId)
