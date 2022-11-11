@@ -12,7 +12,6 @@ import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-import SearchIcon from "@mui/icons-material/Search";
 import {
   getUserPagingAction,
   selectedUserAction,
@@ -58,7 +57,7 @@ const ManageUser = () => {
   return (
     <div>
       <div className="shadow-md p-4 mt-4">
-        <div className="py-4 text-left flex items-center justify-between w-3/4">
+        <div className="py-4 text-left flex items-center justify-between w-3/4 gap-4">
           <div>
             <p className="text-lg font-semibold">User Management</p>
             <p className="text-gray-400 font-thin text-sm">
@@ -68,22 +67,21 @@ const ManageUser = () => {
           <SearchUser />
           <Autocomplete
             className="w-80 outline-none shadow-lg bg-slate-100"
-            multiple
-            onChange={(e, value) =>
+            onChange={(e, value) => {
               dispatch(
                 getUserPagingAction(
                   pageIndex,
                   "",
-                  value.map(({ role }) => role)
+                  value ? value.role : null
                 )
               )
-            }
+            }}
             loading={user?.loading === "loading"}
             options={[{ role: "ADMIN" }, { role: "HOST" }, { role: "USER" }]}
             getOptionLabel={(o) => o.role}
             isOptionEqualToValue={(option, value) => option.role === value.role}
             renderInput={(params) => (
-              <TextField variant="standard" {...params} label="Filter" />
+              <TextField variant="outlined" {...params} label="Role" />
             )}
           />
         </div>
@@ -108,11 +106,10 @@ const ManageUser = () => {
                   <div
                     key={u.id}
                     onClick={() => selectedUser(u.id)}
-                    className={`group rounded-md mt-3 ${
-                      user?.selectedUser?.indexOf(u.id) !== -1
-                        ? "border-2 border-gray-500"
-                        : ""
-                    } `}
+                    className={`group rounded-md mt-3 ${user?.selectedUser?.indexOf(u.id) !== -1
+                      ? "border-2 border-gray-500"
+                      : ""
+                      } `}
                   >
                     <div className="grid grid-cols-4 px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-500 shadow-md group-hover:bg-slate-300">
                       <div className="text-left border-r-2 border-gray-300 flex items-center">
@@ -132,7 +129,7 @@ const ManageUser = () => {
                         )}
                         {u?.name}
                       </div>
-                      <div className="text-left pl-3 border-r-2 border-gray-300 flex items-center">
+                      <div className="text-left pl-3 border-r-2 border-gray-300 flex items-center overflow-hidden text-ellipsis">
                         {u?.email}
                       </div>
                       <div className="text-left pl-3  border-r-2 border-gray-300 flex items-center">

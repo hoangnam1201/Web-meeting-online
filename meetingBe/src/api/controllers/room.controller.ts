@@ -82,13 +82,20 @@ export default () => {
       if (state !== "OPENING" && state !== "CLOSING")
         return res
           .status(400)
-          .json({ status: 400, error: "State is 'CLOSING' or 'OPENING'" });
+          .json({ status: 400, msg: "State is 'CLOSING' or 'OPENING'" });
+      const room = await roomService.findById(roomId);
+      if (!room) return res.status(400).json({ status: 400, msg: "not found" });
+      if (room.state === "BANNING")
+        return res
+          .status(400)
+          .json({ status: 400, msg: "this room is banning" });
+
       await roomService.changeStateRoom(roomId, state);
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -100,7 +107,19 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
+    }
+  };
+
+  const UnbanRoom = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      await roomService.changeStateRoom(roomId, "OPENING");
+      return res.status(200).json({ status: 200, data: null });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -114,7 +133,7 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -127,7 +146,7 @@ export default () => {
       console.log(err);
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -141,7 +160,7 @@ export default () => {
       console.log(err);
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -156,7 +175,7 @@ export default () => {
       console.log(err);
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -215,7 +234,7 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -225,14 +244,13 @@ export default () => {
     try {
       await roomService.addMember(userId, roomId);
       const user = await userService.findUserById(userId);
-      if (!user)
-        return res.status(400).json({ status: 400, error: "Not Found" });
+      if (!user) return res.status(400).json({ status: 400, msg: "Not Found" });
       await mailService.sendInvitation(roomId, user.email);
       res.status(200).json({ status: 200, data: null });
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -250,7 +268,7 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -268,7 +286,7 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -296,7 +314,7 @@ export default () => {
     } catch {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -306,15 +324,14 @@ export default () => {
     try {
       await roomService.removeMember(userId as string, roomId);
       const user = await userService.findUserById(userId as string);
-      if (!user)
-        return res.status(400).json({ status: 400, error: "Not Found" });
+      if (!user) return res.status(400).json({ status: 400, msg: "Not Found" });
       await mailService.sendExpulsion(roomId, user.email);
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
       console.log(err);
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -339,7 +356,7 @@ export default () => {
     } catch {
       return res
         .status(500)
-        .json({ status: 500, error: "Internal Server Error" });
+        .json({ status: 500, msg: "Internal Server Error" });
     }
   };
 
@@ -354,6 +371,7 @@ export default () => {
     changeRoom,
     changeStateRoom,
     BanRoom,
+    UnbanRoom,
     getInvitedRoom,
     getOwnedRoom,
     getRoomById,

@@ -35,7 +35,6 @@ export default () => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: 400, errors: errors.array() });
     }
-    console.log(req.body)
     try {
       const tableCreate = TableUpdateDto.fromTable(req.body);
       await tableService.update(ids, tableCreate);
@@ -159,7 +158,7 @@ export default () => {
       const items = await tableService.getMemberTables(roomId, ltemp, ptemp);
       res.status(200).json({ data: items[0], status: 200 });
     } catch {
-      res.status(500).json({ error: "Interal Server Error", status: 200 });
+      res.status(500).json({ msg: "Interal Server Error", status: 200 });
     }
   };
 
@@ -170,11 +169,11 @@ export default () => {
     try {
       const room = await roomService.findById(roomId);
       if (!room)
-        return res.status(400).json({ status: 400, error: "not found room" });
+        return res.status(400).json({ status: 400, msg: "not found room" });
       if (!room.floors.length)
         return res
           .status(400)
-          .json({ status: 400, error: "room have to leatest one floor" });
+          .json({ status: 400, msg: "room have to leatest one floor" });
 
       await tableService.removeAllTableInRoom(roomId);
       const data = fileService.excelToJson(file.data);
@@ -202,7 +201,7 @@ export default () => {
       res.status(200).json({ status: 200, data: null });
     } catch (e) {
       console.log(e);
-      res.status(500).json({ error: "Interal Server Error", status: 200 });
+      res.status(500).json({ msg: "Interal Server Error", status: 200 });
     }
   };
 
@@ -226,7 +225,7 @@ export default () => {
       stream.pipe(res);
     } catch (err) {
       console.log(err);
-      res.status(500).json({ error: "Interal Server Error", status: 200 });
+      res.status(500).json({ msg: "Interal Server Error", status: 200 });
     }
   };
 

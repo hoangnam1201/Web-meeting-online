@@ -10,6 +10,22 @@ export const ROOMCALL_REMOVEREQUEST = "ROOMCALL_REMOVEREQUEST";
 export const ROOMCALL_JOINLOADING = 'ROOMCALL_JOINLOADING'
 export const ROOMCALL_CHATLOADING = 'ROOMCALL_CHATLOADING'
 export const ROOMCALL_SETSELETEDTABLE = 'ROOMCALL_SETSELETEDTABLE'
+export const ROOMCALL_SETREQUESTLOADING = 'ROOMCALL_SETREQUESTLOADING'
+export const ROOMCALL_SETREQUEST = 'ROOMCALL_SETREQUEST'
+
+const setRequestLoading = (isloading) => {
+  return {
+    type: ROOMCALL_SETREQUESTLOADING,
+    payload: isloading
+  }
+}
+
+export const roomCallSetRequestsAction = (requests) => {
+  return {
+    type: ROOMCALL_SETREQUEST,
+    payload: requests
+  }
+}
 
 export const roomSetSocketAction = (socket) => {
   return {
@@ -141,5 +157,14 @@ export const roomCallSendTableMessage = ({ msgString, files }) => {
         dispatch(roomCallSetChatLoading(false))
       }
     );
+  }
+}
+
+export const roomCallResponceRequests = (requestIds, isAccept) => {
+  return (dispatch, getState) => {
+    const roomCall = getState().roomCall;
+    dispatch(setRequestLoading(true));
+    console.log(roomCall.requests.map(r => r._id))
+    roomCall.socket.emit("room:accept-request", requestIds, isAccept)
   }
 }

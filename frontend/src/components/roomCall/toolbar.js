@@ -12,6 +12,8 @@ import LogoutSharpIcon from "@mui/icons-material/LogoutSharp";
 import DoorBackIcon from "@mui/icons-material/DoorBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import { useDispatch, useSelector } from "react-redux";
 import {
   roomCallCloseRoomAction,
@@ -308,13 +310,9 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
                 </button>
               )}
               <div className="p-2 text-gray-500 focus:outline-none text-sm font-semibold">
-                <label>
-                  <input
-                    type="checkbox"
-                    value={autoHidden}
-                    onChange={() => setAutoHidden(!autoHidden)}
-                  />
-                  <p>auto hiden</p>
+                <label onClick={() => setAutoHidden(!autoHidden)}>
+                  {autoHidden ? <ToggleOnIcon /> : <ToggleOffIcon />}
+                  <p>auto hide</p>
                 </label>
               </div>
             </div>

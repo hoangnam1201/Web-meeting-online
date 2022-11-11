@@ -3,10 +3,11 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "react-avatar";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { roomRemoveRequestAction } from "../../store/actions/roomCallAction";
+import { useDispatch } from "react-redux";
+import { roomCallResponceRequests } from "../../store/actions/roomCallAction";
 
 const RequestList = ({ requests }) => {
+  console.log(requests)
   return (
     <div>
       {requests?.map((user, index) => (
@@ -19,16 +20,9 @@ const RequestList = ({ requests }) => {
 const RequestItem = ({ request }) => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
-  const roomCallState = useSelector((state) => state.roomCall);
 
   const replyHandler = (isAccept) => {
-    roomCallState?.socket.emit(
-      "room:access-request",
-      request.socketId,
-      request.user._id,
-      isAccept
-    );
-    dispatch(roomRemoveRequestAction(request.user._id));
+    dispatch(roomCallResponceRequests([request._id], isAccept))
   };
 
   return (
@@ -57,8 +51,7 @@ const RequestItem = ({ request }) => {
             ? request.user?.name
             : `${request.user?.name.slice(0, 15)}...`}
         </p>
-        <p className=" whitespace-nowrap text-left text-sm text-gray-400">
-          {" "}
+        <p className="whitespace-nowrap text-left text-sm text-gray-400">
           {request.user?.email.length < 18
             ? request.user?.email
             : `${request.user?.email.slice(0, 15)}...`}

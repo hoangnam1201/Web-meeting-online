@@ -12,6 +12,7 @@ import MessageService from "../../services/message.service";
 import RoomService from "../../services/room.service";
 import TableService from "../../services/table.service";
 import { TableDetailDto } from "../../Dtos/table-detail.dto";
+import RequestService from "../../services/request.service";
 
 export default (ioRoom: any, io: any) => {
   const userService = UserService();
@@ -19,6 +20,7 @@ export default (ioRoom: any, io: any) => {
   const roomService = RoomService();
   const tableService = TableService();
   const messageService = MessageService();
+  const requestService = RequestService();
 
   const joinRoom = async function (roomId: string) {
     const socket: Socket = this;
@@ -26,7 +28,6 @@ export default (ioRoom: any, io: any) => {
     const previousRoomId = socket.data.roomId;
     try {
       const room = await roomService.findById(roomId);
-      console.log(room, "OPENING");
       if (room.state !== "OPENING") {
         return socket.emit("room:join-err", {
           msg: "The room is " + room.state,
@@ -56,6 +57,12 @@ export default (ioRoom: any, io: any) => {
             UserReadDetailDto.fromArrayUser(room.joiners as User[])
           );
 
+        //if is owner host
+        if (room.owner.toString() === userId) {
+          const requests = await requestService.getRequestInRoom(roomId);
+          socket.emit("room:requests", requests);
+        }
+
         //join first floor
         let tables: Table[] = [];
         if (room.floors.length > 0) {
@@ -84,12 +91,16 @@ export default (ioRoom: any, io: any) => {
         type: "REQUEST",
       });
 
+      const request = await requestService.createRequest({
+        roomId,
+        user: userId,
+        socketId: socket.id,
+      });
       const user = await userService.findUserById(userId);
       if (user)
-        ioRoom.to(room.owner.toString()).emit("room:user-request", {
-          user: UserReadDetailDto.fromUser(user),
-          socketId: socket.id,
-        });
+        ioRoom
+          .to(`${roomId}${room.owner.toString()}`)
+          .emit("room:user-request", request);
     } catch (err) {
       socket.emit("room:err", { err });
     }
@@ -157,30 +168,42 @@ export default (ioRoom: any, io: any) => {
     callback && callback();
   };
 
-  const acceptRequest = async function (
-    socketId: string,
-    userId: string,
-    accept: string
-  ) {
+  const acceptRequest = async function (requestIds: string[], accept: string) {
     const socket: Socket = this;
+
     const roomId = socket.data.roomId;
-    const clientSocket = ioRoom.sockets.get(socketId);
+    const requests = await requestService.getByIds(requestIds);
+    const socketIds = requests.map((r) => r.socketId);
+    const userIds = requests.map((r) => r.user.toString());
+
+    //response requests
+    await requestService.deleteRequests(requestIds);
+    const requestsNew = await requestService.getRequestInRoom(roomId);
+    socket.emit("room:requests", requestsNew);
 
     if (!accept)
-      return socket.to(socketId).emit("room:join-err", {
+      return socket.to(socketIds).emit("room:join-err", {
         msg: "Your request has been declined",
         type: "REFUSE",
       });
 
     try {
-      const room: Room = await roomService.findOneAndAddJoiner(roomId, userId);
+      const room: Room = await roomService.findOneAndAddJoiners(
+        roomId,
+        userIds
+      );
 
       if (!room) return socket.emit("error:bad-request", "not found room");
-      clientSocket.join(roomId);
-      clientSocket.join(`${roomId}${userId}`);
-      clientSocket.data.roomId = roomId;
 
-      socket.to(socketId).emit("room:info", RoomReadDetailDto.fromRoom(room));
+      const clientSockets = await socket.in(socketIds).fetchSockets();
+      for (const s of clientSockets) {
+        const userId = requests.find((x) => x.socketId === s.id).user;
+        s.join(roomId);
+        s.join(`${roomId}${userId}`);
+        s.data.roomId = roomId;
+      }
+
+      socket.to(socketIds).emit("room:info", RoomReadDetailDto.fromRoom(room));
       ioRoom
         .to(roomId)
         .emit(
@@ -195,20 +218,22 @@ export default (ioRoom: any, io: any) => {
           roomId,
           room.floors[0]
         );
-        clientSocket.emit("floor:tables", {
+        socket.to(socketIds).emit("floor:tables", {
           tables: TableReadDto.fromArray(tables),
           floor: room.floors[0],
         });
-        clientSocket.join(room.floors[0].toString());
-        clientSocket.data.floor = room.floors[0].toString();
+        for (const s of clientSockets) {
+          s.join(room.floors[0].toString());
+          s.data.floor = room.floors[0].toString();
+        }
       }
 
       if (room.isPresent)
-        clientSocket.emit("room:present", { time: 1, tables });
+        socket.to(socketIds).emit("room:present", { time: 1, tables });
 
       const messages = await messageService.getMessages(roomId, 20, 0);
-      ioRoom
-        .to(socketId)
+      socket
+        .to(socketIds)
         .emit("room:messages", MessageReadDto.fromArray(messages));
     } catch (err) {
       console.log(err);

@@ -63,3 +63,7 @@ export const getAllRoomAPI = (pageSize, pageIndex, ownerId) => {
 export const banRoomAPI = (id) => {
   return instance.put("/room/ban-room/" + id);
 };
+
+export const unbanRoomAPI = (id) => {
+  return instance.put("/room/unban-room/" + id);
+};

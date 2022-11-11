@@ -63,6 +63,19 @@ export default () => {
       .populate("joiners");
   };
 
+  const findOneAndAddJoiners = (
+    roomId: string,
+    userIds: string[] | ObjectID[]
+  ) => {
+    return roomModel
+      .findOneAndUpdate(
+        { _id: roomId },
+        { $addToSet: { joiners: { $each: userIds } } },
+        { timestamps: true, new: true }
+      )
+      .populate("joiners");
+  };
+
   const findOneAndUpdatePresent = (roomId: string, isPresent: boolean) => {
     return roomModel.findByIdAndUpdate(
       roomId,
@@ -292,6 +305,7 @@ export default () => {
     changeStateRoom,
     findById,
     findOneAndAddJoiner,
+    findOneAndAddJoiners,
     findOneAndRemoveJoiner,
     findOneAndUpdatePresent,
     inscreaseFloors,

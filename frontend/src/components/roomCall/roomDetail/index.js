@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
 import VideoTableContainer from "../videoTableContainer";
 import ChatBox from "../chatBox";

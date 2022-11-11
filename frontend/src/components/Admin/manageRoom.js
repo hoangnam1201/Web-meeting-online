@@ -10,18 +10,22 @@ import { useDispatch } from "react-redux";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import { useState } from "react";
+import AsyncSelect from "react-select/async";
 import {
   banRoomAction,
   getRoomPagingAction,
+  unbanRoomAction,
 } from "../../store/actions/roomAction";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import Swal from "sweetalert2";
+import { searchUserAPI } from "../../api/user.api";
 
 const ManageRoom = () => {
   const room = useSelector((state) => state.roomManageReducer);
   const dispatch = useDispatch();
   const [pageIndex, setPageIndex] = useState(0);
+  const [usersSelected, setUsersSelected] = useState([]);
   useEffect(() => {
     dispatch(getRoomPagingAction(pageIndex));
   }, [pageIndex]);
@@ -39,38 +43,47 @@ const ManageRoom = () => {
     });
   };
 
+  const unbanRoom = (roomId) => {
+    Swal.fire({
+      icon: "question",
+      title: "Unlock room",
+      text: "confirm",
+      showCancelButton: true,
+      confirmButtonText: "confirm",
+      cancelButtonText: "cancel",
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) dispatch(unbanRoomAction(roomId, pageIndex));
+    });
+  };
+
+  const searchUser = (str, callback) => {
+    searchUserAPI(str).then((res) => {
+      const options = res.data.map((u) => {
+        return { label: `${u.name} (${u.email})`, value: u._id };
+      });
+      callback(options);
+    });
+  };
+
+  const onSelectChange = (e) => {
+    setUsersSelected(e);
+    dispatch(
+      getRoomPagingAction(
+        pageIndex,
+        e && e.value
+      )
+    )
+  };
+
   return (
     <div>
       <div className="shadow-md p-4 mt-4">
-        <div className="py-4 text-left flex items-center justify-between">
+        <div className="py-4 text-left flex items-center gap-4">
           <div>
             <p className="text-lg font-semibold">Event Room Management</p>
             <p className="text-gray-400 font-thin text-sm">
               The tables management event room in system
             </p>
-          </div>
-          <div className="relative right-1/4">
-            <Autocomplete
-              className="w-80 outline-none shadow-lg bg-slate-100"
-              multiple
-              onChange={(e, value) =>
-                dispatch(
-                  getRoomPagingAction(
-                    pageIndex,
-                    value.map((u) => u.owner._id)
-                  )
-                )
-              }
-              loading={room?.loading === "loading"}
-              options={room?.items}
-              getOptionLabel={(o) => o.owner.name}
-              isOptionEqualToValue={(option, value) =>
-                option.owner.name === value.owner._id
-              }
-              renderInput={(params) => (
-                <TextField variant="standard" {...params} label="Filter" />
-              )}
-            />
           </div>
         </div>
         <div className="grid grid-cols-4">
@@ -78,6 +91,23 @@ const ManageRoom = () => {
             className="flex flex-col col-span-3 shadow-md p-2"
             style={{ height: "650px" }}
           >
+            <div
+              className="mb-4 p-1 self-start w-64 justify-start"
+            >
+              <p className="text-left font-bold">owner</p>
+              <AsyncSelect
+                isClearable={true}
+                noOptionsMessage={({ inputValue }) => (
+                  <div>
+                    Could not find a Utemeeting account matching {inputValue}{" "}
+                  </div>
+                )}
+                defaultOptions={true}
+                loadOptions={searchUser}
+                value={usersSelected}
+                onChange={onSelectChange}
+              />
+            </div>
             {room?.loading && <LinearProgress />}
             <div className="grid grid-cols-3 px-4 py-2 bg-gray-200 rounded-md font-bold">
               <div className="text-left border-r-2 border-gray-500">Name</div>
@@ -107,7 +137,7 @@ const ManageRoom = () => {
                           </IconButton>
                         ) : (
                           <IconButton
-                            onClick={() => banRoom(r._id)}
+                            onClick={() => unbanRoom(r._id)}
                             className="bg-red-200 w-7 h-7"
                           >
                             <LockIcon className="text-red-600" />

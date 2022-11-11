@@ -286,6 +286,11 @@ PUT http://localhost:3002/api/room/ban-room/6345784728da9e182927f368 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
 
+//---------------------ban room
+###
+PUT http://localhost:3002/api/room/unban-room/6345784728da9e182927f368 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWFiMTNmYmRhZDYwMGRmYzc0Mjc0OTYiLCJpYXQiOjE2NjEzMzc3MjgsImV4cCI6MTY2MTM0NDkyOH0.2Q_4Hey2RbnhIl70tV_0zzkHRbOXsy5SIj-4Cpt1_9s
 
 //---------------------delete room
 ###

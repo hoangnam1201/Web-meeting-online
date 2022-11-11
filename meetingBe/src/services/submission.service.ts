@@ -46,8 +46,6 @@ export default () => {
   };
 
   const getByQuiz = (userId: string, quizId: string) => {
-    console.log(userId);
-    console.log(quizId);
     return submissionModel.findOne({ userId: userId, quiz: quizId });
   };
 

@@ -9,6 +9,8 @@ import {
   ROOMCALL_JOINLOADING,
   ROOMCALL_SETSELETEDTABLE,
   ROOMCALL_CHATLOADING,
+  ROOMCALL_SETREQUESTLOADING,
+  ROOMCALL_SETREQUEST,
 } from "../actions/roomCallAction";
 
 const initState = {
@@ -20,7 +22,6 @@ const initState = {
   roomInfo: null,
   showChat: false,
   showLobby: false,
-  requests: {},
   buzz: null,
   //seleted
   selectedTable: null,
@@ -28,16 +29,13 @@ const initState = {
   loading: false,
   chatLoading: false,
   joinLoading: false,
+  //requests
+  requests: [],
+  requestLoading: false
 };
 
 export const roomCallReducer = (state = initState, { type, payload }) => {
   switch (type) {
-    case ROOMCALL_ADDREQUEST:
-      state.requests[payload.user._id] = payload;
-      return { ...state, requests: { ...state.requests } };
-    case ROOMCALL_REMOVEREQUEST:
-      delete state.requests[payload];
-      return { ...state, requests: { ...state.requests } };
     case ROOMCALL_SETSOCKET:
       return { ...state, socket: payload };
     case ROOMCALL_SETROOMINFO:
@@ -55,6 +53,12 @@ export const roomCallReducer = (state = initState, { type, payload }) => {
       return { ...state, chatLoading: payload }
     case ROOMCALL_SETSELETEDTABLE:
       return { ...state, selectedTable: payload }
+    case ROOMCALL_SETREQUESTLOADING:
+      return { ...state, requestLoading: payload }
+    case ROOMCALL_SETREQUEST:
+      return { ...state, requestLoading: false, requests: payload }
+    case ROOMCALL_ADDREQUEST:
+      return { ...state, requests: [...state.requests, payload] };
     default:
       return state;
   }

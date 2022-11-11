@@ -30,7 +30,13 @@ roomRoute.get(
 roomRoute.put(
   "/ban-room/:roomId",
   [AuthMiddlesware.verifyToken, AuthMiddlesware.checkAdminPermission],
-  roomController.getRooms
+  roomController.BanRoom
+);
+
+roomRoute.put(
+  "/unban-room/:roomId",
+  [AuthMiddlesware.verifyToken, AuthMiddlesware.checkAdminPermission],
+  roomController.UnbanRoom
 );
 
 roomRoute.delete(

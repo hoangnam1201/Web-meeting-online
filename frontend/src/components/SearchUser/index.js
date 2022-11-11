@@ -11,14 +11,14 @@ const SearchUser = () => {
   };
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center bg-slate-100 rounded-md shadow-lg">
       <input
-        className="h-8 w-64 p-2 rounded-md shadow-lg outline-none bg-slate-100"
+        className="h-8 w-64 py-7 px-4 outline-none bg-slate-100 "
         type="text"
         placeholder="Search user..."
         onChange={(e) => searchUser(e.target.value)}
       />
-      <button className="absolute right-0">
+      <button>
         <SearchIcon className="text-blue-700" />
       </button>
     </div>

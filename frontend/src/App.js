@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AdminLayout from "./layouts/adminLayout";
 import AdminAuth from "./routes/helper/adminAuth";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const [showNotification, setShowNotification] = useState(false);
@@ -39,6 +40,7 @@ function App() {
           <Alert severity={notification.icon}>{notification.msg}</Alert>
         )}
       </div>
+      <ToastContainer />
 
       <BrowserRouter>
         <Switch>

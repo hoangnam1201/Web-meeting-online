@@ -12,7 +12,7 @@ const AdminAuth = ({ children, ...rest }) => {
       {...rest}
       render={() =>
         cookie.u_auth ? (
-          user?.user?.role === "ADMIN" ? (
+          (user?.user?.role === "ADMIN" || !user.user) ? (
             children
           ) : (
             <Redirect to="/user/my-event" />

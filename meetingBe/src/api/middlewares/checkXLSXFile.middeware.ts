@@ -9,11 +9,11 @@ export const checkXLSXFile = (
   if (!file)
     return res
       .status(400)
-      .json({ status: 400, error: "import file is required" });
+      .json({ status: 400, msg: "import file is required" });
   if (
     file.mimetype !==
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   )
-    return res.status(400).json({ status: 400, error: "invalied import file" });
+    return res.status(400).json({ status: 400, msg: "invalied import file" });
   next();
 };

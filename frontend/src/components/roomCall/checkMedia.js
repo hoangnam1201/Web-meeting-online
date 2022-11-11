@@ -8,6 +8,7 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { useParams } from "react-router";
 import { getRoomAPI, updateStateRoomApi } from "../../api/room.api";
 import { useSelector } from "react-redux";
+import { toastError } from "../../services/toastService";
 
 const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
   const myVideo = useRef(null);
@@ -38,6 +39,9 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
     setLoading(true);
     updateStateRoomApi(id, 'OPENING').then(() => {
       getRoomInfo()
+    }).catch((e) => {
+      toastError(e.response.data.msg)
+      setLoading(false)
     })
   }
 

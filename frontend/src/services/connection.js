@@ -11,11 +11,14 @@ import { renewToken } from "../api/user.api";
 import {
   roomAddRequestAction,
   roomCallSetPeerId,
+  roomCallSetRequestsAction,
   roomSetRoomInfoAction,
   roomSetSocketAction,
   roomShowChatAction,
   roomShowLobbyAction,
 } from "../store/actions/roomCallAction";
+import { toast } from "react-toastify";
+import { toastJoinRoom, toastJoinTable, toastRequest } from "./toastService";
 
 var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
@@ -119,8 +122,13 @@ class Connection {
     });
 
     this.socket.on("room:user-request", (request) => {
-      store.dispatch(roomAddRequestAction(request));
+      store.dispatch(roomAddRequestAction(request))
+      toastRequest(request.user.name)
       soundJoin.play();
+    });
+
+    this.socket.on("room:requests", (requests) => {
+      store.dispatch(roomCallSetRequestsAction(requests))
     });
 
     this.socket.on("room:user-joined", (users) => {
@@ -250,6 +258,7 @@ class Connection {
     this.socket.on("table:user-joined", (data) => {
       const userCurrent = store.getState().userReducer;
       const { peerId, user, media } = data;
+      toastJoinTable(user.name);
 
       const options = {
         metadata: {

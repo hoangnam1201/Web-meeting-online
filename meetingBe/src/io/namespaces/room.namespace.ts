@@ -20,7 +20,7 @@ export default (io: any) => {
     socket.on("room:get-messages", _roomHandler.getMessages);
     socket.on("room:send-message", _roomHandler.sendMessage);
     socket.on("room:present", _roomHandler.present);
-    socket.on("room:access-request", _roomHandler.acceptRequest);
+    socket.on("room:accept-request", _roomHandler.acceptRequest);
     socket.on("room:divide-tables", _roomHandler.divideTables);
     socket.on("table:join", _roomHandler.joinTable);
     socket.on("table:join-previous", _roomHandler.joinPreviousTable);

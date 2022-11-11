@@ -16,7 +16,7 @@ export default () => {
     } catch {
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "internal server errror" });
+        .json({ status: 500, data: null, msg: "internal server errror" });
     }
   };
 
@@ -28,13 +28,12 @@ export default () => {
     } catch {
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "internal server errror" });
+        .json({ status: 500, data: null, msg: "internal server errror" });
     }
   };
 
   const getUsers = async (req: Request, res: Response) => {
     const { take = 10, page = 0, role, searchStr = "" } = req.query;
-    console.log(role);
     try {
       const users = await userService.getUsers(
         searchStr.toString(),
@@ -53,7 +52,7 @@ export default () => {
       console.log(e);
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "internal server errror" });
+        .json({ status: 500, data: null, msg: "internal server errror" });
     }
   };
 
@@ -67,7 +66,7 @@ export default () => {
     } catch {
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "Internal Server Errror" });
+        .json({ status: 500, data: null, msg: "Internal Server Errror" });
     }
   };
 
@@ -84,7 +83,7 @@ export default () => {
       console.log(err);
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "Internal Server Errror" });
+        .json({ status: 500, data: null, msg: "Internal Server Errror" });
     }
   };
 
@@ -97,7 +96,7 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "Internal Server Errror" });
+        .json({ status: 500, data: null, msg: "Internal Server Errror" });
     }
   };
 
@@ -114,7 +113,7 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "Internal Server Errror" });
+        .json({ status: 500, data: null, msg: "Internal Server Errror" });
     }
   };
 
@@ -132,7 +131,7 @@ export default () => {
     } catch (err) {
       return res
         .status(500)
-        .json({ status: 500, data: null, error: "Internal Server Errror" });
+        .json({ status: 500, data: null, msg: "Internal Server Errror" });
     }
   };
 

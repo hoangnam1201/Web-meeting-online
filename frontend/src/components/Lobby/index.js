@@ -4,7 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import { useDispatch, useSelector } from "react-redux";
 import JoinerList from "./joinerList";
 import RequestList from "./requestList";
-import { roomRemoveRequestAction } from "../../store/actions/roomCallAction";
+import { roomCallResponceRequests } from "../../store/actions/roomCallAction";
 
 const LobbyUser = (props) => {
   const { openLobby, userJoined } = props;
@@ -14,23 +14,15 @@ const LobbyUser = (props) => {
   const [tab, setTab] = useState(0);
 
   const replyHandlerAll = () => {
-    Object.values(roomCall.requests).forEach((request) => {
-      roomCall?.socket.emit(
-        "room:access-request",
-        request.socketId,
-        request.user._id,
-        true
-      );
-      dispatch(roomRemoveRequestAction(request.user._id));
-    });
-  };
+    dispatch(roomCallResponceRequests(roomCall?.requests.map(r => r._id), true));
+  }
+
   return (
     <>
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`fixed top-0 right-0 flex flex-col z-50 h-screen bg-white overflow-x-hidden shadow-md transition-all duration-300 ${
-          openLobby ? "w-80" : "w-0"
-        }`}
+        className={`fixed top-0 right-0 flex flex-col z-50 h-screen bg-white overflow-x-hidden shadow-md transition-all duration-300 ${openLobby ? "w-80" : "w-0"
+          }`}
       >
         <div className="shadow mb-2">
           {roomCall?.roomInfo?.owner?._id === currentUser?.user?._id ? (
@@ -48,7 +40,7 @@ const LobbyUser = (props) => {
           <JoinerList joiners={userJoined} />
         </div>
         <div hidden={tab !== 1} className="h-0 flex-grow overflow-y-auto">
-          {roomCall && Object.values(roomCall.requests).length > 0 && (
+          {roomCall && roomCall.requests.length > 0 && (
             <div className="flex flex-col">
               <div className="px-4 flex justify-start my-2">
                 <button
@@ -58,7 +50,7 @@ const LobbyUser = (props) => {
                   ACCEPT ALL
                 </button>
               </div>
-              <RequestList requests={Object.values(roomCall.requests)} />
+              <RequestList requests={roomCall.requests} />
             </div>
           )}
         </div>

@@ -10,10 +10,10 @@ export default () => {
     if (!fileId)
       return res
         .status(400)
-        .json({ status: 400, error: "id required in params" });
+        .json({ status: 400, msg: "id required in params" });
     const fileCursor = fileService.findById(fileId);
     const file = await fileCursor.next();
-    if (!file) return res.status(404).json({ status: 400, error: "not found" });
+    if (!file) return res.status(404).json({ status: 400, msg: "not found" });
     res.setHeader(
       "Content-disposition",
       "attachment; filename=" + file.filename
