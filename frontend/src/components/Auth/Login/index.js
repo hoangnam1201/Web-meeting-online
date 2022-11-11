@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Alert from "@mui/material/Alert";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -19,7 +17,7 @@ const schema = yup.object().shape({
 
 function Login(props) {
   const history = useHistory();
-  const [cookies, setCookies] = useCookies(["u_auth"]);
+  const [, setCookies] = useCookies(["u_auth"]);
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState(null);
   const location = useLocation();

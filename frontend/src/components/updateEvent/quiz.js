@@ -230,7 +230,7 @@ const QuizManage = (props) => {
                   InputLabelProps={{ shrink: true }}
                   InputProps={{ inputProps: { min: 15, max: 120 } }}
                   margin="dense"
-                  label="Duration"
+                  label="Duration (Minutes)"
                   {...register("duration", {
                     required: quiz?.selectedQuiz.length > 1 ? null : "Required",
                     max:

@@ -232,7 +232,6 @@ const ManageDialog = (props) => {
             ) : null} */}
             <LoadingButton
               loading={room?.loading}
-              loadingPosition="start"
               type="submit"
               className={classes.button}
               variant="contained"

@@ -8,6 +8,8 @@ import { TablesReducer } from "./tablesReducer";
 import { globalnofificationReducer } from "./globalNotificationReducer";
 import { quizReducer } from "./quizReducer";
 import { questionReducer } from "./questionReducer";
+import { userManageReducer } from "./userManageReducer";
+import { roomManageReducer } from "./roomManageReducer";
 
 export const rootReducer = combineReducers({
   userReducer,
@@ -19,4 +21,6 @@ export const rootReducer = combineReducers({
   notifyMessageReducer,
   quizReducer,
   questionReducer,
+  userManageReducer,
+  roomManageReducer,
 });

@@ -50,12 +50,12 @@ const JoinerItem = ({ joiner }) => {
             className="cursor-pointer"
           />
         )}
-        <div className="flex-grow overflow-x-hidden">
+        <div className="flex-grow overflow-x-hidden w-48">
           <div className="flex items-center">
             <p className="whitespace-nowrap text-left font-semibold text-black">
               {joiner?.name.length < 15
                 ? joiner?.name
-                : `${joiner?.name.slice(0, 10)}...`}
+                : `${joiner?.name.slice(0, 12)}...`}
             </p>
             {joiner?._id === roomCallState?.roomInfo?.owner?._id && (
               <JoinerTag name="Host" />
@@ -70,9 +70,9 @@ const JoinerItem = ({ joiner }) => {
         </div>
       </div>
       <div className="relative">
-        <IconButton onClick={() => setOpen(!open)}>
+        <button onClick={() => setOpen(!open)}>
           <MoreVertIcon />
-        </IconButton>
+        </button>
         {open && (
           <div>
             <div className="absolute right-1/2 top-1/2 transform bg-white shadow-md rounded-sm z-50">

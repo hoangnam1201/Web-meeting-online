@@ -29,7 +29,7 @@ const LobbyUser = (props) => {
       <div
         onClick={(e) => e.stopPropagation()}
         className={`fixed top-0 right-0 flex flex-col z-50 h-screen bg-white overflow-x-hidden shadow-md transition-all duration-300 ${
-          openLobby ? "w-72" : "w-0"
+          openLobby ? "w-80" : "w-0"
         }`}
       >
         <div className="shadow mb-2">

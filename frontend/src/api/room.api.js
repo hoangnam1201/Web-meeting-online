@@ -53,3 +53,13 @@ export const removeMemberAPI = (roomId, userId) => {
     params: { userId },
   });
 };
+
+export const getAllRoomAPI = (pageSize, pageIndex, ownerId) => {
+  return instance.get("/room", {
+    params: { take: pageSize, page: pageIndex, ownerId: ownerId },
+  });
+};
+
+export const banRoomAPI = (id) => {
+  return instance.put("/room/ban-room/" + id);
+};

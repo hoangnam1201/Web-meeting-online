@@ -27,6 +27,7 @@ import meetingIcon from "../../assets/meetingIcon1.png";
 import { getInvitedRoomAPI } from "../../api/room.api";
 import { renewToken } from "../../api/user.api";
 import PersonIcon from "@mui/icons-material/Person";
+import { list } from "postcss";
 
 const useStyles = makeStyles({
   root: {
@@ -52,9 +53,6 @@ const useStyles = makeStyles({
 
       backgroundColor: "#0E1E40",
     },
-  },
-  courseListContainer: {
-    marginTop: "10px",
   },
   cardContent: {
     display: "flex",
@@ -84,11 +82,9 @@ const useStyles = makeStyles({
     alignItems: "center",
   },
 });
-const MyEvent = (props) => {
+const MyEvent = () => {
   const classes = useStyles();
   const listRoom = useSelector((state) => state.listRoomReducer);
-  console.log(listRoom);
-
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false);
   const [roomEvent, setRoomEvent] = useState({});
@@ -165,17 +161,6 @@ const MyEvent = (props) => {
 
   return (
     <>
-      {/* <Box className="z-100 inline-block fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        {console.log(listRoom?.loading)}
-        <ScaleLoader
-          color="#f50057"
-          loading={listRoom?.loading}
-          height={45}
-          width={5}
-          radius={10}
-          margin={4}
-        />
-      </Box> */}
       <div className={classes.root}>
         <Helmet>
           <title>My Event</title>
@@ -213,14 +198,10 @@ const MyEvent = (props) => {
 
             <div className="mt-5">
               {listRoom?.loading && <CircularProgress />}
-              <Grid
-                container
-                spacing={4}
-                className={classes.courseListContainer}
-              >
+              <Grid container spacing={4}>
                 {listRoom?.data?.length > 0 ? (
                   listRoom?.data?.map((room, index) => (
-                    <Grid item lg={3} md={4} sm={6} xs={12} key={index}>
+                    <Grid item lg={3} md={4} sm={6} xs={12} key={room._id}>
                       <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
                         <Link to={`/room/${room._id}`}>
                           <CardMedia
@@ -318,7 +299,7 @@ const MyEvent = (props) => {
               >
                 {invitedRoom.length > 0 ? (
                   invitedRoom?.map((room, index) => (
-                    <Grid item lg={3} md={4} sm={6} xs={12} key={index}>
+                    <Grid item lg={3} md={4} sm={6} xs={12} key={room._id}>
                       <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
                         <Link to={`/room/${room._id}`}>
                           <CardMedia
@@ -349,23 +330,15 @@ const MyEvent = (props) => {
                           >
                             {new Date(room?.endDate).toDateString()}
                           </Typography>
-                          {/* <div className={classes.groupButton}>
-                          <IconButton
-                            className={classes.roomButton}
-                            onClick={() => handleUpdate(room)}
-                          >
-                            <EditIcon fontSize="medium" />
-                          </IconButton>
-                          <IconButton
-                            className={classes.roomButton}
-                            onClick={() => deleteRoom(room?._id)}
-                          >
-                            <DeleteIcon fontSize="medium" />
-                          </IconButton>
-                        </div> */}
                         </CardContent>
                         <CardActions>
-                          <Button size="small">1 floor</Button>
+                          <div className="flex justify-center items-center ">
+                            {room?.floors?.length} Floor
+                          </div>
+                          <div className="flex justify-center items-center ml-3">
+                            {room?.memberCount + 1}
+                            <PersonIcon fontSize="small" />
+                          </div>
                         </CardActions>
                       </Card>
                     </Grid>

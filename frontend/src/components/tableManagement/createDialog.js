@@ -91,7 +91,12 @@ const CreateDialog = (props) => {
   const { id } = useParams();
   const [tableError, setTableError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
@@ -176,7 +181,7 @@ const CreateDialog = (props) => {
                   type="text"
                   name="name"
                   label="Name"
-                  {...register('name')}
+                  {...register("name")}
                   error={!!errors?.name}
                   // value={tableInfo?.name}
                   helperText={errors?.name?.message}
@@ -207,7 +212,6 @@ const CreateDialog = (props) => {
           ) : null}
           <LoadingButton
             loading={loading}
-            loadingPosition="start"
             type="submit"
             className={classes.button}
             variant="contained"

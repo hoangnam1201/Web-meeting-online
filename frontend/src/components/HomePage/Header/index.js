@@ -9,7 +9,8 @@ import { useSelector } from "react-redux";
 import { getInfoAPI, logoutAPI } from "../../../api/user.api";
 import { useDispatch } from "react-redux";
 import {
-  actionRemoveUserInfo, getUserInfo,
+  actionRemoveUserInfo,
+  getUserInfo,
 } from "../../../store/actions/userInfoAction";
 import Scroll from "react-scroll";
 import { CircularProgress } from "@mui/material";
@@ -104,24 +105,27 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                     className="relative p-2"
                     onClick={() => setShowAvatarMenu(!showAvatarMenu)}
                   >
-                    {currentUser?.loading && <div>
-                      <CircularProgress size='3rem' />
-                    </div>}
-                    {!currentUser?.loading && (currentUser?.user?.picture ? (
-                      <img
-                        src={currentUser?.user?.picture}
-                        alt=""
-                        referrerPolicy="no-referrer"
-                        className="cursor-pointer rounded-full w-12"
-                      ></img>
-                    ) : (
-                      <Avatar
-                        name={currentUser?.user?.name}
-                        size="50"
-                        round={true}
-                        className="cursor-pointer"
-                      ></Avatar>
-                    ))}
+                    {currentUser?.loading && (
+                      <div>
+                        <CircularProgress size="3rem" />
+                      </div>
+                    )}
+                    {!currentUser?.loading &&
+                      (currentUser?.user?.picture ? (
+                        <img
+                          src={currentUser?.user?.picture}
+                          alt=""
+                          referrerPolicy="no-referrer"
+                          className="cursor-pointer rounded-full w-12"
+                        ></img>
+                      ) : (
+                        <Avatar
+                          name={currentUser?.user?.name}
+                          size="50"
+                          round={true}
+                          className="cursor-pointer"
+                        ></Avatar>
+                      ))}
 
                     {showAvatarMenu && (
                       <div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">
@@ -129,6 +133,13 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                           <li className="font-bold text-gray-500 border-b-2 p-3">
                             {currentUser?.user?.name}
                           </li>
+                          {currentUser?.user?.role === "ADMIN" && (
+                            <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
+                              <Link underline="none" to="/admin">
+                                Admin dashboard
+                              </Link>
+                            </li>
+                          )}
                           <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
                             <Link underline="none" to="/user/profile">
                               Profile

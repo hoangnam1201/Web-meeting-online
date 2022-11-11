@@ -1,0 +1,138 @@
+import React, { useEffect } from "react";
+import {
+  Autocomplete,
+  IconButton,
+  LinearProgress,
+  TextField,
+} from "@mui/material";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
+import { useState } from "react";
+import {
+  banRoomAction,
+  getRoomPagingAction,
+} from "../../store/actions/roomAction";
+import LockIcon from "@mui/icons-material/Lock";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
+import Swal from "sweetalert2";
+
+const ManageRoom = () => {
+  const room = useSelector((state) => state.roomManageReducer);
+  const dispatch = useDispatch();
+  const [pageIndex, setPageIndex] = useState(0);
+  useEffect(() => {
+    dispatch(getRoomPagingAction(pageIndex));
+  }, [pageIndex]);
+
+  const banRoom = (roomId) => {
+    Swal.fire({
+      icon: "question",
+      title: "Lock room",
+      text: "confirm",
+      showCancelButton: true,
+      confirmButtonText: "confirm",
+      cancelButtonText: "cancel",
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) dispatch(banRoomAction(roomId, pageIndex));
+    });
+  };
+
+  return (
+    <div>
+      <div className="shadow-md p-4 mt-4">
+        <div className="py-4 text-left flex items-center justify-between">
+          <div>
+            <p className="text-lg font-semibold">Event Room Management</p>
+            <p className="text-gray-400 font-thin text-sm">
+              The tables management event room in system
+            </p>
+          </div>
+          <div className="relative right-1/4">
+            <Autocomplete
+              className="w-80 outline-none shadow-lg bg-slate-100"
+              multiple
+              onChange={(e, value) =>
+                dispatch(
+                  getRoomPagingAction(
+                    pageIndex,
+                    value.map((u) => u.owner._id)
+                  )
+                )
+              }
+              loading={room?.loading === "loading"}
+              options={room?.items}
+              getOptionLabel={(o) => o.owner.name}
+              isOptionEqualToValue={(option, value) =>
+                option.owner.name === value.owner._id
+              }
+              renderInput={(params) => (
+                <TextField variant="standard" {...params} label="Filter" />
+              )}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-4">
+          <div
+            className="flex flex-col col-span-3 shadow-md p-2"
+            style={{ height: "650px" }}
+          >
+            {room?.loading && <LinearProgress />}
+            <div className="grid grid-cols-3 px-4 py-2 bg-gray-200 rounded-md font-bold">
+              <div className="text-left border-r-2 border-gray-500">Name</div>
+              <div className="text-left pl-3 border-r-2 border-gray-500">
+                Owner room
+              </div>
+              <div className="text-center pl-3">Status</div>
+            </div>
+            <div className="flex-grow h-0 overflow-y-auto scroll-sm">
+              {room?.items?.map((r) => {
+                return (
+                  <div key={r._id} className="group rounded-md mt-3 ">
+                    <div className="grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-500 shadow-md group-hover:bg-slate-300">
+                      <div className="text-left border-r-2 border-gray-300 flex items-center">
+                        {r?.name}
+                      </div>
+                      <div className="text-left pl-3 border-r-2 border-gray-300 flex items-center">
+                        {r?.owner?.name}
+                      </div>
+                      <div className="pl-3 flex items-center justify-center">
+                        {r?.state === "OPENING" ? (
+                          <IconButton
+                            onClick={() => banRoom(r._id)}
+                            className="bg-green-200 w-7 h-7"
+                          >
+                            <LockOpenIcon className="text-green-600" />
+                          </IconButton>
+                        ) : (
+                          <IconButton
+                            onClick={() => banRoom(r._id)}
+                            className="bg-red-200 w-7 h-7"
+                          >
+                            <LockIcon className="text-red-600" />
+                          </IconButton>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex justify-end">
+              <Stack spacing={2}>
+                <Pagination
+                  count={room?.totalPages + 1}
+                  onChange={(e, value) => setPageIndex(value - 1)}
+                  color="primary"
+                />
+              </Stack>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ManageRoom;

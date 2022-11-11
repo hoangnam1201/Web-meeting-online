@@ -8,6 +8,8 @@ import RoomCall from "../components/roomCall";
 import GroupManagement from "../components/groupManagement";
 import TableManagement from "../components/tableManagement";
 import QuizManagement from "../components/quizManagement";
+import ManageUser from "../components/Admin/manageUser";
+import ManageRoom from "../components/Admin/manageRoom";
 
 export const userRoute = [
   {
@@ -68,5 +70,18 @@ export const homeRoute = [
     exact: true,
     path: ["/", "/home"],
     component: HomePage,
+  },
+];
+
+export const adminRoute = [
+  {
+    exact: true,
+    path: ["/admin", "/admin/user"],
+    component: ManageUser,
+  },
+  {
+    exact: true,
+    path: "/admin/room",
+    component: ManageRoom,
   },
 ];

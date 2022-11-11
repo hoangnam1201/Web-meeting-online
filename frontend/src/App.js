@@ -1,6 +1,12 @@
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { roomRoute, userRoute, homeRoute, authRoute } from "./routes";
+import {
+  roomRoute,
+  userRoute,
+  homeRoute,
+  authRoute,
+  adminRoute,
+} from "./routes";
 import UserAuth from "./routes/helper/userAuth";
 import UnAuth from "./routes/helper/unAuth";
 import Error from "./components/Error";
@@ -8,6 +14,8 @@ import DefautLayout from "./layouts/defautLayout";
 import { Alert } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import AdminLayout from "./layouts/adminLayout";
+import AdminAuth from "./routes/helper/adminAuth";
 
 function App() {
   const [showNotification, setShowNotification] = useState(false);
@@ -79,6 +87,21 @@ function App() {
               <Route path="*" exact component={Error} />
             </Switch>
           </UserAuth>
+          <AdminAuth path="/admin">
+            <AdminLayout>
+              <Switch>
+                {adminRoute.map((route, index) => (
+                  <Route
+                    path={route.path}
+                    exact={route.exact}
+                    component={route.component}
+                    key={route.path}
+                  />
+                ))}
+                <Route path="*" exact component={Error} />
+              </Switch>
+            </AdminLayout>
+          </AdminAuth>
           <UnAuth>
             <DefautLayout logged={false}>
               <Switch>

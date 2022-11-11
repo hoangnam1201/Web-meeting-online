@@ -42,3 +42,18 @@ export const changePasswordAPI = (data) => {
 export const registerAPI = (data) => {
   return instance.post("/user/register", data);
 };
+
+export const getAllUserAPI = (pageSize, pageIndex, searchStr, role) => {
+  return instance.get("/user", {
+    params: {
+      take: pageSize,
+      page: pageIndex,
+      searchStr: searchStr,
+      role: role,
+    },
+  });
+};
+
+export const updateUserAPI = (data) => {
+  return instance.put("/user/update-permission", data);
+};
