@@ -44,7 +44,7 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
       {user &&
         (user?.picture ? (
           <div>
-            {userSate?.user?._id === roomCallState?.roomInfo?.owner?._id && (
+            {user?._id === roomCallState?.roomInfo?.owner?._id && (
               <StarIcon
                 fontSize="medium"
                 className="absolute text-yellow-800 top-0 right-0 transform -translate-y-3"
@@ -63,7 +63,7 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
           </div>
         ) : (
           <div>
-            {userSate?.user?._id === roomCallState?.roomInfo?.owner?._id && (
+            {user?._id === roomCallState?.roomInfo?.owner?._id && (
               <StarIcon
                 fontSize="medium"
                 className="absolute text-yellow-800 top-0 right-0 transform -translate-y-3"
