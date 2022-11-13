@@ -2,6 +2,10 @@ import requestModel, { Request } from "../models/request.model";
 
 export default () => {
   const createRequest = async (request: Request) => {
+    await requestModel.deleteOne({
+      user: request.user,
+      roomId: request.roomId,
+    });
     return (await requestModel.create(request)).populate({
       path: "user",
       select: {

@@ -96,6 +96,10 @@ export default () => {
       .populate("owner");
   };
 
+  const removeAllJoiners = (roomId: string) => {
+    return roomModel.updateOne({ _id: roomId }, { joiners: [] });
+  };
+
   const getOwnedRooms = (userId: string) => {
     return roomModel.find({ owner: userId }).populate("owner");
   };
@@ -309,6 +313,7 @@ export default () => {
     findOneAndRemoveJoiner,
     findOneAndUpdatePresent,
     inscreaseFloors,
+    removeAllJoiners,
     deleteFloor,
     create,
     getDetail,

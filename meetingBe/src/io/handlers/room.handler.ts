@@ -50,11 +50,13 @@ export default (ioRoom: any, io: any) => {
         if (!room) return socket.emit("error:bad-request", "not found room");
 
         socket.emit("room:info", RoomReadDetailDto.fromRoom(room));
+        const user = await userService.findUserById(userId);
         ioRoom
           .to(roomId)
           .emit(
             "room:user-joined",
-            UserReadDetailDto.fromArrayUser(room.joiners as User[])
+            UserReadDetailDto.fromArrayUser(room.joiners as User[]),
+            { userDatas: [user?.name], state: "join" }
           );
 
         //if is owner host
@@ -161,6 +163,7 @@ export default (ioRoom: any, io: any) => {
         "You do not have permission to close room"
       );
     await roomService.changeStateRoom(roomId, "CLOSING");
+    await roomService.removeAllJoiners(roomId);
     socket.broadcast
       .to(roomId)
       .emit("room:disconnect-reason", "The room is closed");
@@ -204,11 +207,13 @@ export default (ioRoom: any, io: any) => {
       }
 
       socket.to(socketIds).emit("room:info", RoomReadDetailDto.fromRoom(room));
+      const users = await userService.getUsersByIds(userIds);
       ioRoom
         .to(roomId)
         .emit(
           "room:user-joined",
-          UserReadDetailDto.fromArrayUser(room.joiners as User[])
+          UserReadDetailDto.fromArrayUser(room.joiners as User[]),
+          { userDatas: users.map((u) => u?.name), state: "join" }
         );
 
       //join first floor
@@ -250,8 +255,12 @@ export default (ioRoom: any, io: any) => {
 
     try {
       const room = await roomService.findOneAndRemoveJoiner(roomId, userId);
+      const user = await userService.findUserById(userId);
       if (!room) return socket.emit("room:bad-request", "not found room");
-      socket.to(roomId).emit("room:user-joined", room.joiners);
+      socket.to(roomId).emit("room:user-joined", room.joiners, {
+        userDatas: [user.name],
+        state: "leave",
+      });
 
       if (room.isPresent) {
         //stop presenting if user is owner
@@ -512,7 +521,7 @@ export default (ioRoom: any, io: any) => {
     if (!roomId) return;
     try {
       const checkRoom = await roomService.findById(roomId);
-      if (checkRoom.owner.toString() !== userId.toString())
+      if (checkRoom.owner.toString() !== userId.toSting())
         return socket.emit("room:err", "You do not have permission to present");
 
       const room = await roomService.findOneAndUpdatePresent(roomId, true);

@@ -41,15 +41,15 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
 
   return (
     <div className="absolute flex items-center" {...rest}>
+      {user?._id === roomCallState?.roomInfo?.owner?._id && (
+        <StarIcon
+          fontSize="medium"
+          className="absolute text-yellow-800 top-0 right-0 transform -translate-y-3"
+        />
+      )}
       {user &&
         (user?.picture ? (
           <div>
-            {user?._id === roomCallState?.roomInfo?.owner?._id && (
-              <StarIcon
-                fontSize="medium"
-                className="absolute text-yellow-800 top-0 right-0 transform -translate-y-3"
-              />
-            )}
             <button onClick={clickHandler} className="outline-none">
               <img
                 className="rounded-full shadow-lg"
@@ -63,15 +63,9 @@ const SeatAvatar = React.memo(({ user, ...rest }) => {
           </div>
         ) : (
           <div>
-            {user?._id === roomCallState?.roomInfo?.owner?._id && (
-              <StarIcon
-                fontSize="medium"
-                className="absolute text-yellow-800 top-0 right-0 transform -translate-y-3"
-              />
-            )}
             <button onClick={clickHandler} className="outline-none">
               <Avatar
-                onClick={() => {}}
+                onClick={() => { }}
                 name={user?.name}
                 size="50"
                 round={true}

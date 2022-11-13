@@ -14,11 +14,9 @@ import {
   roomCallSetRequestsAction,
   roomSetRoomInfoAction,
   roomSetSocketAction,
-  roomShowChatAction,
-  roomShowLobbyAction,
 } from "../store/actions/roomCallAction";
 import { toast } from "react-toastify";
-import { toastJoinRoom, toastJoinTable, toastRequest } from "./toastService";
+import { toastJoinLeaveRoom, toastJoinTable, toastRequest } from "./toastService";
 
 var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
@@ -38,7 +36,7 @@ const initializePeerConnection = () => {
 const initializeSocketConnection = () => {
   const auth = cookies.get("u_auth");
   return openSocket(socketRoomEndPoint, {
-    // transports: ["websocket", "polling"],
+    transports: ["websocket", "polling"],
     forceNew: true,
     auth: {
       token: "Bearer " + auth.accessToken,
@@ -131,7 +129,8 @@ class Connection {
       store.dispatch(roomCallSetRequestsAction(requests))
     });
 
-    this.socket.on("room:user-joined", (users) => {
+    this.socket.on("room:user-joined", (users, { userDatas, state }) => {
+      toastJoinLeaveRoom(userDatas, state);
       this.joiners = users;
       this.setting.updateInstance("joiners", users);
     });

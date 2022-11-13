@@ -25,6 +25,7 @@ const ManageUser = () => {
   const user = useSelector((state) => state.userManageReducer);
   const dispatch = useDispatch();
   const [pageIndex, setPageIndex] = useState(0);
+  const [searchValue, setSearchValue] = useState({});
   const {
     register,
     handleSubmit,
@@ -64,10 +65,20 @@ const ManageUser = () => {
               The tables management user in system
             </p>
           </div>
-          <SearchUser />
+          <SearchUser onChange={(value) => {
+            setSearchValue({ ...searchValue, searchText: value })
+            dispatch(
+              getUserPagingAction(
+                pageIndex,
+                value,
+                searchValue.role
+              )
+            )
+          }} />
           <Autocomplete
             className="w-80 outline-none shadow-lg bg-slate-100"
             onChange={(e, value) => {
+              value && setSearchValue({ ...searchValue, role: value.role })
               dispatch(
                 getUserPagingAction(
                   pageIndex,

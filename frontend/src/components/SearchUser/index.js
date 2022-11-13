@@ -1,13 +1,10 @@
 import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import { useDispatch } from "react-redux";
-import { searchUserAction } from "../../store/actions/userAction";
 
-const SearchUser = () => {
-  const dispatch = useDispatch();
+const SearchUser = ({ onChange }) => {
 
   const searchUser = (searchText) => {
-    dispatch(searchUserAction(0, searchText));
+    onChange(searchText)
   };
 
   return (
