@@ -83,6 +83,20 @@ docker build -t <username>/<imagename>:<tag> .
 docker run -p 3002:3002 <username>/<imagename>:<tag>
 ```
 
+- Thêm Role admin vào tài khoản:
+- execu mongo container (sử dụng "docker ps" để xem danh sách container)
+
+```
+docker exec -i <CONTAINER ID> mongosh
+```
+- truy vấn update
+
+```
+use meetingdb
+db.users.updateOne({email:"<USER EMAIL>"},{$set:{role:"ADMIN"}})
+db.users.find()
+```
+
 ### FRONT_END
 
 - project backend nằm trong thư mục fe
@@ -125,13 +139,13 @@ docker run --name mongodb -d -p 27017:27017 -v YOUR_LOCAL_DIR:/data/db mongo
 
 - Mở port 27017 của instance cho backend truy cập
 
-- Thêm Role admin vào tài khoản
-execu mongo container (sử dụng "docker ps" để xem danh sách container)
+- Thêm Role admin vào tài khoản:
+- execu mongo container (sử dụng "docker ps" để xem danh sách container)
 
 ```
 docker exec -i <CONTAINER ID> mongosh
 ```
-truy vấn update
+- truy vấn update
 
 ```
 use meetingdb
