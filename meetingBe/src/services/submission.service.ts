@@ -46,7 +46,11 @@ export default () => {
   };
 
   const getByQuiz = (userId: string, quizId: string) => {
-    return submissionModel.findOne({ userId: userId, quiz: quizId });
+    return submissionModel.find({ userId: userId, quiz: quizId });
+  };
+
+  const getCountByQuiz = (userId: string, quizId: string) => {
+    return submissionModel.countDocuments({ userId: userId, quiz: quizId });
   };
 
   const getSubmissionInQuiz = (quizId: string) => {
@@ -130,6 +134,7 @@ export default () => {
   return {
     getById,
     getByQuiz,
+    getCountByQuiz,
     createSubmission,
     changeStateSubmit,
     getSubmissionInQuiz,

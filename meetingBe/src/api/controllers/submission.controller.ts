@@ -64,7 +64,6 @@ export default () => {
         data: submissionReadDetailDTO.fromSubmission(submission),
       });
     } catch (e) {
-      console.log(e);
       return res
         .status(500)
         .json({ status: 500, msg: "Internal Server Error" });
@@ -108,10 +107,10 @@ export default () => {
     const { quizId } = req.params;
     const { userId } = req.userData;
     try {
-      const submission = await submissionService.getByQuiz(userId, quizId);
+      const submissions = await submissionService.getByQuiz(userId, quizId);
       res.status(200).json({
         status: 200,
-        data: submissionReadDetailDTO.fromSubmission(submission),
+        data: submissionReadDetailDTO.fromArray(submissions),
       });
     } catch (e) {
       console.log(e);

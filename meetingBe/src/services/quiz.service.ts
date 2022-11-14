@@ -2,6 +2,7 @@ import { QuizCreateDTO } from "../Dtos/quiz-create.dto";
 import { QuizUpdateDTO } from "../Dtos/quiz-update.dto";
 import questionModel from "../models/question.model";
 import quizModel from "../models/quiz.model";
+import submissionModel from "../models/submission.model";
 
 export default () => {
   const createQuiz = (quizData: QuizCreateDTO) => {
@@ -16,6 +17,7 @@ export default () => {
     return Promise.all([
       quizModel.deleteOne({ _id: id }),
       questionModel.deleteMany({ quiz: id }),
+      submissionModel.deleteMany({ quiz: id }),
     ]);
   };
 

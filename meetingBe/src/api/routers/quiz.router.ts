@@ -1,14 +1,19 @@
 import { Router } from "express";
 import QuizController from "../controllers/quiz.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
+import { QuizValidator } from "../validations/quiz.validator";
 
 const quizRouter = Router();
 const quizController = QuizController();
 
-quizRouter.post("", [AuthMiddlesware.verifyToken], quizController.createQuiz);
+quizRouter.post(
+  "",
+  [AuthMiddlesware.verifyToken, ...QuizValidator.checkCreate()],
+  quizController.createQuiz
+);
 quizRouter.put(
   "/:quizId",
-  [AuthMiddlesware.verifyToken],
+  [AuthMiddlesware.verifyToken, ...QuizValidator.checkUpdate()],
   quizController.updateQuiz
 );
 quizRouter.delete(

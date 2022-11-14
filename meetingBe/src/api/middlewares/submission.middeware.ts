@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import QuizService from "../../services/quiz.service";
+import { submissionReadDetailDTO } from "../../Dtos/submission-read-detail.dto";
 import SubmissionService from "../../services/submission.service";
+import QuizService from "../../services/quiz.service";
 
 export class SubmissionMiddleware {
   static submissionService = SubmissionService();
@@ -12,16 +13,33 @@ export class SubmissionMiddleware {
     next: NextFunction
   ) {
     const { quizId } = req.params;
-    const quiz = await this.quizService.getById(quizId);
+    const { userId } = req.userData;
+    const quiz = await SubmissionMiddleware.quizService.getById(quizId);
     const timeNow = new Date().getTime();
     if (!quiz)
       return res
         .status(400)
         .json({ status: 400, msg: "the quiz is not exist" });
     if (quiz.startDate > timeNow) {
+      return res.status(400).json({ status: 400, msg: "It's not time to do" });
+    }
+    if (quiz.endDate < timeNow) {
       return res
         .status(400)
-        .json({ status: 400, msg: "the quiz is not exist" });
+        .json({ status: 400, msg: "this quiz has expired" });
+    }
+
+    // check count submission
+    const countSubmission =
+      await SubmissionMiddleware.submissionService.getCountByQuiz(
+        userId,
+        quizId
+      );
+    if (quiz.countSubmission <= countSubmission) {
+      return res.status(400).json({
+        status: 400,
+        msg: `max numbers of submission is ${quiz.countSubmission}`,
+      });
     }
     next();
   }
@@ -32,20 +50,48 @@ export class SubmissionMiddleware {
     next: NextFunction
   ) {
     const { submissionId } = req.params;
-    const submission = await this.submissionService.getById(submissionId);
+    const submission = await SubmissionMiddleware.submissionService.getById(
+      submissionId
+    );
     const timeNow = new Date().getTime();
     if (!submission)
       return res
         .status(400)
         .json({ status: 400, msg: "the submission is not exist" });
 
-    const quiz = await this.quizService.getById(submission.quiz.toString());
-    if (timeNow - submission.startDate >= quiz.duration)
-      return res
-        .status(400)
-        .json({ status: 400, msg: "quiz timed out" });
-
+    const quiz = await SubmissionMiddleware.quizService.getById(
+      submission.quiz.toString()
+    );
+    if (timeNow - submission.startDate >= quiz.duration) {
+      const submission =
+        await SubmissionMiddleware.submissionService.changeStateSubmit(
+          submissionId,
+          "SUBMITTED"
+        );
+      res.status(200).json({
+        status: 200,
+        data: submissionReadDetailDTO.fromSubmission(submission),
+      });
+    }
     next();
   }
 
+  static async checkOwnerSubmssion(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId } = req.userData;
+    const { submissionId } = req.params;
+    const submission = await SubmissionMiddleware.submissionService.getById(
+      submissionId
+    );
+    if (submission.userId !== userId) {
+      return res.status(400).json({
+        status: 400,
+        msg: "you don't have permission with this submission",
+      });
+    }
+    next();
+  }
 }

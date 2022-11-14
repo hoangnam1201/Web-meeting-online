@@ -4,8 +4,9 @@ export class QuizCreateDTO {
   room: string;
   name: string;
   description: string;
-  startDate: Number;
-  duration: Number;
+  startDate: number;
+  endDate: number;
+  duration: number;
 
   static fromQuiz(quiz: Quiz) {
     const quizCreate = new QuizCreateDTO();
@@ -13,6 +14,7 @@ export class QuizCreateDTO {
     quizCreate.name = quiz.name;
     quizCreate.description = quiz.description;
     quizCreate.startDate = quiz.startDate;
+    quizCreate.endDate = quiz.endDate;
     quizCreate.duration = quiz.duration;
     return quizCreate;
   }

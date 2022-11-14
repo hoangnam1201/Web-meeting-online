@@ -1,13 +1,14 @@
 import { Router } from "express";
 import SubmissionController from "../controllers/submission.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
+import { SubmissionMiddleware } from "../middlewares/submission.middeware";
 
 const submissionRouter = Router();
 const submissionController = SubmissionController();
 
 submissionRouter.post(
   "/:quizId",
-  AuthMiddlesware.verifyToken,
+  [AuthMiddlesware.verifyToken, SubmissionMiddleware.checkTimeCreateSubmission],
   submissionController.createSubmission
 );
 
@@ -37,8 +38,18 @@ submissionRouter.get(
 
 submissionRouter.post(
   "/submit-answers/:submissionId",
-  AuthMiddlesware.verifyToken,
+  [
+    AuthMiddlesware.verifyToken,
+    SubmissionMiddleware.checkOwnerSubmssion,
+    SubmissionMiddleware.checkSubmitTime,
+  ],
   submissionController.submitAnswers
+);
+
+submissionRouter.put(
+  "/submit-answers/:submissionId",
+  [AuthMiddlesware.verifyToken, SubmissionMiddleware.checkOwnerSubmssion],
+  submissionController.submitSubmission
 );
 
 export default submissionRouter;

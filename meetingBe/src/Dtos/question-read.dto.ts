@@ -1,10 +1,14 @@
 import { Choice, Question } from "../models/question.model";
+class ChoiceRead {
+  _id: string;
+  content: string;
+}
 
 export class QuestionReadDTO {
   _id: string;
   quiz: string;
   content: string;
-  choices: Choice[];
+  choices: ChoiceRead[];
   type: string;
 
   static fromQuestion(question: Question) {
@@ -12,7 +16,10 @@ export class QuestionReadDTO {
     questionRead._id = question._id.toString();
     questionRead.quiz = question.quiz.toString();
     questionRead.content = question.content;
-    questionRead.choices = question.choices;
+    questionRead.choices = question.choices.map((c) => ({
+      _id: c._id.toString(),
+      content: c.content,
+    }));
     questionRead.type = question.type;
     return questionRead;
   }
