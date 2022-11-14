@@ -1,27 +1,23 @@
-import * as actionTypes from "./constant";
+import {
+  GET_ROOM_FAILED,
+  GET_ROOM_REQUEST,
+  GET_ROOM_SUCCESS,
+} from "./constant";
 
 const initialState = {
   loading: false,
-  data: null,
+  data: [],
   error: null,
 };
 
 export const listRoomReducer = (state = initialState, { payload, type }) => {
   switch (type) {
-    case actionTypes.GET_ROOM_REQUEST:
-      state.loading = true;
-      state.error = null;
-      return { ...state };
-    case actionTypes.GET_ROOM_SUCCESS:
-      state.loading = false;
-      state.data = payload;
-      state.error = null;
-      return { ...state };
-    case actionTypes.GET_ROOM_FAILED:
-      state.loading = false;
-      state.data = null;
-      state.error = payload;
-      return { ...state };
+    case GET_ROOM_REQUEST:
+      return { ...state, loading: true };
+    case GET_ROOM_SUCCESS:
+      return { ...state, loading: false, data: payload };
+    case GET_ROOM_FAILED:
+      return { ...state, loading: false, error: payload };
     default:
       return state;
   }

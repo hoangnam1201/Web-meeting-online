@@ -28,6 +28,7 @@ import { getInvitedRoomAPI } from "../../api/room.api";
 import { renewToken } from "../../api/user.api";
 import PersonIcon from "@mui/icons-material/Person";
 import { list } from "postcss";
+import { ToastContainer } from "react-toastify";
 
 const useStyles = makeStyles({
   root: {
@@ -85,6 +86,7 @@ const useStyles = makeStyles({
 const MyEvent = () => {
   const classes = useStyles();
   const listRoom = useSelector((state) => state.listRoomReducer);
+  const userCurrent = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false);
   const [roomEvent, setRoomEvent] = useState({});
@@ -174,14 +176,18 @@ const MyEvent = () => {
           roomEvent={roomEvent}
         />
         <section>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<EventNoteIcon />}
-            onClick={handleAdd}
-          >
-            New Events
-          </Button>
+          {(userCurrent?.user?.role === "ADMIN" ||
+            userCurrent?.user?.role === "HOST") && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<EventNoteIcon />}
+              onClick={handleAdd}
+            >
+              New Events
+            </Button>
+          )}
+
           <Container component="div" maxWidth="xl">
             <Grid container>
               <Grid item>

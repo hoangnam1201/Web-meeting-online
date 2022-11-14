@@ -1,10 +1,15 @@
-import * as actionTypes from "./constant";
+import {
+  GET_ROOM_FAILED,
+  GET_ROOM_REQUEST,
+  GET_ROOM_SUCCESS,
+} from "./constant";
 import {
   createRoomApi,
   deleteRoomAPI,
   getOwnerRoomAPI,
   updateRoomApi,
 } from "../../../api/room.api";
+import { toast } from "react-toastify";
 
 export const actGetRoom = () => {
   return (dispatch) => {
@@ -21,20 +26,20 @@ export const actGetRoom = () => {
 
 const actGetRoomRequest = () => {
   return {
-    type: actionTypes.GET_ROOM_REQUEST,
+    type: GET_ROOM_REQUEST,
   };
 };
 
-const actGetRoomSuccess = (payload) => {
+const actGetRoomSuccess = (data) => {
   return {
-    type: actionTypes.GET_ROOM_SUCCESS,
-    payload,
+    type: GET_ROOM_SUCCESS,
+    payload: data,
   };
 };
 
 const actGetRoomFailed = (error) => {
   return {
-    type: actionTypes.GET_ROOM_FAILED,
+    type: GET_ROOM_FAILED,
     payload: error,
   };
 };
@@ -62,7 +67,17 @@ export const addRoomAction = (data, callBack) => {
         callBack && callBack("success");
       })
       .catch((error) => {
-        callBack && callBack("error");
+        dispatch(actGetRoomFailed(error));
+        toast.error(error.response.data.msg, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       });
   };
 };

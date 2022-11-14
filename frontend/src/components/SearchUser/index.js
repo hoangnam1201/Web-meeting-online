@@ -2,9 +2,8 @@ import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
 
 const SearchUser = ({ onChange }) => {
-
   const searchUser = (searchText) => {
-    onChange(searchText)
+    onChange(searchText);
   };
 
   return (

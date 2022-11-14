@@ -49,6 +49,13 @@ export const selectedUserAction = (id, callback) => {
   };
 };
 
+export const clearSelectedUserAction = () => {
+  return (dispatch, getState) => {
+    const { selectedUser } = getState().userManageReducer;
+    if (selectedUser.length) return dispatch(userSelected([]));
+  };
+};
+
 export const searchUserAction = (pageIndex, searchStr, callback) => {
   return async (dispatch) => {
     dispatch(userRequest());
@@ -97,6 +104,7 @@ export const updateUserAction = (data, pageIndex, callback) => {
     try {
       await updateUserAPI(data);
       dispatch(getUserPagingAction(pageIndex));
+      dispatch(clearSelectedUserAction());
       callback && callback();
     } catch (err) {
       console.log(err);

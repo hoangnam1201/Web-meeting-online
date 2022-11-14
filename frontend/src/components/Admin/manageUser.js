@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import {
+  clearSelectedUserAction,
   getUserPagingAction,
   selectedUserAction,
   updateUserAction,
@@ -65,27 +66,19 @@ const ManageUser = () => {
               The tables management user in system
             </p>
           </div>
-          <SearchUser onChange={(value) => {
-            setSearchValue({ ...searchValue, searchText: value })
-            dispatch(
-              getUserPagingAction(
-                pageIndex,
-                value,
-                searchValue.role
-              )
-            )
-          }} />
+          <SearchUser
+            onChange={(value) => {
+              setSearchValue({ ...searchValue, searchText: value });
+              dispatch(getUserPagingAction(pageIndex, value, searchValue.role));
+            }}
+          />
           <Autocomplete
             className="w-80 outline-none shadow-lg bg-slate-100"
             onChange={(e, value) => {
-              value && setSearchValue({ ...searchValue, role: value.role })
+              value && setSearchValue({ ...searchValue, role: value.role });
               dispatch(
-                getUserPagingAction(
-                  pageIndex,
-                  "",
-                  value ? value.role : null
-                )
-              )
+                getUserPagingAction(pageIndex, "", value ? value.role : null)
+              );
             }}
             loading={user?.loading === "loading"}
             options={[{ role: "ADMIN" }, { role: "HOST" }, { role: "USER" }]}
@@ -117,10 +110,11 @@ const ManageUser = () => {
                   <div
                     key={u.id}
                     onClick={() => selectedUser(u.id)}
-                    className={`group rounded-md mt-3 ${user?.selectedUser?.indexOf(u.id) !== -1
-                      ? "border-2 border-gray-500"
-                      : ""
-                      } `}
+                    className={`group rounded-md mt-3 ${
+                      user?.selectedUser?.indexOf(u.id) !== -1
+                        ? "border-2 border-gray-500"
+                        : ""
+                    } `}
                   >
                     <div className="grid grid-cols-4 px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-500 shadow-md group-hover:bg-slate-300">
                       <div className="text-left border-r-2 border-gray-300 flex items-center">

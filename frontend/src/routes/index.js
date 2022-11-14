@@ -10,6 +10,7 @@ import TableManagement from "../components/tableManagement";
 import QuizManagement from "../components/quizManagement";
 import ManageUser from "../components/Admin/manageUser";
 import ManageRoom from "../components/Admin/manageRoom";
+import AddMembers from "../components/updateEvent/members";
 
 export const userRoute = [
   {
@@ -42,6 +43,7 @@ export const userRoute = [
     path: "/user/management-quiz/:id",
     component: QuizManagement,
   },
+  { exact: true, path: "/user/management-member/:id", component: AddMembers },
 ];
 
 export const roomRoute = [

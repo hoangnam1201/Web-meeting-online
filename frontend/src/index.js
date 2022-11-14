@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { myHistory } from "./routes/history";
 import { Router } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 
 ReactDOM.render(
   // <React.StrictMode>

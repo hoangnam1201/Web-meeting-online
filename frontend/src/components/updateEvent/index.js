@@ -491,6 +491,11 @@ function UpdateEvent() {
               </p>
             </div>
             <div className="flex gap-2">
+              <Link to={`/user/management-member/${id}`}>
+                <Button variant="contained" color="primary">
+                  Add more member
+                </Button>
+              </Link>
               <div>
                 <Button variant="outlined">
                   <label>
