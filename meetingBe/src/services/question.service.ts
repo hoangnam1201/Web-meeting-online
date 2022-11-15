@@ -8,6 +8,7 @@ export default () => {
   };
 
   const updateQuestion = (id: string, question: QuestionUpdateDTO) => {
+    console.log(question);
     return questionModel.updateOne({ _id: id }, question);
   };
 

@@ -1,13 +1,12 @@
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
 import React from "react";
 import Logo from "../../../assets/logomeeting.png";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import YouTubeIcon from "@mui/icons-material/YouTube";
+import { Container, Grid } from "@mui/material";
+import { Link } from "react-router-dom";
+import { makeStyles } from "@mui/styles";
 const useStyles = makeStyles((theme) => ({
   grid: {
     marginTop: "30px",
@@ -74,30 +73,30 @@ export default function Footer() {
               </div>
             </Grid>
             <Grid item xs={6} sm={2} className={classes.linkList}>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 PRICING
               </Link>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 BLOG
               </Link>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 Contact
               </Link>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 About us
               </Link>
             </Grid>
             <Grid item xs={6} sm={2} className={classes.linkList}>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 PRIVACY
               </Link>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 DATA PROTECTION
               </Link>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 COOKIE NOTICE
               </Link>
-              <Link className={classes.link} underline="none" href="#">
+              <Link className={classes.link} underline="none" to="#">
                 USER TEMS OF SERVICE
               </Link>
             </Grid>

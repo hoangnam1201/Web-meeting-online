@@ -11,7 +11,7 @@ export class Question {
   quiz: ObjectId;
   content: string;
   choices: Choice[];
-  type: string;
+  type: "ESSAY" | "ONE" | 'MULTIPLE' | "FILLIN";
 }
 
 const QuestionSchema = new Schema<Question>({

@@ -1,24 +1,33 @@
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "react-avatar";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { kickComfirmSwal, SendBuzzSwal } from "../../services/swalServier";
-import { JoinerTag } from "../JoinerTag";
+import {
+  ListItemText,
+  Badge,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton, Popover, ListItemIcon, IconButton
+} from "@mui/material";
+import BlockIcon from '@mui/icons-material/Block';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import InfoIcon from '@mui/icons-material/Info';
 
 const JoinerList = ({ joiners }) => {
   return (
-    <div>
+    <List style={{ overflowY: 'auto', width: '300px' }}>
       {joiners?.map((user, index) => (
         <JoinerItem joiner={user} key={index} />
       ))}
-    </div>
+    </List>
   );
 };
 
 const JoinerItem = ({ joiner }) => {
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(false);
   const roomCallState = useSelector((state) => state.roomCall);
   const userSate = useSelector((state) => state.userReducer);
 
@@ -29,84 +38,99 @@ const JoinerItem = ({ joiner }) => {
   };
 
   const BuzzHandler = (id) => {
+    setAnchorEl(null);
     SendBuzzSwal((value) => {
       roomCallState?.socket.emit("room:buzz", id, value);
     });
   };
   return (
-    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 text-black px-2">
-      <div className="flex items-center gap-4">
-        {joiner?.picture ? (
-          <img
-            src={joiner?.picture}
-            alt=""
-            className="cursor-pointer rounded-full w-12"
-          />
-        ) : (
-          <Avatar
-            name={joiner?.name}
-            size="48"
-            round={true}
-            className="cursor-pointer"
-          />
-        )}
-        <div className="flex-grow overflow-x-hidden w-48">
-          <div className="flex items-center">
-            <p className="whitespace-nowrap text-left font-semibold text-black">
-              {joiner?.name.length < 15
-                ? joiner?.name
-                : `${joiner?.name.slice(0, 12)}...`}
-            </p>
-            {joiner?._id === roomCallState?.roomInfo?.owner?._id && (
-              <JoinerTag name="Host" />
-            )}
-            {joiner?._id === userSate?.user?._id && <JoinerTag name="You" />}
-          </div>
-          <p className=" whitespace-nowrap text-left text-sm text-gray-400">
-            {joiner?.email.length < 18
-              ? joiner?.email
-              : `${joiner?.email.slice(0, 15)}...`}
-          </p>
-        </div>
-      </div>
-      <div className="relative">
-        <button onClick={() => setOpen(!open)}>
-          <MoreVertIcon />
-        </button>
-        {open && (
-          <div>
-            <div className="absolute right-1/2 top-1/2 transform bg-white shadow-md rounded-sm z-50">
+    <>
+      <ListItem secondaryAction={
+        <div>
+          <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+            <MoreVertIcon />
+          </IconButton>
+          <Popover open={!!anchorEl} anchorEl={anchorEl} onClose={() => setAnchorEl(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <List
+              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+              component="nav"
+              aria-labelledby="nested-list-subheader"
+            >
+
               {roomCallState?.roomInfo?.owner._id === userSate?.user._id &&
                 userSate?.user._id !== joiner._id && (
-                  <div>
-                    <button
-                      onClick={() => BuzzHandler(joiner?._id)}
-                      className="py-2 px-5 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-100 whitespace-nowrap"
-                    >
-                      Buzz
-                    </button>
-                    <button
-                      onClick={() => KickHandler(joiner?._id)}
-                      className=" p-2 px-5 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-100 whitespace-nowrap"
-                    >
-                      Kick
-                    </button>
-                  </div>
+                  <>
+                    <ListItem disablePadding>
+                      <ListItemButton style={{ padding: '0 1rem' }}
+                        onClick={() => KickHandler(joiner?._id)}
+                      >
+                        <ListItemIcon>
+                          <BlockIcon />
+                        </ListItemIcon>
+                        <ListItemText primary='Kick' />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton style={{ padding: '0 1rem' }}
+                        onClick={() => BuzzHandler(joiner?._id)}
+                      >
+                        <ListItemIcon>
+                          <TelegramIcon />
+                        </ListItemIcon>
+                        <ListItemText primary='Buzz' />
+                      </ListItemButton>
+                    </ListItem >
+                  </>
                 )}
-              <button className=" p-2 px-5 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-100 whitespace-nowrap">
-                Info
-              </button>
-            </div>
-            <div
-              className="fixed top-0 left-0 w-full h-full z-40"
-              onClick={() => {
-                setOpen(false);
-              }}
-            ></div>
-          </div>
-        )}
-      </div>
-    </div>
+              <ListItem disablePadding>
+                <ListItemButton style={{ padding: '0 1rem' }}>
+                  <ListItemIcon>
+                    <InfoIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Info' />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Popover>
+        </div>
+      }>
+        <ListItemAvatar>
+          <Badge badgeContent={
+            joiner?._id === roomCallState?.roomInfo?.owner?._id ?
+              'host' : joiner?._id === userSate?.user?._id ?
+                'you' : 0} color={
+                  joiner?._id === roomCallState?.roomInfo?.owner?._id ?
+                    'secondary' : 'primary'
+                }>
+            {joiner?.picture ? (
+              <img
+                src={joiner?.picture}
+                alt=""
+                className="cursor-pointer rounded-full w-12"
+              />
+            ) : (
+              <Avatar
+                name={joiner?.name}
+                size="48"
+                round={true}
+                className="cursor-pointer"
+              />
+            )}
+          </Badge>
+        </ListItemAvatar>
+        <ListItemText
+          primary={joiner?.name}
+          secondary={joiner?.email}
+          primaryTypographyProps={{ noWrap: true }}
+          secondaryTypographyProps={{ noWrap: true }}
+        />
+      </ListItem>
+    </>
   );
 };
 

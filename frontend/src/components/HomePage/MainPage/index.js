@@ -1,7 +1,4 @@
 import React from "react";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import iconCheck from "../../../assets/iconcheck.png";
 import Button from "@mui/material/Button";
 import imgMeeting from "../../../assets/imagemeeting.png";
@@ -10,6 +7,8 @@ import Table7 from "../../roomCall/tables/table7";
 import Table4 from "../../roomCall/tables/table4";
 import Table2 from "../../roomCall/tables/table2";
 import Table3 from "../../roomCall/tables/table3";
+import { Container, Grid } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 const useStyles = makeStyles({
   root: {
     background: "#fff7ed",

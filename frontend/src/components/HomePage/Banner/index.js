@@ -3,11 +3,11 @@ import imgBanner from "../../../assets/banner.png";
 import imgBanner1 from "../../../assets/meetingslide.jpg";
 import imgBanner2 from "../../../assets/meetingslide1.jpg";
 import imgBanner3 from "../../../assets/meetingslide2.png";
-import Button from "@material-ui/core/Button";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.min.css";
 import "swiper/swiper.min.css";
 import SwiperCore, { Autoplay, Pagination } from "swiper";
+import { Button } from "@mui/material";
 
 const Banner = () => {
   SwiperCore.use([Autoplay]);

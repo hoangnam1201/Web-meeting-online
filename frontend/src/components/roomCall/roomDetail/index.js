@@ -44,7 +44,6 @@ const RoomDetail = ({
 
   return (
     <div
-      onClick={() => dispatch(roomShowLobbyAction(false))}
       className="min-h-screen relative bg-blue-50 pb-20"
     >
       {!roomCall?.roomInfo?.isPresent && (

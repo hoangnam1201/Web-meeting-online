@@ -4,6 +4,7 @@ import {
   getAllQuestionApi,
   updateQuestionApi,
 } from "../../api/quiz.api";
+import { toastSuccess } from "../../services/toastService";
 
 export const QUESTION_REQUEST = "QUESTION_REQUEST";
 export const QUESTION_SUCCESS = "QUESTION_SUCCESS";
@@ -64,6 +65,7 @@ export const addQuestionAction = (data, quizId, callback) => {
     try {
       await createQuestionApi(data);
       dispatch(getQuestionAction(quizId));
+      toastSuccess('Create success')
       callback();
     } catch (err) {
       console.log(err);
@@ -81,6 +83,7 @@ export const updateQuestionActon = (id, data) => {
     dispatch(questionRequest());
     try {
       await updateQuestionApi(id, data);
+      toastSuccess('Update question success')
       dispatch(getQuestionAction(data.quiz));
     } catch (err) {
       console.log(err);

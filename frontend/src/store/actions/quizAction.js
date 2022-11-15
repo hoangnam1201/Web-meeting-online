@@ -8,6 +8,7 @@ import {
 
 export const QUIZ_REQUEST = "QUIZ_REQUEST";
 export const QUIZ_SUCCESS = "QUIZ_SUCCESS";
+export const QUIZ_SETCURRENT = 'QUIZ_SETCURRENT';
 export const QUIZ_ERROR = "QUIZ_ERROR";
 export const QUIZ_SELECTED = "QUIZ_SELECTED";
 
@@ -20,6 +21,13 @@ const quizRequest = () => {
 const quizSuccess = (quiz) => {
   return {
     type: QUIZ_SUCCESS,
+    payload: quiz,
+  };
+};
+
+const quizSetCurrent = (quiz) => {
+  return {
+    type: QUIZ_SETCURRENT,
     payload: quiz,
   };
 };
@@ -74,7 +82,7 @@ export const getQuizByQuizIdAction = (quizId) => {
     dispatch(quizRequest());
     try {
       const res = await getQuizById(quizId);
-      dispatch(quizSuccess(res.data));
+      dispatch(quizSetCurrent(res.data));
     } catch (err) {
       console.log(err);
       if (err.response) {

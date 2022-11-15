@@ -15,4 +15,8 @@ export class TableCreateDto {
     tableCreate.floor = table.floor;
     return tableCreate;
   }
+
+  static fromArray(tables: Table[]) {
+    return tables.map((t) => this.fromTable(t));
+  }
 }

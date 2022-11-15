@@ -29,6 +29,23 @@ export default () => {
     }
   };
 
+  const createTables = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: 400, errors: errors.array() });
+    }
+
+    try {
+      const tableCreate = TableCreateDto.fromArray(req.body);
+      await tableService.create(tableCreate);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Enternal Server Error" });
+    }
+  };
+
   const updateTable = async (req: Request, res: Response) => {
     const errors = validationResult(req);
     const { ids } = req.body;
@@ -62,6 +79,18 @@ export default () => {
     const tableId = req.params.tableId;
     try {
       await tableService.removeTable(tableId);
+      return res.status(200).json({ status: 200, data: null });
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
+    }
+  };
+
+  const deleteTables = async (req: Request, res: Response) => {
+    const tableIds = req.body;
+    try {
+      await tableService.removeTables(tableIds);
       return res.status(200).json({ status: 200, data: null });
     } catch {
       return res
@@ -232,8 +261,10 @@ export default () => {
   return {
     addMembersByFile,
     createTable,
+    createTables,
     saveMember,
     deleteTable,
+    deleteTables,
     updateTable,
     getMemberTables,
     searchMember,

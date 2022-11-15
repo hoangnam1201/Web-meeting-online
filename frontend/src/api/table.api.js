@@ -14,8 +14,16 @@ export const createTableAPI = (data) => {
   return instance.post("/table", data);
 };
 
+export const createTablesAPI = (data) => {
+  return instance.post("/table/create-tables", data);
+};
+
 export const deleteTableAPI = (id) => {
   return instance.delete("/table/" + id);
+};
+
+export const deleteTablesAPI = (ids) => {
+  return instance.put("/table/delete-tables", ids);
 };
 
 export const updateTableAPI = (ids, data) => {

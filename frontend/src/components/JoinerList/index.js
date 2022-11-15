@@ -1,11 +1,11 @@
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "react-avatar";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { kickComfirmSwal, SendBuzzSwal } from "../../services/swalServier";
 import { JoinerTag } from "../JoinerTag";
+import { IconButton } from "@mui/material";
 
 const JoinerList = ({ joiners }) => {
   return (

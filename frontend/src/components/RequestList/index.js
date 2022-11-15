@@ -1,10 +1,10 @@
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "react-avatar";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { roomRemoveRequestAction } from "../../store/actions/roomCallAction";
+import { IconButton } from "@mui/material";
 
 const RequestList = ({ requests }) => {
   return (

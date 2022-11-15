@@ -57,6 +57,82 @@ export default () => {
     return submissionModel.find({ quiz: quizId });
   };
 
+  const getScoresByQuiz = (quizId: string, userId: string) => {
+    return submissionModel
+      .aggregate()
+      .match({
+        quiz: new Types.ObjectId(quizId),
+        userId: new Types.ObjectId(userId),
+      })
+      .lookup({
+        from: "questions",
+        localField: "answers.questionId",
+        foreignField: "_id",
+        as: "questions",
+        pipeline: [
+          {
+            $project: {
+              choices: {
+                $filter: {
+                  input: "$choices",
+                  as: "choice",
+                  cond: "$$choice.isTrue",
+                },
+              },
+            },
+          },
+          {
+            $addFields: {
+              choices: "$choices._id",
+            },
+          },
+        ],
+      })
+      .unwind("$answers", "$questions")
+      .project({
+        _id: 1,
+        userId: 1,
+        quiz: 1,
+        isCorrect: {
+          $cond: [
+            {
+              $setEquals: ["$questions.choices", "$answers.answerIds"],
+            },
+            1,
+            0,
+          ],
+        },
+      })
+      .group({
+        _id: "$_id",
+        userId: { $first: "$userId" },
+        quiz: { $first: "$quiz" },
+        countCorrect: { $sum: "$isCorrect" },
+      })
+      .lookup({
+        from: "questions",
+        localField: "quiz",
+        foreignField: "quiz",
+        as: "countQuestion",
+        pipeline: [
+          {
+            $count: "count",
+          },
+        ],
+      })
+      .project({
+        _id: 1,
+        quiz: 1,
+        countCorrect: 1,
+        userId: 1,
+        countQuestion: { $arrayElemAt: ["$countQuestion.count", 0] },
+      })
+      .addFields({
+        score: {
+          $multiply: [{ $divide: ["$countCorrect", "$countQuestion"] }, 100],
+        },
+      });
+  };
   const getScoresInQuiz = (quizId: string) => {
     return submissionModel
       .aggregate()

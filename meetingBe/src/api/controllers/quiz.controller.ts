@@ -70,7 +70,8 @@ export default () => {
       const questionCreate = QuestionCreateDTO.fromQuestion(req.body);
       await questionService.createQuestion(questionCreate);
       return res.status(200).json({ status: 200, data: null });
-    } catch {
+    } catch (e) {
+      console.log(e);
       return res.status(500).json({
         status: 500,
         msg: "Internal Server Error",
@@ -83,6 +84,7 @@ export default () => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ status: 400, errors: errors.array() });
     }
+
     try {
       const questionId = req.params.questionId;
       const questionUpdate = QuestionUpdateDTO.fromQuestion(req.body);
@@ -116,7 +118,8 @@ export default () => {
       return res
         .status(200)
         .json({ status: 200, data: QuestionReadDTO.fromList(questions) });
-    } catch {
+    } catch (e) {
+      console.log(e);
       return res.status(500).json({
         status: 500,
         msg: "Internal Server Error",
@@ -146,7 +149,8 @@ export default () => {
       return res
         .status(200)
         .json({ status: 200, data: QuizReadDTO.fromList(quizs) });
-    } catch {
+    } catch (e) {
+      console.log(e);
       return res.status(500).json({
         status: 500,
         msg: "Internal Server Error",
@@ -161,8 +165,8 @@ export default () => {
       return res
         .status(200)
         .json({ status: 200, data: QuizReadDTO.fromQuiz(quiz) });
-    } catch(e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return res.status(500).json({
         status: 500,
         msg: "Internal Server Error",
@@ -180,6 +184,6 @@ export default () => {
     getAllQuestionsInQuiz,
     getQuestionById,
     getAllQuizsInRoom,
-    getQuizById
+    getQuizById,
   };
 };

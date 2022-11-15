@@ -25,6 +25,10 @@ export default () => {
     return tableModel.deleteOne({ _id: tableId });
   };
 
+  const removeTables = (tableIds: string[]) => {
+    return tableModel.deleteMany({ _id: { $in: tableIds } });
+  };
+
   const addUser = (tableId: string, userId: ObjectId) => {
     return tableModel.updateOne(
       { _id: tableId },
@@ -178,6 +182,7 @@ export default () => {
     getMemberTables,
     saveMember,
     removeTable,
+    removeTables,
     addUser,
     removeUser,
     getDetail,

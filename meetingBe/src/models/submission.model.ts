@@ -9,6 +9,7 @@ export class submission {
   answers: {
     questionId: Types.ObjectId;
     answerIds: Types.ObjectId[];
+    content: string;
   }[];
 }
 
@@ -21,6 +22,7 @@ const submissionSchema = new Schema<submission>({
     {
       questionId: { type: SchemaTypes.ObjectId, ref: "question" },
       answerIds: [{ type: SchemaTypes.ObjectId }],
+      content: { type: String },
     },
   ],
 });

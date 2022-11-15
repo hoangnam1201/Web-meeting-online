@@ -3,7 +3,10 @@ import { query } from "express-validator";
 import TablerController from "../controllers/table.controller";
 import AuthMiddlesware from "../middlewares/auth.middleware";
 import { checkXLSXFile } from "../middlewares/checkXLSXFile.middeware";
-import { tableCreateValidator, tableUpdateValidator } from "../validations/table.validator";
+import {
+  tableCreateValidator,
+  tableUpdateValidator,
+} from "../validations/table.validator";
 
 const tableRoute = Router();
 const tableController = TablerController();
@@ -12,6 +15,12 @@ tableRoute.post(
   "",
   [AuthMiddlesware.verifyToken, ...tableCreateValidator()],
   tableController.createTable
+);
+
+tableRoute.post(
+  "/create-tables",
+  [AuthMiddlesware.verifyToken],
+  tableController.createTables
 );
 
 tableRoute.put(
@@ -24,6 +33,12 @@ tableRoute.delete(
   "/:tableId",
   AuthMiddlesware.verifyToken,
   tableController.deleteTable
+);
+
+tableRoute.put(
+  "/delete-tables",
+  AuthMiddlesware.verifyToken,
+  tableController.deleteTables
 );
 
 tableRoute.put(

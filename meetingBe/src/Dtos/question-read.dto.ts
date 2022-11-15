@@ -19,6 +19,7 @@ export class QuestionReadDTO {
     questionRead.choices = question.choices.map((c) => ({
       _id: c._id.toString(),
       content: c.content,
+      isTrue: c.isTrue,
     }));
     questionRead.type = question.type;
     return questionRead;

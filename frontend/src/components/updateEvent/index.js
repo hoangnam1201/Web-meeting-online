@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import {
   addTableAction,
+  removeSeletedTablesAction,
   removeTableAction,
   tableSelectFloorAction,
   tableSelectTableAction,
@@ -30,6 +31,7 @@ import { AboutFormatSwal, confirmSwal } from "../../services/swalServier";
 import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 import QuizManage from "./quiz";
+import AutoAddTablesDialog from "./autoAddTablesDialog";
 
 function UpdateEvent() {
   const { id } = useParams();
@@ -44,7 +46,9 @@ function UpdateEvent() {
   const [membersLoading, setMembersLoading] = useState(false);
   //floors
   const [floorsLoading, setFloorsLoading] = useState(false);
-  //
+  //dialog
+  const [openAutoAddTables, SetOpenAutoAddTables] = useState(false);
+  //form
   const {
     register,
     handleSubmit,
@@ -199,6 +203,9 @@ function UpdateEvent() {
 
   return (
     <div>
+      <AutoAddTablesDialog data={{ room: id, floor: tables?.currentFloor }} open={openAutoAddTables} onClose={() => {
+        SetOpenAutoAddTables(false)
+      }} />
       <div className="text-xl text-left p-4 font-semibold text-gray-500 flex items-center gap-4 border-b-2">
         <Link to="/user/my-event">
           <svg
@@ -236,7 +243,7 @@ function UpdateEvent() {
                 dispatch(setGlobalNotification("success", "copied"));
               }}
             >
-              <ContentCopyIcon></ContentCopyIcon>
+              <ContentCopyIcon />
             </button>
           </div>
         </div>
@@ -252,15 +259,23 @@ function UpdateEvent() {
                   divide the group
                 </p>
               </div>
-              <Link to={`/user/management-tables/${id}`} className="mr-4">
+              <div className="flex gap-3">
                 <Button
                   className=" min-w-max"
                   variant="outlined"
-                  color="primary"
-                >
-                  Manage Tables
-                </Button>
-              </Link>
+                  color="secondary"
+                  onClick={() => SetOpenAutoAddTables(true)}
+                >Auto Add Tables</Button>
+                <Link to={`/user/management-tables/${id}`} className="mr-4">
+                  <Button
+                    className=" min-w-max"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    Manage Tables
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
           <div
@@ -284,10 +299,9 @@ function UpdateEvent() {
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">
               {tables?.items?.map((s) => (
                 <div
-                  className={`hover:bg-gray-50 grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm ${
-                    tables?.selectedTables.indexOf(s._id) !== -1 &&
+                  className={`hover:bg-gray-50 grid grid-cols-3 px-4 py-2 bg-gray-100 rounded-md mt-4 text-gray-500 text-sm ${tables?.selectedTables.indexOf(s._id) !== -1 &&
                     "border-2 border-gray-400"
-                  }`}
+                    }`}
                   key={s._id}
                   onClick={() => {
                     dispatch(tableSelectTableAction(s._id));
@@ -355,9 +369,8 @@ function UpdateEvent() {
                       dispatch(tableSelectFloorAction(id, f));
                     }}
                     key={f}
-                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
-                      tables?.currentFloor === f && "shadow-lg bg-gray-200"
-                    }`}
+                    className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${tables?.currentFloor === f && "shadow-lg bg-gray-200"
+                      }`}
                   >
                     Floor {index}
                   </button>
@@ -419,9 +432,8 @@ function UpdateEvent() {
                       <button
                         type="button"
                         key={index}
-                        className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${
-                          vFloor === f && "shadow-lg bg-gray-200"
-                        }`}
+                        className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${vFloor === f && "shadow-lg bg-gray-200"
+                          }`}
                         onClick={() =>
                           setValue("floor", f, {
                             shouldDirty: true,
@@ -448,15 +460,30 @@ function UpdateEvent() {
                   Add
                 </LoadingButton>
               ) : (
-                <LoadingButton
-                  variant="contained"
-                  type="button"
-                  color="inherit"
-                  loading={tables?.loading}
-                  onClick={handleSubmit(updateTable)}
-                >
-                  Update
-                </LoadingButton>
+                <div className="flex flex-col gap-2">
+                  <LoadingButton
+                    variant="contained"
+                    type="button"
+                    color="info"
+                    loading={tables?.loading}
+                    onClick={handleSubmit(updateTable)}
+                  >
+                    Update
+                  </LoadingButton>
+                  <LoadingButton
+                    variant="contained"
+                    type="button"
+                    loading={tables?.loading}
+                    color="inherit"
+                    onClick={() => {
+                      confirmSwal('Delete these tables', 'are you sure?', () => {
+                        dispatch(removeSeletedTablesAction(id))
+                      })
+                    }}
+                  >
+                    Delete
+                  </LoadingButton>
+                </div>
               )}
             </form>
           </div>

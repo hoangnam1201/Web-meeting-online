@@ -1,24 +1,42 @@
 import React from "react";
-import IconButton from "@material-ui/core/IconButton";
+import DoneIcon from '@mui/icons-material/Done';
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "react-avatar";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { roomCallResponceRequests } from "../../store/actions/roomCallAction";
+import { Card, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText, Popover } from "@mui/material";
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 const RequestList = ({ requests }) => {
-  console.log(requests)
+  const roomCall = useSelector((state) => state.roomCall);
+  const dispatch = useDispatch();
+  const replyHandlerAll = () => {
+    dispatch(roomCallResponceRequests(roomCall?.requests.map(r => r._id), true));
+  }
+
   return (
-    <div>
+    <List style={{ overflowY: 'auto', width: '300px' }}>
+      <ListItem>
+        <Card variant="outlined">
+          <ListItemButton style={{ padding: '0 1rem' }} onClick={replyHandlerAll}>
+            <ListItemIcon>
+              <DoneAllIcon />
+            </ListItemIcon>
+            <ListItemText primary='Accept all requests' />
+          </ListItemButton>
+        </Card>
+      </ListItem>
       {requests?.map((user, index) => (
         <RequestItem request={user} key={index} />
       ))}
-    </div>
+    </List>
   );
 };
 
 const RequestItem = ({ request }) => {
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(false);
   const dispatch = useDispatch();
 
   const replyHandler = (isAccept) => {
@@ -26,70 +44,68 @@ const RequestItem = ({ request }) => {
   };
 
   return (
-    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 px-2">
-      {request?.picture ? (
-        <div className="flex items-center gap-4">
+    <ListItem
+      secondaryAction={
+        <div>
+          <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+            <MoreVertIcon />
+          </IconButton>
+          <Popover open={!!anchorEl} anchorEl={anchorEl} onClose={() => setAnchorEl(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+          >
+            <List
+              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+              component="nav"
+              aria-labelledby="nested-list-subheader"
+            >
+              <ListItem disablePadding>
+                <ListItemButton style={{ padding: '0 1rem' }}
+                  onClick={() => replyHandler(true)}>
+                  <ListItemIcon>
+                    <DoneIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='accept' />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton style={{ padding: '0 1rem' }}
+                  onClick={() => replyHandler(false)}>
+                  <ListItemIcon>
+                    <DoNotDisturbIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='refuse' />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Popover>
+        </div>
+      }
+    >
+      <ListItemAvatar
+      >
+        {request?.picture ? (
           <img
             src={request.user?.picture}
             alt=""
             className="cursor-pointer rounded-full w-12"
           />
-        </div>
-      ) : (
-        <div className="flex items-center gap-4">
+        ) : (
           <Avatar
             name={request.user?.name}
             size="48"
             round={true}
             className="cursor-pointer"
           />
-        </div>
-      )}
-      <div className="w-0 flex-grow overflow-x-hidden">
-        <p className="whitespace-nowrap text-left font-semibold text-gray-500">
-          {request.user?.name.length < 15
-            ? request.user?.name
-            : `${request.user?.name.slice(0, 15)}...`}
-        </p>
-        <p className="whitespace-nowrap text-left text-sm text-gray-400">
-          {request.user?.email.length < 18
-            ? request.user?.email
-            : `${request.user?.email.slice(0, 15)}...`}
-        </p>
-      </div>
-      <div className="relative">
-        <IconButton onClick={() => setOpen(!open)}>
-          <MoreVertIcon />
-        </IconButton>
-        {open && (
-          <div>
-            <div className="flex flex-col absolute right-1/2 top-1/2 transform bg-white shadow-md rounded-sm z-50">
-              <button
-                onClick={() => replyHandler(true)}
-                className="py-2 px-5 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-100 whitespace-nowrap"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => replyHandler(false)}
-                className=" p-2 px-5 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-100 whitespace-nowrap"
-              >
-                Refuse
-              </button>
-              <button className="p-2 px-5 text-gray-500 focus:outline-none text-sm font-semibold capitalize hover:bg-gray-100 whitespace-nowrap">
-                Info
-              </button>
-            </div>
-            <div
-              className="fixed top-0 left-0 w-full h-full z-40"
-              onClick={() => {
-                setOpen(false);
-              }}
-            ></div>
-          </div>
         )}
-      </div>
-    </div>
+      </ListItemAvatar>
+      <ListItemText primary={request.user?.name} secondary={request.user?.email}
+        primaryTypographyProps={{ noWrap: true }}
+        secondaryTypographyProps={{ noWrap: true }}
+      />
+    </ListItem>
   );
 };
 

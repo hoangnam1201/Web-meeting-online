@@ -27,7 +27,7 @@ import { confirmPresent, confirmSwal } from "../../services/swalServier";
 import { Link, useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
 import { useReactMediaRecorder } from "react-media-recorder";
-import { LinearProgress } from "@mui/material";
+import { LinearProgress, Switch } from "@mui/material";
 
 const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   const roomCall = useSelector((state) => state.roomCall);
@@ -311,7 +311,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
               )}
               <div className="p-2 text-gray-500 focus:outline-none text-sm font-semibold">
                 <label onClick={() => setAutoHidden(!autoHidden)}>
-                  {autoHidden ? <ToggleOnIcon /> : <ToggleOffIcon />}
+                  <Switch value={autoHidden} />
                   <p>auto hide</p>
                 </label>
               </div>

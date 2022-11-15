@@ -61,3 +61,27 @@ export const toastError = (text) => {
     theme: "colored",
   })
 }
+
+export const toastWarning = (text) => {
+  toast.warning(text, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "colored",
+  })
+}
+
+export const toastSuccess = (text) => {
+  toast.success(text, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "colored",
+  })
+}

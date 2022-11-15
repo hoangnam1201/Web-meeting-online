@@ -14,10 +14,10 @@ import {
   updateQuizActon,
 } from "../../store/actions/quizAction";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Swal from "sweetalert2";
+import { DesktopDateTimePicker } from "@mui/x-date-pickers";
 
 const QuizManage = (props) => {
   const { roomId } = props;
@@ -32,7 +32,10 @@ const QuizManage = (props) => {
     setValue,
   } = useForm({
     mode: "onChange",
-    defaultValues: { startDate: new Date().getTime() },
+    defaultValues: {
+      startDate: new Date().getTime(),
+      endDate: new Date().getTime()
+    },
   });
 
   useEffect(() => {
@@ -54,6 +57,7 @@ const QuizManage = (props) => {
         description: "",
         duration: "",
         startDate: new Date().getTime(),
+        endDate: new Date().getTime(),
       });
     }
   }, [quiz?.selectedQuiz]);
@@ -71,6 +75,7 @@ const QuizManage = (props) => {
       })
     );
   };
+
   const updateQuiz = (data) => {
     const quizData = { ...data, room: roomId };
     if (quiz.selectedQuiz) {
@@ -81,14 +86,15 @@ const QuizManage = (props) => {
             description: "",
             duration: "",
             startDate: new Date().getTime(),
+            endDate: new Date().getTime()
           });
         })
       );
     }
   };
 
-  const handleDateChange = (date) => {
-    setValue("startDate", date.getTime(), { shouldValidate: true });
+  const handleDateChange = (date, key) => {
+    setValue(key, date.getTime(), { shouldValidate: true });
   };
 
   const selectedQuiz = (id) => {
@@ -134,11 +140,10 @@ const QuizManage = (props) => {
                 return (
                   <div
                     onClick={() => selectedQuiz(q._id)}
-                    className={`group rounded-md mt-4 ${
-                      quiz.selectedQuiz.indexOf(q._id) !== -1
-                        ? "border-2 border-gray-500"
-                        : ""
-                    } `}
+                    className={`group rounded-md mt-4 ${quiz.selectedQuiz.indexOf(q._id) !== -1
+                      ? "border-2 border-gray-500"
+                      : ""
+                      } `}
                     key={q._id}
                   >
                     <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-500 group-hover:bg-slate-300">
@@ -152,7 +157,7 @@ const QuizManage = (props) => {
                             to={`/user/management-quiz/${q._id}`}
                             target="_blank"
                             className="mr-4"
-                            onClick={(e) => e.stopPropagation()}
+                          // onClick={(e) => e.stopPropagation()}
                           >
                             <SettingsIcon fontSize="small" />
                           </Link>
@@ -209,43 +214,72 @@ const QuizManage = (props) => {
                 helperText={errors?.description?.message}
               />
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DesktopDatePicker
+                <DesktopDateTimePicker
                   variant="outlined"
                   margin="dense"
                   disabled={quiz?.selectedQuiz.length > 1}
                   InputLabelProps={{ shrink: true }}
                   id="date-picker-dialog-register"
                   label="Start Date"
-                  inputFormat="MM/dd/yyyy"
                   value={new Date(getValues("startDate"))}
-                  onChange={handleDateChange}
+                  onChange={(e) => handleDateChange(e, 'startDate')}
                   renderInput={(params) => (
                     <TextField className="my-2" fullWidth {...params} />
                   )}
                 />
-                <TextField
-                  fullWidth
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DesktopDateTimePicker
                   variant="outlined"
+                  margin="dense"
                   disabled={quiz?.selectedQuiz.length > 1}
                   InputLabelProps={{ shrink: true }}
-                  InputProps={{ inputProps: { min: 15, max: 120 } }}
-                  margin="dense"
-                  label="Duration (Minutes)"
-                  {...register("duration", {
-                    required: quiz?.selectedQuiz.length > 1 ? null : "Required",
-                    max:
-                      quiz?.selectedQuiz.length > 1
-                        ? null
-                        : { value: 120, message: "Max duraion is 120 minutes" },
-                    min:
-                      quiz?.selectedQuiz.length > 1
-                        ? null
-                        : { value: 15, message: "Min duraion is 15 minutes" },
-                  })}
-                  error={!!errors?.duration}
-                  helperText={errors?.duration?.message}
+                  id="date-picker-dialog-register"
+                  label="End Date"
+                  value={new Date(getValues("endDate"))}
+                  onChange={(e) => handleDateChange(e, 'endDate')}
+                  renderInput={(params) => (
+                    <TextField className="my-2" fullWidth {...params} />
+                  )}
                 />
               </LocalizationProvider>
+              <TextField
+                fullWidth
+                variant="outlined"
+                InputProps={{ inputProps: { min: 1 } }}
+                margin="dense"
+                type='number'
+                label="number of Submissions of a user"
+                {...register("countSubmission", {
+                  required: true, min:
+                    { value: 1, message: 'min number of submission is 1' }
+                })}
+                error={!!errors?.countSubmission}
+                helperText={errors?.countSubmission?.message}
+              />
+              <TextField
+                fullWidth
+                variant="outlined"
+                disabled={quiz?.selectedQuiz.length > 1}
+                InputLabelProps={{ shrink: true }}
+                InputProps={{ inputProps: { min: 15, max: 120 } }}
+                margin="dense"
+                type='number'
+                label="Duration (Minutes)"
+                {...register("duration", {
+                  required: quiz?.selectedQuiz.length > 1 ? null : "Required",
+                  max:
+                    quiz?.selectedQuiz.length > 1
+                      ? null
+                      : { value: 120, message: "Max duraion is 120 minutes" },
+                  min:
+                    quiz?.selectedQuiz.length > 1
+                      ? null
+                      : { value: 5, message: "Min duraion is 5 minutes" },
+                })}
+                error={!!errors?.duration}
+                helperText={errors?.duration?.message}
+              />
               {quiz?.selectedQuiz?.length === 0 ? (
                 <LoadingButton
                   onClick={handleSubmit(createQuiz)}

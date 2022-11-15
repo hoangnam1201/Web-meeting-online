@@ -130,7 +130,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                     {showAvatarMenu && (
                       <div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">
                         <ul className="p-1">
-                          <li className="font-bold text-gray-500 border-b-2 p-3">
+                          <li className="font-bold text-gray-500 border-b-2 p-3 overflow-hidden text-ellipsis">
                             {currentUser?.user?.name}
                           </li>
                           {currentUser?.user?.role === "ADMIN" && (

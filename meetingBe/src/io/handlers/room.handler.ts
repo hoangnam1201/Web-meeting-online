@@ -517,11 +517,10 @@ export default (ioRoom: any, io: any) => {
     const socket: Socket = this;
     const roomId = socket.data.roomId;
     const userId = socket.data.userData.userId;
-
     if (!roomId) return;
     try {
       const checkRoom = await roomService.findById(roomId);
-      if (checkRoom.owner.toString() !== userId.toSting())
+      if (checkRoom.owner.toString() !== userId.toString())
         return socket.emit("room:err", "You do not have permission to present");
 
       const room = await roomService.findOneAndUpdatePresent(roomId, true);
