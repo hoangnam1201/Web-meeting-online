@@ -110,11 +110,10 @@ const ManageUser = () => {
                   <div
                     key={u.id}
                     onClick={() => selectedUser(u.id)}
-                    className={`group rounded-md mt-3 ${
-                      user?.selectedUser?.indexOf(u.id) !== -1
+                    className={`group rounded-md mt-3 ${user?.selectedUser?.indexOf(u.id) !== -1
                         ? "border-2 border-gray-500"
                         : ""
-                    } `}
+                      } `}
                   >
                     <div className="grid grid-cols-4 px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-500 shadow-md group-hover:bg-slate-300">
                       <div className="text-left border-r-2 border-gray-300 flex items-center">
@@ -132,12 +131,14 @@ const ManageUser = () => {
                             className="mr-3"
                           />
                         )}
-                        {u?.name}
+                        <p className=" overflow-hidden text-ellipsis">
+                          {u?.name}
+                        </p>
                       </div>
                       <div className="text-left pl-3 border-r-2 border-gray-300 flex items-center overflow-hidden text-ellipsis">
                         {u?.email}
                       </div>
-                      <div className="text-left pl-3  border-r-2 border-gray-300 flex items-center">
+                      <div className="text-left pl-3  border-r-2 border-gray-300 flex items-cente">
                         {u?.role}
                       </div>
                       <div className="text-left pl-3 flex items-center">

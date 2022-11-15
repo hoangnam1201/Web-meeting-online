@@ -1,5 +1,5 @@
 import * as React from "react";
-import { styled } from "@mui/styles";
+import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
@@ -20,7 +20,6 @@ import { useEffect } from "react";
 import { getQuizByQuizIdAction } from "../../store/actions/quizAction";
 import Swal from "sweetalert2";
 import { confirmSwal, textSwal } from "../../services/swalServier";
-import { toastWarning } from "../../services/toastService";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
