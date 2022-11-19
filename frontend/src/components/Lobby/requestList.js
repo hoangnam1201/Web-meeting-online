@@ -90,7 +90,7 @@ const RequestItem = ({ request }) => {
           <img
             src={request.user?.picture}
             alt=""
-            className="cursor-pointer rounded-full w-12"
+            style={{"cursor": "pointer", "borderRadius": "100%", "width": "48px"}}
           />
         ) : (
           <Avatar

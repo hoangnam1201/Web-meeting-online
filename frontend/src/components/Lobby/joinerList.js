@@ -111,7 +111,7 @@ const JoinerItem = ({ joiner }) => {
               <img
                 src={joiner?.picture}
                 alt=""
-                className="cursor-pointer rounded-full w-12"
+                style={{"cursor": "pointer", "borderRadius": "100%", "width": "48px"}}
               />
             ) : (
               <Avatar

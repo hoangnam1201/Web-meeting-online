@@ -74,9 +74,7 @@ const ManageDialog = (props) => {
   const classes = useStyles();
   const { openDialog, setOpenDialog, handleCloseDialog, modal, roomEvent } =
     props;
-
   const dispatch = useDispatch();
-
   const room = useSelector((state) => state.listRoomReducer);
   const {
     register,
@@ -89,11 +87,7 @@ const ManageDialog = (props) => {
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
-  // const [roomEvent, setRoomEvent] = useState({ ...props.roomEvent });
 
-  // useEffect(() => {
-  //   setRoomEvent(props.roomEvent);
-  // }, [props.roomEvent]);
   useEffect(() => {
     if (roomEvent) {
       reset({
@@ -109,12 +103,15 @@ const ManageDialog = (props) => {
       });
     }
   }, [roomEvent]);
+
   const handleDateChange = (date) => {
     setValue("startDate", date.getTime(), { shouldValidate: true });
   };
+
   const handleDateChange2 = (date) => {
     setValue("endDate", date.getTime(), { shouldValidate: true });
   };
+
   const onAddSubmit = (data) => {
     dispatch(
       addRoomAction(data, () => {
