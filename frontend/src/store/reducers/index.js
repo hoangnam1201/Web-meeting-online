@@ -10,10 +10,12 @@ import { quizReducer } from "./quizReducer";
 import { questionReducer } from "./questionReducer";
 import { userManageReducer } from "./userManageReducer";
 import { roomManageReducer } from "./roomManageReducer";
+import { submissionReducer } from './submissionReducer';
 
 export const rootReducer = combineReducers({
   userReducer,
   listRoomReducer,
+  submissionReducer,
   roomCall: roomCallReducer,
   selectedVideo: selectedVideoReducer,
   tables: TablesReducer,

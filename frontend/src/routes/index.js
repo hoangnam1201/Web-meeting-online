@@ -11,6 +11,7 @@ import QuizManagement from "../components/quizManagement";
 import ManageUser from "../components/Admin/manageUser";
 import ManageRoom from "../components/Admin/manageRoom";
 import AddMembers from "../components/updateEvent/members";
+import Quiz from "../components/Quiz";
 
 export const userRoute = [
   {
@@ -53,6 +54,14 @@ export const roomRoute = [
     component: RoomCall,
   },
 ];
+
+export const quizRoute = [
+  {
+    exact: true,
+    path: "/quiz/:id",
+    component: Quiz,
+  },
+]
 
 export const authRoute = [
   {

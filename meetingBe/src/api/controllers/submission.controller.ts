@@ -53,17 +53,18 @@ export default () => {
 
   const submitAnswers = async (req: Request, res: Response) => {
     const { submissionId } = req.params;
-    const { answers } = req.body;
+    const { data } = req.body;
     try {
       const submission = await submissionService.addAnswer(
         submissionId,
-        answers
+        data
       );
       res.status(200).json({
         status: 200,
         data: submissionReadDetailDTO.fromSubmission(submission),
       });
     } catch (e) {
+      console.log(e)
       return res
         .status(500)
         .json({ status: 500, msg: "Internal Server Error" });

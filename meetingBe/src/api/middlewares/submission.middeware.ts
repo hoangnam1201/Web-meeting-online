@@ -62,13 +62,14 @@ export class SubmissionMiddleware {
     const quiz = await SubmissionMiddleware.quizService.getById(
       submission.quiz.toString()
     );
-    if (timeNow - submission.startDate >= quiz.duration) {
+    if (timeNow - submission.startDate >= quiz.duration*60000) {
+      console.log('time out')
       const submission =
         await SubmissionMiddleware.submissionService.changeStateSubmit(
           submissionId,
           "SUBMITTED"
         );
-      res.status(200).json({
+      return res.status(200).json({
         status: 200,
         data: submissionReadDetailDTO.fromSubmission(submission),
       });
@@ -86,7 +87,8 @@ export class SubmissionMiddleware {
     const submission = await SubmissionMiddleware.submissionService.getById(
       submissionId
     );
-    if (submission.userId !== userId) {
+    
+    if (submission.userId.toString() !== userId) {
       return res.status(400).json({
         status: 400,
         msg: "you don't have permission with this submission",

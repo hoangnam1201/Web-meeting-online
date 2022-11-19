@@ -3,8 +3,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Avatar from "react-avatar";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { roomRemoveRequestAction } from "../../store/actions/roomCallAction";
 import { IconButton } from "@mui/material";
+import { roomCallResponceRequests } from "../../store/actions/roomCallAction";
 
 const RequestList = ({ requests }) => {
   return (
@@ -19,16 +19,9 @@ const RequestList = ({ requests }) => {
 const RequestItem = ({ request }) => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
-  const roomCallState = useSelector((state) => state.roomCall);
 
   const replyHandler = (isAccept) => {
-    roomCallState?.socket.emit(
-      "room:access-request",
-      request.socketId,
-      request.user._id,
-      isAccept
-    );
-    dispatch(roomRemoveRequestAction(request.user._id));
+    dispatch(roomCallResponceRequests([request._id], isAccept))
   };
 
   return (

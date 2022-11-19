@@ -11,6 +11,7 @@ import PinVideo from "./pinVideo";
 import ListFloor from "./listFloor";
 import ListTable from "./listTable";
 import { roomShowLobbyAction } from "../../../store/actions/roomCallAction";
+import ListQuiz from "./listQuiz";
 
 const RoomDetail = ({
   connection,
@@ -25,6 +26,7 @@ const RoomDetail = ({
   currentFloor,
 }) => {
   const roomCall = useSelector((state) => state.roomCall);
+  const selectedVideo = useSelector((state) => state.selectedVideo)
   const dispatch = useDispatch();
   const [mediaStatus, setMediaStatus] = useState({
     audio: false,
@@ -54,7 +56,10 @@ const RoomDetail = ({
             myStream={myStream}
             connection={connection}
           />
-          <PinVideo />
+          {selectedVideo && (roomCall?.myId === selectedVideo) ?
+            <PinVideo streamData={myStream} /> :
+            selectedVideo ? <PinVideo streamData={streamDatas[selectedVideo]} /> : null
+          }
         </>
       )}
       <div className="text-xl font-semibold py-4 text-gray-500">
@@ -77,6 +82,7 @@ const RoomDetail = ({
         userJoined={userJoined}
         roomInfo={roomInfo}
       />
+      <ListQuiz />
       <div className=" fixed z-30 top-full transform -translate-y-full w-max left-1/2 -translate-x-1/2">
         <Toolbar
           className="bg-white rounded-lg shadow-inner"

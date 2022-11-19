@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
+import { QuestionBriefReadDTO } from "../../Dtos/question-brief-read.dto";
 import { QuestionCreateDTO } from "../../Dtos/question-create.dto";
 import { QuestionReadDTO } from "../../Dtos/question-read.dto";
 import { QuestionUpdateDTO } from "../../Dtos/question-update.dto";
@@ -127,6 +128,22 @@ export default () => {
     }
   };
 
+  const getAllBriefQuestionInQuiz = async (req: Request, res: Response) => {
+    try {
+      const quizId = req.params.quizId;
+      const questions = await questionService.getAllQuestionInQuiz(quizId);
+      return res
+        .status(200)
+        .json({ status: 200, data: QuestionBriefReadDTO.fromList(questions) });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        status: 500,
+        msg: "Internal Server Error",
+      });
+    }
+  };
+
   const getQuestionById = async (req: Request, res: Response) => {
     try {
       const questionId = req.params.questionId;
@@ -135,6 +152,26 @@ export default () => {
         .status(200)
         .json({ status: 200, data: QuestionReadDTO.fromQuestion(question) });
     } catch {
+      return res.status(500).json({
+        status: 500,
+        msg: "Internal Server Error",
+      });
+    }
+  };
+
+  const getQuestionByIdAndSubmissionId = async (
+    req: Request,
+    res: Response
+  ) => {
+    try {
+      const { questionId, submissionId } = req.query;
+      const question = await questionService.getByIdAndSubmissionId(
+        questionId.toString(),
+        submissionId.toString()
+      );
+      return res.status(200).json({ status: 200, data: question[0] });
+    } catch (e) {
+      console.log(e);
       return res.status(500).json({
         status: 500,
         msg: "Internal Server Error",
@@ -182,6 +219,8 @@ export default () => {
     updateQuestion,
     deleteQuestion,
     getAllQuestionsInQuiz,
+    getAllBriefQuestionInQuiz,
+    getQuestionByIdAndSubmissionId,
     getQuestionById,
     getAllQuizsInRoom,
     getQuizById,

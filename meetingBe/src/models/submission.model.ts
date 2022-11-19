@@ -8,8 +8,11 @@ export class submission {
   status: "DOING" | "SUBMITTED";
   answers: {
     questionId: Types.ObjectId;
-    answerIds: Types.ObjectId[];
-    content: string;
+    answers: {
+      answerId: Types.ObjectId;
+      content: string;
+    }[];
+    essay: string;
   }[];
 }
 
@@ -21,8 +24,13 @@ const submissionSchema = new Schema<submission>({
   answers: [
     {
       questionId: { type: SchemaTypes.ObjectId, ref: "question" },
-      answerIds: [{ type: SchemaTypes.ObjectId }],
-      content: { type: String },
+      answers: [
+        {
+          answerId: { type: SchemaTypes.ObjectId },
+          content: { type: String, default: "" },
+        },
+      ],
+      essay: { type: String },
     },
   ],
 });

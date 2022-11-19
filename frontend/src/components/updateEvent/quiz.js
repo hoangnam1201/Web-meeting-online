@@ -49,7 +49,9 @@ const QuizManage = (props) => {
         name: quizData?.name,
         description: quizData?.description,
         startDate: quizData?.startDate,
+        endDate: quizData?.endDate,
         duration: quizData?.duration,
+        countSubmission: quizData?.countSubmission,
       });
     } else {
       reset({
@@ -67,10 +69,12 @@ const QuizManage = (props) => {
     dispatch(
       addQuizAction(quiz, roomId, () => {
         reset({
-          name: "",
-          description: "",
-          duration: "",
-          startDate: new Date().getTime(),
+            name: "",
+            description: "",
+            duration: "",
+            countSubmission: 1,
+            startDate: new Date().getTime(),
+            endDate: new Date().getTime()
         });
       })
     );
@@ -85,6 +89,7 @@ const QuizManage = (props) => {
             name: "",
             description: "",
             duration: "",
+            countSubmission: 1,
             startDate: new Date().getTime(),
             endDate: new Date().getTime()
           });

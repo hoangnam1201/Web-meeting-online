@@ -6,6 +6,7 @@ import {
   homeRoute,
   authRoute,
   adminRoute,
+  quizRoute,
 } from "./routes";
 import UserAuth from "./routes/helper/userAuth";
 import UnAuth from "./routes/helper/unAuth";
@@ -75,6 +76,19 @@ function App() {
                 <Route path="*" exact component={Error} />
               </Switch>
             </DefautLayout>
+          </UserAuth>
+          <UserAuth path='/quiz'>
+            <Switch>
+              {quizRoute.map((route) => (
+                < Route
+                  path={route.path}
+                  exact={route.exact}
+                  component={route.component}
+                  key={route.path}
+                />
+              ))}
+              <Route path="*" exact component={Error} />
+            </Switch>
           </UserAuth>
           <UserAuth path="/room">
             <Switch>

@@ -1,13 +1,11 @@
-const initState = null;
+import { SET_SELECTEDVIDEO } from "../actions/selectedVideoAction";
 
-export const SET_SELECTEDVIDEO = 'SET_SELECTEDVIDEO'
+const initState = null;
 
 export const selectedVideoReducer = (state = initState, { type, payload }) => {
     switch (type) {
         case SET_SELECTEDVIDEO:
-            if (payload)
-                return { ...payload }
-            return null
+            return payload
         default:
             return state
     }

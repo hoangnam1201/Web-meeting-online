@@ -48,6 +48,11 @@ quizRouter.delete(
   quizController.deleteQuestion
 );
 quizRouter.get(
+  "/question/get-by-questionId-and-submissionId",
+  [AuthMiddlesware.verifyToken],
+  quizController.getQuestionByIdAndSubmissionId
+);
+quizRouter.get(
   "/question/:questionId",
   [AuthMiddlesware.verifyToken],
   quizController.getQuestionById
@@ -56,6 +61,11 @@ quizRouter.get(
   "/question/get-all-questions-in-quiz/:quizId",
   [AuthMiddlesware.verifyToken],
   quizController.getAllQuestionsInQuiz
+);
+quizRouter.get(
+  "/question/get-all-brief-questions-in-quiz/:quizId",
+  [AuthMiddlesware.verifyToken],
+  quizController.getAllBriefQuestionInQuiz
 );
 
 export default quizRouter;

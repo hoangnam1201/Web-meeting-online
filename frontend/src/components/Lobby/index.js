@@ -30,9 +30,10 @@ const LobbyUser = (props) => {
               <Tab label="request" />
             </Tabs>
           ) : (
-            <Typography>
-              Users in room
-            </Typography>
+            <Typography variant='h6' textAlign='center' style={{
+              backgroundColor: '#f3f4f6',
+              padding: '4px'
+            }}>Joiners</Typography>
           )}
           {tab === 0 ? (
             <JoinerList joiners={userJoined} />

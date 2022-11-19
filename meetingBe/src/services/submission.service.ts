@@ -14,11 +14,11 @@ export default () => {
 
   const changeStateSubmit = (
     submissionId: string,
-    state: "SUBMITTED" | "DONING"
+    status: "SUBMITTED" | "DONING"
   ) => {
     return submissionModel.findOneAndUpdate(
       { _id: submissionId },
-      { state },
+      { status },
       { new: true }
     );
   };
@@ -34,6 +34,7 @@ export default () => {
         $pull: { answers: { questionId: { $in: ids } } },
       }
     );
+
     return submissionModel.findByIdAndUpdate(
       { _id: submissionId },
       { $push: { answers } },

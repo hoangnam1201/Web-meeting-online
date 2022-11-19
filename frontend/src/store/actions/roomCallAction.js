@@ -6,12 +6,12 @@ export const ROOMCALL_SETSOCKET = "ROOMCALL_SETSOCKET";
 export const ROOMCALL_SETPEERID = "ROOMCALL_SETPEERID";
 export const ROOMCALL_SETROOMINFO = "ROOMCALL_SETROOMINFO";
 export const ROOMCALL_ADDREQUEST = "ROOMCALL_ADDREQUEST";
-export const ROOMCALL_REMOVEREQUEST = "ROOMCALL_REMOVEREQUEST";
-export const ROOMCALL_JOINLOADING = 'ROOMCALL_JOINLOADING'
-export const ROOMCALL_CHATLOADING = 'ROOMCALL_CHATLOADING'
-export const ROOMCALL_SETSELETEDTABLE = 'ROOMCALL_SETSELETEDTABLE'
-export const ROOMCALL_SETREQUESTLOADING = 'ROOMCALL_SETREQUESTLOADING'
-export const ROOMCALL_SETREQUEST = 'ROOMCALL_SETREQUEST'
+export const ROOMCALL_JOINLOADING = 'ROOMCALL_JOINLOADING';
+export const ROOMCALL_CHATLOADING = 'ROOMCALL_CHATLOADING';
+export const ROOMCALL_SETSELETEDTABLE = 'ROOMCALL_SETSELETEDTABLE';
+export const ROOMCALL_SETREQUESTLOADING = 'ROOMCALL_SETREQUESTLOADING';
+export const ROOMCALL_SETREQUEST = 'ROOMCALL_SETREQUEST';
+export const ROOMCALL_SHOWQUIZS = 'ROOMCALL_SHOWQUIZLIST';
 
 const setRequestLoading = (isloading) => {
   return {
@@ -31,13 +31,6 @@ export const roomSetSocketAction = (socket) => {
   return {
     type: ROOMCALL_SETSOCKET,
     payload: socket,
-  };
-};
-
-export const roomRemoveRequestAction = (requestId) => {
-  return {
-    type: ROOMCALL_REMOVEREQUEST,
-    payload: requestId,
   };
 };
 
@@ -68,6 +61,13 @@ export const roomShowChatAction = (isShow) => {
     payload: isShow,
   };
 };
+
+export const roomShowQuizsAction = (isShow) => {
+  return {
+    type: ROOMCALL_SHOWQUIZS,
+    payload: isShow,
+  };
+}
 
 export const roomShowLobbyAction = (isShow) => {
   return {

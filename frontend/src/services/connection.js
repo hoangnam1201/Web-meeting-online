@@ -4,7 +4,6 @@ import { store } from "../store";
 import Peer from "peerjs";
 import { receiveMessageAction } from "../store/actions/messageAction";
 import { buzzSwal, confirmSwal, countTime, textSwal } from "./swalServier";
-import { SET_SELECTEDVIDEO } from "../store/reducers/selectVideoReducer";
 import sound from "../sounds/join-permission.mp3";
 import sound1 from "../sounds/meet-message-sound-1.mp3";
 import { renewToken } from "../api/user.api";
@@ -17,6 +16,7 @@ import {
 } from "../store/actions/roomCallAction";
 import { toast } from "react-toastify";
 import { toastJoinLeaveRoom, toastJoinTable, toastRequest } from "./toastService";
+import { setSelectedVideoAction } from "../store/actions/selectedVideoAction";
 
 var soundJoin = new Audio(sound);
 var soundMessage = new Audio(sound1);
@@ -63,6 +63,7 @@ class Connection {
   //stream
   myStream = {
     stream: null,
+    media: { video: true, audio: true }
   };
   streamDatas = [];
   isShare = false;
@@ -165,7 +166,7 @@ class Connection {
 
     this.socket.on("room:divide-tables", (tables) => {
       this.clearPeers();
-      store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
+      store.dispatch(setSelectedVideoAction(null));
 
       this.myStream.stream?.getTracks().forEach((tr) => {
         tr.stop();
@@ -218,10 +219,7 @@ class Connection {
       const videoSelected = store.getState().selectedVideo;
       if (videoSelected) {
         if (videoSelected.peerId === peerId)
-          return store.dispatch({
-            type: SET_SELECTEDVIDEO,
-            payload: null,
-          });
+          return store.dispatch(setSelectedVideoAction(null));
       }
     });
 
@@ -233,7 +231,7 @@ class Connection {
       // this.tables = tables;
       this.clearPeers();
       this.streamDatas = {};
-      store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
+      store.dispatch(setSelectedVideoAction(null));
       this.setting.updateInstance("tables", [...this.tables]);
 
       this.myStream.stream.getTracks().forEach((tr) => {
@@ -274,6 +272,7 @@ class Connection {
       const call = this.myPeer.call(peerId, this.myStream.stream, options);
 
       call.on("stream", (userStream) => {
+        console.log('share', this.isShare)
         this.streamDatas[call.peer] = {
           user,
           stream: userStream,
@@ -308,42 +307,11 @@ class Connection {
     this.socket.on("table:media", ({ userId, media, peerId }) => {
       if (this.streamDatas[peerId]) this.streamDatas[peerId].media = media;
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
-
-      const videoSelected = store.getState().selectedVideo;
-      if (videoSelected && videoSelected.peerId === peerId) {
-        if (this.myID === peerId) {
-          return store.dispatch({
-            type: SET_SELECTEDVIDEO,
-            payload: { ...videoSelected, media: media },
-          });
-        }
-
-        return store.dispatch({
-          type: SET_SELECTEDVIDEO,
-          payload: { ...this.streamDatas[peerId] },
-        });
-      }
     });
 
     this.socket.on("present:media", ({ userId, media, peerId }) => {
       if (this.streamDatas[peerId]) this.streamDatas[peerId].media = media;
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
-
-      const videoSelected = store.getState().selectedVideo;
-      if (videoSelected) {
-        if (this.streamDatas[peerId] && videoSelected.peerId === peerId)
-          return store.dispatch({
-            type: SET_SELECTEDVIDEO,
-            payload: { ...this.streamDatas[peerId] },
-          });
-
-        if (this.myID === peerId && videoSelected.peerId === peerId) {
-          return store.dispatch({
-            type: SET_SELECTEDVIDEO,
-            payload: { ...videoSelected, media: media },
-          });
-        }
-      }
     });
 
     this.socket.on("table:message", (msg) => {
@@ -359,7 +327,7 @@ class Connection {
     this.socket.on("present:close", () => {
       this.clearPeers();
       this.peers = {};
-      store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
+      store.dispatch(setSelectedVideoAction(null));
       this.socket.emit("table:join-previous", this.myID, {
         audio: false,
         video: false,
@@ -368,25 +336,20 @@ class Connection {
 
     this.socket.on("present:user-leave", (data) => {
       const { peerId } = data;
-      console.log(peerId);
+      const videoSelected = store.getState().selectedVideo;
+      if (videoSelected === peerId)
+        store.dispatch(setSelectedVideoAction(null));
       this.peers[peerId]?.close();
       delete this.streamDatas[peerId];
       this.setting.updateInstance("streamDatas", { ...this.streamDatas });
-
-      const videoSelected = store.getState().selectedVideo;
-      if (videoSelected) {
-        if (videoSelected.peerId === peerId)
-          return store.dispatch({
-            type: SET_SELECTEDVIDEO,
-            payload: null,
-          });
-      }
     });
+
     this.socket.on("present:pin", (data) => {
-      store.dispatch({
-        type: SET_SELECTEDVIDEO,
-        payload: this.streamDatas[data.peerId],
-      });
+      // store.dispatch({
+      //   type: SET_SELECTEDVIDEO,
+      //   payload: this.streamDatas[data.peerId],
+      // })
+      store.dispatch(setSelectedVideoAction(data.peerId));
     });
 
     this.socket.on("present:user-joined", (data) => {
@@ -475,6 +438,7 @@ class Connection {
 
       call.on("stream", (userStream) => {
         const { user, media, peerId } = call.metadata;
+        console.log('stream', this.isShare)
         this.streamDatas[call.peer] = {
           user,
           stream: userStream,
@@ -540,7 +504,7 @@ class Connection {
 
   leaveTable = () => {
     this.clearPeers();
-    store.dispatch({ type: SET_SELECTEDVIDEO, layload: null });
+    store.dispatch(setSelectedVideoAction(null));
     this.tableMessages = [];
     this.setting.updateInstance("table:messages", [...this.tableMessages]);
     this.socket.emit("table:leave", this.myID);
@@ -568,6 +532,7 @@ class Connection {
         this.myStream.stream.addTrack(displayTrack);
         this.isShare = true;
         this.socket.emit("present:pin");
+        this.myStream.media = { ...this.myStream.media, video: true }
         this.setting.updateInstance("myStream", { ...this.myStream });
       })
       .catch(() => {
@@ -578,6 +543,7 @@ class Connection {
   turnOffAudio = async () => {
     const track = this.myStream.stream.getAudioTracks()[0];
     track?.stop();
+    this.myStream.media = { ...this.myStream.media, audio: false }
     this.setting.updateInstance("myStream", { ...this.myStream });
   };
 
@@ -590,6 +556,7 @@ class Connection {
       }
       const streamTemp = await this.getVideoAudioStream(false, true, 12);
       this.myStream.stream.addTrack(streamTemp.getTracks()[0]);
+      this.myStream.media = { ...this.myStream.media, audio: true }
       this.setting.updateInstance("myStream", { ...this.myStream });
     } catch (err) {
       console.log(err);
@@ -599,6 +566,7 @@ class Connection {
   turnOffVideo = async () => {
     const track = this.myStream.stream.getVideoTracks()[0];
     track?.stop();
+    this.myStream.media = { ...this.myStream.media, video: false }
     this.setting.updateInstance("myStream", { ...this.myStream });
   };
 
@@ -609,8 +577,10 @@ class Connection {
         track?.stop();
         this.myStream.stream.removeTrack(track);
       }
+
       const streamTemp = await this.getVideoAudioStream(true, false, 12);
       this.myStream.stream.addTrack(streamTemp.getTracks()[0]);
+      this.myStream.media = { ...this.myStream.media, video: true }
       this.setting.updateInstance("myStream", { ...this.myStream });
     } catch (err) {
       console.log(err);
@@ -620,6 +590,7 @@ class Connection {
   initMyStream = async () => {
     try {
       this.myStream.stream = await this.getVideoAudioStream(true, true, 12);
+      this.myStream.media = { video: true, audio: true };
       this.setting.updateInstance("myStream", this.myStream);
       this.setting.updateInstance(
         "canAccess",
@@ -652,10 +623,10 @@ class Connection {
   static getMediaStatus = (stream) => {
     let media = { video: false, audio: false };
     stream?.getTracks().forEach((track) => {
-      if (track.kind === "audio" && track.readyState === "live") {
+      if (track.kind === "audio" && track.readyState === 'live') {
         media = { ...media, audio: true };
       }
-      if (track.kind === "video" && track.readyState === "live") {
+      if (track.kind === "video" && track.readyState === 'live') {
         media = { ...media, video: true };
       }
     });

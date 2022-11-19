@@ -5,8 +5,8 @@ import React, { useEffect, useRef, useState } from "react";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { useDispatch } from "react-redux";
 import {
+  roomCallResponceRequests,
   roomCallSendMessage,
-  roomRemoveRequestAction,
   roomShowChatAction,
 } from "../../../store/actions/roomCallAction";
 import { Message } from "../chatBox";
@@ -28,15 +28,7 @@ const ChatBox = ({ roomMessages, userJoined }) => {
   const roomCall = useSelector((state) => state.roomCall);
 
   const replyHandlerAll = () => {
-    Object.values(roomCall.requests).forEach((request) => {
-      roomCall?.socket.emit(
-        "room:access-request",
-        request.socketId,
-        request.user._id,
-        true
-      );
-      dispatch(roomRemoveRequestAction(request.user._id));
-    });
+    dispatch(roomCallResponceRequests(roomCall?.requests.map(r => r._id), true));
   };
 
   useEffect(() => {

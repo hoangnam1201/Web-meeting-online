@@ -72,9 +72,13 @@ export default function QuizManagement() {
       const data = question.data.find(
         (q) => q._id === question.selectedQuestion
       )
+      let type = data.type;
+      if (data.type === 'ONE' || data.type === 'MUTIPLE') {
+        type = 'CHOICE';
+      }
       reset({
         content: data.content,
-        type: data.type,
+        type: type,
         quiz: data.quiz,
         choices: data.choices.map((c) => {
           return {
@@ -96,6 +100,14 @@ export default function QuizManagement() {
 
   const saveQuestion = (data) => {
     if (data.type === 'ESSAY') data.choices = []
+    if (data.type === 'CHOICE') {
+      const countTrue = data.choices.filter(t => t.isTrue === true);
+      if (countTrue.length > 1) {
+        data.type = 'MULTIPLE'
+      } else {
+        data.type = 'ONE'
+      }
+    }
     if (!question.selectedQuestion) {
       dispatch(
         addQuestionAction({ ...data, quiz: id }, id, () => {

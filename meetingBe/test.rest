@@ -141,19 +141,16 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQ1Nzg0NzI4ZGE5ZTE4MjkyN2YzNjgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjgwMDU4MTUsImV4cCI6MTY2ODAwNzAxNX0.nevn4AgXqbNQLtVtWi3ppCL21EqPUaotYME31U2qsEo
 
 {
-  "answers":[
+  "data":[
     {
       "questionId": "636aa5a39ebb2983fdc0241d",
-      "answerIds": ["636aa5a39ebb2983fdc0241a"]
+      "answers": [{
+        "answerId": "objectid",
+        "content": "string"
+        ],
+        "essay":"string"
+      }]
     },
-    {
-      "questionId": "636aa5a49ebb2983fdc02422",
-      "answerIds": ["636aa5a49ebb2983fdc0241f"]
-    },
-    {
-      "questionId": "636aa5b09ebb2983fdc0242c",
-      "answerIds": ["636aa5b09ebb2983fdc02429","636aa5b09ebb2983fdc0242a","636aa5b09ebb2983fdc0242b"]
-    }
   ]
 }
 

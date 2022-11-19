@@ -1,24 +1,24 @@
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import  IconButton from "@mui/material/IconButton";
+import { useDispatch } from "react-redux";
+import IconButton from "@mui/material/IconButton";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import MinimizeIcon from "@mui/icons-material/Minimize";
+import CropFreeIcon from '@mui/icons-material/CropFree';
 import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
-import { SET_SELECTEDVIDEO } from "../../../store/reducers/selectVideoReducer";
 import Avatar from "react-avatar";
+import { setSelectedVideoAction } from "../../../store/actions/selectedVideoAction";
 
-const PinVideo = () => {
-  const selectedVideo = useSelector((state) => state.selectedVideo);
+const PinVideo = ({ streamData }) => {
   const [size, setSize] = useState("50%");
   const videoRef = useRef(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!selectedVideo) return;
-    const stream = selectedVideo.stream;
+    if (!streamData) return;
+    const stream = streamData.stream;
     if (!stream) return;
     document.body.style.overflow = "hidden";
 
@@ -28,22 +28,21 @@ const PinVideo = () => {
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [selectedVideo]);
+  }, [streamData]);
 
   return (
     <>
-      {selectedVideo && (
+      {streamData && (
         <div
           className="fixed rounded-md overflow-auto top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 shadow-lg bg-black"
           style={{ width: size, height: size, zIndex: "60" }}
         >
-          <div className="flex justify-between px-3 absolute items-center w-full z-10 bg-black opacity-0 hover:opacity-60 transition-opacity">
+          <div className="flex justify-between px-3 absolute items-center w-full z-10 bg-black opacity-10 hover:opacity-80 transition-opacity">
             <div className="flex gap-2 ">
               <div className="text-shadow text-white">
-                {" "}
-                {selectedVideo.user?.name}{" "}
+                {streamData?.user?.name}{" "}
               </div>
-              <div hidden={selectedVideo.media.audio}>
+              <div hidden={streamData.media.audio}>
                 <MicOffIcon className="text-red-500" />
               </div>
             </div>
@@ -51,10 +50,7 @@ const PinVideo = () => {
             <div>
               <IconButton
                 onClick={() => {
-                  dispatch({
-                    type: SET_SELECTEDVIDEO,
-                    payload: null,
-                  });
+                  dispatch(setSelectedVideoAction(null));
                 }}
                 variant="contained"
               >
@@ -68,6 +64,18 @@ const PinVideo = () => {
                   variant="contained"
                 >
                   <OpenInFullIcon fontSize="small" className="text-white" />
+                </IconButton>
+              ) : size === "80%" ? (
+                <IconButton
+                  onClick={() => {
+                    setSize("100%");
+                  }}
+                  variant="contained"
+                >
+                  <CropFreeIcon
+                    fontSize="small"
+                    className="text-white"
+                  />
                 </IconButton>
               ) : (
                 <IconButton
@@ -87,14 +95,13 @@ const PinVideo = () => {
           <video
             ref={videoRef}
             autoPlay
-            className="h-full ml-auto mr-auto"
+            className={`h-full ml-auto mr-auto ${!streamData.media.video && 'hidden'}`}
             muted
-            hidden={!selectedVideo.media.video}
           />
-          {!selectedVideo.media.video &&
-            (selectedVideo.user.name ? (
+          {!streamData.media.video &&
+            (streamData.user?.name ? (
               <Avatar
-                name={selectedVideo.user.name}
+                name={streamData.user.name}
                 round
                 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
               />

@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MyVideo, Video } from "../videoTableContainer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useResizeDetector } from "react-resize-detector";
+import { setSelectedVideoAction } from "../../../store/actions/selectedVideoAction";
 
 const VideoContainer = ({ connection, myStream, streamDatas }) => {
   const selectedVideo = useSelector((state) => state.selectedVideo);
+  const roomCall = useSelector(state => state.roomCall);
+  const dispatch = useDispatch()
   const ref = useRef();
   const [heightCam, setHeightCam] = useState(0);
 
@@ -55,6 +58,10 @@ const VideoContainer = ({ connection, myStream, streamDatas }) => {
         cols = 4;
         break;
     }
+    if (cols === 1) {
+      setHeightCam(ref.current.clientHeight - 16);
+      return
+    }
     const calHeight = (widthScreen - 8 * cols) / cols / aspectRatio;
     setHeightCam(calHeight);
   };
@@ -73,24 +80,34 @@ const VideoContainer = ({ connection, myStream, streamDatas }) => {
             connection={connection}
           />
           {streamDatas &&
-            Object.values(streamDatas).map((s, index) => {
+            Object.keys(streamDatas).map((key, index) => {
               return (
                 <Video
                   style={{ height: heightCam }}
                   className="bg-black rounded-md overflow-hidden"
-                  isPin={false}
-                  streamData={s}
+                  streamData={streamDatas[key]}
                   key={index}
-                />
-              );
+                  onPin={() => {
+                    if (!selectedVideo)
+                      return dispatch(setSelectedVideoAction(key));
+                    return dispatch(setSelectedVideoAction(null));
+                  }}
+                />)
             })}
         </>
-      ) : (
-        <Video
-          className="bg-black rounded-md overflow-hidden h-full relative"
-          isPin={true}
-          streamData={selectedVideo}
+      ) : (selectedVideo === roomCall?.myId ? (
+        <MyVideo
+          myStream={myStream}
+          className="h-full w-auto"
+          connection={connection}
         />
+      ) : (< Video
+        className="bg-black rounded-md overflow-hidden h-full relative"
+        streamData={streamDatas[selectedVideo]}
+        onPin={() => {
+          return dispatch(setSelectedVideoAction(null));
+        }}
+      />)
       )}
     </div>
   );

@@ -47,7 +47,7 @@ submissionRouter.post(
 );
 
 submissionRouter.put(
-  "/submit-answers/:submissionId",
+  "/submit/:submissionId",
   [AuthMiddlesware.verifyToken, SubmissionMiddleware.checkOwnerSubmssion],
   submissionController.submitSubmission
 );

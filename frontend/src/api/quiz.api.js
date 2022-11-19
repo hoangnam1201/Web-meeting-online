@@ -32,6 +32,14 @@ export const getAllQuestionApi = (quizId) => {
   return instance.get("/quiz/question/get-all-questions-in-quiz/" + quizId);
 };
 
+export const getAllBriefQuestionInQuizAPI = (quizId) => {
+  return instance.get("/quiz/question/get-all-brief-questions-in-quiz/" + quizId);
+}
+
 export const deleteQuestionApi = (questionId) => {
   return instance.delete("/quiz/question/" + questionId);
 };
+
+export const getQuestionByIdAndSubmissionIdAPI = (questionId, submissionId) => {
+  return instance.get("/quiz/question/get-by-questionId-and-submissionId", { params: { questionId, submissionId } });
+}

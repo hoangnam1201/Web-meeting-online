@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { QuestionCreateDTO } from "../Dtos/question-create.dto";
 import { QuestionUpdateDTO } from "../Dtos/question-update.dto";
 import questionModel from "../models/question.model";
@@ -24,11 +25,46 @@ export default () => {
     return questionModel.findById(id);
   };
 
+  const getByIdAndSubmissionId = (id: string, submissionId: string) => {
+    return questionModel
+      .aggregate()
+      .match({ _id: new Types.ObjectId(id) })
+      .lookup({
+        from: "submissions",
+        let: { questionId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: [{ $toString: "$_id" }, submissionId],
+              },
+            },
+          },
+          {
+            $project: {
+              answer: {
+                $first: {
+                  $filter: {
+                    input: "$answers",
+                    as: "answer",
+                    cond: { $eq: ["$$answer.questionId", "$$questionId"] },
+                  },
+                },
+              },
+            },
+          },
+        ],
+        as: "submission",
+      })
+      .addFields({ submission: { $first: "$submission" } });
+  };
+
   return {
     createQuestion,
     updateQuestion,
     deleteQuestion,
     getById,
     getAllQuestionInQuiz,
+    getByIdAndSubmissionId,
   };
 };

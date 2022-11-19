@@ -4,13 +4,13 @@ import {
   ROOMCALL_SETSOCKET,
   ROOMCALL_SETROOMINFO,
   ROOMCALL_ADDREQUEST,
-  ROOMCALL_REMOVEREQUEST,
   ROOMCALL_SETPEERID,
   ROOMCALL_JOINLOADING,
   ROOMCALL_SETSELETEDTABLE,
   ROOMCALL_CHATLOADING,
   ROOMCALL_SETREQUESTLOADING,
   ROOMCALL_SETREQUEST,
+  ROOMCALL_SHOWQUIZS,
 } from "../actions/roomCallAction";
 
 const initState = {
@@ -22,6 +22,7 @@ const initState = {
   roomInfo: null,
   showChat: false,
   showLobby: false,
+  showQuizs: false,
   buzz: null,
   //seleted
   selectedTable: null,
@@ -42,6 +43,8 @@ export const roomCallReducer = (state = initState, { type, payload }) => {
       return { ...state, roomInfo: payload };
     case ROOMCALL_SHOWCHAT:
       return { ...state, showChat: payload };
+    case ROOMCALL_SHOWQUIZS:
+      return { ...state, showQuizs: payload };
     case ROOMCALL_SETPEERID:
       return { ...state, myId: payload };
     case ROOMCALL_SHOWLOBBY:
