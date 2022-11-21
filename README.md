@@ -73,10 +73,18 @@ cd meetingBe
 ```
 
 - khi mở file .env bạn sẽ thấy các thông tin \
-  PORT: cổng sẽ chạy project be \
-  HOST_DB: địa chỉ máy chủ database, localhost là địa chỉ local của máy bạn \
-  ACCESS_TOKEN_SECRET: key để mã hóa/giải mã token \
-  ACCESS_TOKEN_LIFE: Thời gian sống của token \
+  PORT= cổng chạy server api\
+  SOCKET_PORT= cổng chạy server socket \
+  HOST_DB= địa chỉ database \
+  HOST_SERVER= địa chỉ domain của server be \
+  HOST_FRONTEND= địa chỉ domain của server fe \
+  CLIENT_ID= client id được google cung cấp dùng để đăng nhập bằng gmail \
+  ACCESS_TOKEN_SECRET= mật khẩu access token \
+  ACCESS_TOKEN_LIFE= thời gian sống access token \
+  REFRESH_TOKEN_SECRET= mật khẩu refresh token \
+  REFRESH_TOKEN_LIFE= thời gian sống refresh token \
+  USER_EMAIL= tài khoản gmail \
+  PASSWORD_EMAIL=mk gmail \
 - Chạy các lệnh sau để run project ở local
 
 ```
@@ -104,10 +112,15 @@ docker run -p 3002:3002 <username>/<imagename>:<tag>
 ```
 cd fe
 ```
+- khi mở file .env bạn sẽ thấy các thông tin \
+  REACT_APP_CLIENT_ID= client id được google cung cấp dùng để đăng nhập bằng gmail \
+  REACT_APP_HOST_BASE= địa chỉ server be \
+  REACT_APP_HOST_NAME=tên domain của server be\
+  REACT_APP_HOST_PORT=server api port\
+  REACT_APP_SOCKET_HOST=server socket port\
+  WDS_SOCKET_PORT = cổng kết nối tới server fe - không cần nếu chạy ở localhost\
 
-- Ở trong các file /src/api/instaceAxios.js và /src/serices/connection.js, sẽ thấy các địa chỉ của backend bạn có thể thay đổi nếu khác địa chỉ backend. Trong trường hợp backend chạy ở local ở port 3002 thì không cần thay đổi.
-- Chạy các lệnh sau để run project ở local
-
+- lệnh chạy ở local
 ```
 npm install --legacy-peer-deps
 npm start
@@ -127,94 +140,17 @@ docker run -p 3000:3000 <username>/<imagename>:<tag>
 
 ## CÁCH DEPLOY LÊN EC2 AWS
 
-### DATABASE
-
-- vào instance chứa database
-- pull mongodb container
-
-```
-docker pull mongo:latest
-docker run --name mongodb -d -p 27017:27017 -v YOUR_LOCAL_DIR:/data/db mongo
-```
-
-- Mở port 27017 của instance cho backend truy cập
-
-- Thêm Role admin vào tài khoản:
-- execu mongo container (sử dụng "docker ps" để xem danh sách container)
+### khởi chạy container
+- ở project truy cập file docker-compose
+- Bạn sẻ thấy các biến environment tương tự ở trên (Cách cài đặt)
+- Điều chỉnh cho phù hợp
+- khởi chạy docker-compose bằng lệnh
 
 ```
-docker exec -i <CONTAINER ID> mongosh
-```
-- truy vấn update
-
-```
-use meetingdb
-db.users.updateOne({email:"<USER EMAIL>"},{$set:{role:"ADMIN"}})
+docker compose up .
 ```
 
-### BACKEND
-
-Mở file .env trong folder meetingBe \
- đổi địa chỉ database thành địa chỉ Private IPv4 của database: **mongodb://IPv4Address:27017/meetingdb** (lưu ý nếu be và database cùng 1 máy ảo thì địa chỉ là 127.0.0.1)
-Build docker image:
-
-```
-  docker build -t <username>/<image-name>:<tag> .
-```
-
-Push docker image lên docker hub:
-
-```
-  docker push <username>/<image-name>:<tag>
-```
-
-Kết nối vào máy ảo chứa backend
-Pull backend project image:
-
-```
-docker pull <username>/<image-name>:<tag>
-
-```
-
-Chạy image backend (port bằng 3002 tại vì trong file .env đã cấu hình sẽ chạy ở port 3002):
-
-```
-docker run -p 3002:3002 <username>/<image-name>:<tag>
-```
-
-### FRONTEND
-
-#### Cài đặt và cấu hình nginx
-
-- mở các file connectionService, axiosInstance trong folder frontend
-  đổi các địa chỉ baseURL, socketRoomEndPoint, peerjsEndPoint thành địa chỉ của máy chủ be
-  Build docker image:
-
-```
-  docker build -t <username>/<image-name>:<tag> .
-```
-
-Push docker image lên docker hub:
-
-```
-  docker push <username>/<image-name>:<tag>
-```
-
-Kết nối vào máy ảo chứa frontend
-Pull frontend project image:
-
-```
-docker pull <username>/<image-name>:<tag>
-
-```
-
-Chạy image backend (port bằng 3000):
-
-```
-docker run -p 3000:3000 <username>/<image-name>:<tag>
-```
-
-#### cài đặt và cấu hình nginx
+### cài đặt và cấu hình nginx
 
 Install and enable NGINX
 
