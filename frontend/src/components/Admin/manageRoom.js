@@ -25,10 +25,16 @@ const ManageRoom = () => {
   const room = useSelector((state) => state.roomManageReducer);
   const dispatch = useDispatch();
   const [pageIndex, setPageIndex] = useState(0);
-  const [usersSelected, setUsersSelected] = useState([]);
+  const [usersSelected, setUsersSelected] = useState(null);
+
   useEffect(() => {
-    dispatch(getRoomPagingAction(pageIndex));
-  }, [pageIndex]);
+    dispatch(
+      getRoomPagingAction(
+        pageIndex,
+        usersSelected?.value
+      ))
+  }, [])
+
 
   const banRoom = (roomId) => {
     Swal.fire({
@@ -56,6 +62,15 @@ const ManageRoom = () => {
     });
   };
 
+  const onPageChage = (page) => {
+    setPageIndex(page)
+    dispatch(
+      getRoomPagingAction(
+        page,
+        usersSelected?.value
+      ))
+  }
+
   const searchUser = (str, callback) => {
     searchUserAPI(str).then((res) => {
       const options = res.data.map((u) => {
@@ -67,9 +82,10 @@ const ManageRoom = () => {
 
   const onSelectChange = (e) => {
     setUsersSelected(e);
+    setPageIndex(0);
     dispatch(
       getRoomPagingAction(
-        pageIndex,
+        0,
         e && e.value
       )
     )
@@ -103,6 +119,7 @@ const ManageRoom = () => {
                   </div>
                 )}
                 defaultOptions={true}
+                filterOption={(o) => o.value}
                 loadOptions={searchUser}
                 value={usersSelected}
                 onChange={onSelectChange}
@@ -152,9 +169,10 @@ const ManageRoom = () => {
             <div className="flex justify-end">
               <Stack spacing={2}>
                 <Pagination
-                  count={room?.totalPages + 1}
-                  onChange={(e, value) => setPageIndex(value - 1)}
+                  count={room?.totalPages}
+                  onChange={(e, value) => onPageChage(value - 1)}
                   color="primary"
+                  page={pageIndex + 1}
                 />
               </Stack>
             </div>

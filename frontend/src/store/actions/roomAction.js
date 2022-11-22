@@ -34,7 +34,7 @@ export const getRoomPagingAction = (pageIndex, ownerId) => {
       dispatch(
         roomSuccess({
           items: records,
-          totalPages: Math.round(count / 10),
+          totalPages: Math.round(count / pageSize),
           currentPage: pageIndex,
         })
       );

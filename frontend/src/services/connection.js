@@ -11,11 +11,12 @@ import {
   roomAddRequestAction,
   roomCallSetPeerId,
   roomCallSetRequestsAction,
+  roomCallSetSharingAction,
   roomSetRoomInfoAction,
   roomSetSocketAction,
 } from "../store/actions/roomCallAction";
 import { toast } from "react-toastify";
-import { toastJoinLeaveRoom, toastJoinTable, toastRequest } from "./toastService";
+import { toastJoinLeaveRoom, toastJoinTable, toastRequest, toastText } from "./toastService";
 import { setSelectedVideoAction } from "../store/actions/selectedVideoAction";
 
 var soundJoin = new Audio(sound);
@@ -46,6 +47,7 @@ const initializeSocketConnection = () => {
 
 class Connection {
   myPeer;
+  sharePeer;
   socket;
   myID = null;
   canAccess = false;
@@ -55,6 +57,7 @@ class Connection {
   currentFloor = null;
   //peers
   peers = {};
+  sharePeers = {};
   //room
   // info = null;
   //messages
@@ -65,6 +68,7 @@ class Connection {
     stream: null,
     media: { video: true, audio: true }
   };
+  shareStream = null;
   streamDatas = [];
   isShare = false;
   //joiner
@@ -139,8 +143,6 @@ class Connection {
     this.socket.on("room:info", (room) => {
       this.access = true;
       this.setting.updateInstance("access", this.access);
-      // this.info = room;
-      // this.setting.updateInstance("info", this.info);
       store.dispatch(roomSetRoomInfoAction(room));
     });
 
@@ -252,6 +254,61 @@ class Connection {
       );
     });
 
+    this.socket.on('table:user-stop-share-screen', ({ user, peerId }) => {
+      if (user) toastText(`${user.name} stop share screen`);
+      this.peers[peerId]?.close();
+      delete this.streamDatas[peerId];
+      this.setting.updateInstance("streamDatas", {
+        ...this.streamDatas,
+      });
+    })
+
+    this.socket.on("table:user-share-screen", (data) => {
+      const userCurrent = store.getState().userReducer;
+      const { peerId, user } = data;
+      toastText(`${user.name} share screen`);
+      console.log(peerId)
+
+      const options = {
+        metadata: {
+          user: {
+            name: userCurrent.user.name,
+            _id: userCurrent.user._id,
+            picture: userCurrent.user.picture,
+          },
+          media: Connection.getMediaStatus(this.myStream.stream),
+          peerId: peerId,
+        },
+      };
+
+      const call = this.myPeer.call(peerId, this.myStream.stream, options);
+      call.on("stream", (userStream) => {
+        this.streamDatas[call.peer] = {
+          user,
+          stream: userStream,
+          media: { video: true, audio: false },
+          peerId,
+        };
+        this.setting.updateInstance("streamDatas", {
+          ...this.streamDatas,
+        });
+      });
+
+      call.on("close", () => {
+        this.peers[call.peer]?.close();
+        delete this.streamDatas[call.peer];
+        this.setting.updateInstance("streamDatas", {
+          ...this.streamDatas,
+        });
+      });
+
+      call.on("error", () => {
+        console.log("peer error ------");
+      });
+
+      this.peers[call.peer] = call;
+    });
+
     this.socket.on("table:user-joined", (data) => {
       const userCurrent = store.getState().userReducer;
       const { peerId, user, media } = data;
@@ -272,7 +329,6 @@ class Connection {
       const call = this.myPeer.call(peerId, this.myStream.stream, options);
 
       call.on("stream", (userStream) => {
-        console.log('share', this.isShare)
         this.streamDatas[call.peer] = {
           user,
           stream: userStream,
@@ -293,9 +349,8 @@ class Connection {
       });
 
       call.on("error", () => {
-        console.log("peer error ------");
-      });
-
+        console.log("peer error ------")
+      })
       this.peers[call.peer] = call;
     });
 
@@ -435,10 +490,10 @@ class Connection {
   setPeersListeners = (stream) => {
     this.myPeer.on("call", (call) => {
       call.answer(stream);
+      // call.peerConnection.addTrack();
 
       call.on("stream", (userStream) => {
         const { user, media, peerId } = call.metadata;
-        console.log('stream', this.isShare)
         this.streamDatas[call.peer] = {
           user,
           stream: userStream,
@@ -459,6 +514,11 @@ class Connection {
       call.on("error", () => {
         console.log("peer error ------");
       });
+
+      // call.peerConnection.ontrack = (e) => {
+      //   console.log(e)
+      // }
+
       this.peers[call.peer] = call;
     });
   };
@@ -510,34 +570,60 @@ class Connection {
     this.socket.emit("table:leave", this.myID);
   };
 
-  getDisplayMediaStream = () => {
-    if (this.isShare) {
-      this.turnOffVideo();
-      this.isShare = false;
+  shareScreen = async (scope) => {
+    if (this.shareStream) {
+      const track = this.shareStream.getVideoTracks()[0];
+      track?.stop();
+      track.dispatchEvent(new Event('ended'))
       return;
     }
-    const myNavigator = navigator.mediaDevices.getDisplayMedia();
-    myNavigator
-      .then((stream) => {
-        const track = this.myStream.stream.getVideoTracks()[0];
-        if (track) {
-          track?.stop();
-          this.myStream.stream.removeTrack(track);
-        }
-        const displayTrack = stream.getVideoTracks()[0];
-        displayTrack.addEventListener("ended", () => {
-          this.turnOffVideo();
-          this.isShare = false;
-        });
-        this.myStream.stream.addTrack(displayTrack);
-        this.isShare = true;
-        this.socket.emit("present:pin");
-        this.myStream.media = { ...this.myStream.media, video: true }
-        this.setting.updateInstance("myStream", { ...this.myStream });
-      })
-      .catch(() => {
-        return;
+    store.dispatch(roomCallSetSharingAction(true))
+    this.shareStream = await this.getDisplayMediaStream().catch((e) => {
+      console.log(e)
+    });
+
+    this.sharePeer = initializePeerConnection()
+
+    this.sharePeer.once('open', (id) => {
+      this.socket.emit(scope.toLowerCase() + ':share-screen', id);
+      const videoTrack = this.shareStream.getVideoTracks()[0];
+      videoTrack.addEventListener("ended", () => {
+        this.shareStream = null;
+        store.dispatch(roomCallSetSharingAction(false))
+        this.socket.emit('table:stop-share-screen', id);
+        Object.values(this.sharePeers).forEach(peer => {
+          peer.close()
+        })
+        this.sharePeer.destroy();
       });
+    })
+
+    this.sharePeer.on("error", (err) => {
+      this.myPeer.reconnect();
+    });
+
+    this.sharePeer.on("disconnected", () => {
+      //stop share
+    });
+
+    this.sharePeer.on("call", (call) => {
+      call.answer(this.shareStream);
+
+      call.on("close", () => {
+        console.log('close -- lisent')
+        this.sharePeers[call.peer]?.close();
+      });
+
+      call.on("error", () => {
+        console.log("peer error ------");
+      });
+
+      this.sharePeers[call.peer] = call;
+    });
+  }
+
+  getDisplayMediaStream = async () => {
+    return navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
   };
 
   turnOffAudio = async () => {

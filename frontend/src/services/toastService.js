@@ -1,5 +1,17 @@
 import { toast } from "react-toastify";
 
+export const toastText = (text) => {
+  toast(text, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "colored",
+  })
+};
+
 export const toastRequest = (name) => {
   toast(`🔔 ${name} requests to join room !`, {
     position: "top-right",

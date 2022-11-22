@@ -25,6 +25,8 @@ export default (io: any) => {
     socket.on("table:join", _roomHandler.joinTable);
     socket.on("table:join-previous", _roomHandler.joinPreviousTable);
     socket.on("table:send-message", _roomHandler.sendTableMessage);
+    socket.on("table:share-screen", _roomHandler.tableShareScreen);
+    socket.on("table:stop-share-screen", _roomHandler.tableStopShareScreen);
     socket.on("change-media", _roomHandler.changeMedia);
     socket.on("disconnecting", _roomHandler.leaveRoom);
     socket.on("present:join", _roomHandler.joinPresent);

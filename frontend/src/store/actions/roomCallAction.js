@@ -4,6 +4,7 @@ export const ROOMCALL_SHOWLOBBY = "ROOMCALL_SHOWLOBBY";
 export const ROOMCALL_CHANGE = "ROOMCALL_CANACCESS";
 export const ROOMCALL_SETSOCKET = "ROOMCALL_SETSOCKET";
 export const ROOMCALL_SETPEERID = "ROOMCALL_SETPEERID";
+export const ROOMCALL_SETSHARING = "ROOMCALL_SETSHARING";
 export const ROOMCALL_SETROOMINFO = "ROOMCALL_SETROOMINFO";
 export const ROOMCALL_ADDREQUEST = "ROOMCALL_ADDREQUEST";
 export const ROOMCALL_JOINLOADING = 'ROOMCALL_JOINLOADING';
@@ -17,6 +18,13 @@ const setRequestLoading = (isloading) => {
   return {
     type: ROOMCALL_SETREQUESTLOADING,
     payload: isloading
+  }
+}
+
+export const roomCallSetSharingAction = (isShare) => {
+  return {
+    type: ROOMCALL_SETSHARING,
+    payload: isShare
   }
 }
 

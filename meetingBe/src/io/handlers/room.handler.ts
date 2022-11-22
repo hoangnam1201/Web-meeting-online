@@ -13,6 +13,7 @@ import RoomService from "../../services/room.service";
 import TableService from "../../services/table.service";
 import { TableDetailDto } from "../../Dtos/table-detail.dto";
 import RequestService from "../../services/request.service";
+import { UserReadDto } from "../../Dtos/user-read.dto";
 
 export default (ioRoom: any, io: any) => {
   const userService = UserService();
@@ -251,6 +252,7 @@ export default (ioRoom: any, io: any) => {
     const roomId = socket.data.roomId;
     const userId = socket.data.userData.userId;
     const peerId = socket.data.peerId;
+    const sharePeerId = socket.data.sharePeerId;
     const floor = socket.data.floor;
 
     try {
@@ -278,7 +280,12 @@ export default (ioRoom: any, io: any) => {
         return;
       }
       const tableId = socket.data.tableId;
+      const sharePeerId = socket.data.sharePeerId;
       if (tableId) {
+        if (sharePeerId)
+          socket
+            .to(tableId)
+            .emit("table:user-stop-share-screen", { peerId: sharePeerId });
         await tableService.removeJoiner(tableId, userId);
         const tables = await tableService.getTablesByRoomAndFloor(
           roomId,
@@ -383,8 +390,15 @@ export default (ioRoom: any, io: any) => {
 
       // check previous tables
       const previousTableId = socket.data.tableId;
+      const sharePeerId = socket.data.sharePeerId;
       checkPrevious: if (previousTableId) {
         ioRoom.to(previousTableId).emit("table:user-leave", { userId, peerId });
+        if (sharePeerId)
+          socket.broadcast
+            .to(previousTableId)
+            .emit("table:user-stop-share-screen", {
+              peerId: sharePeerId,
+            });
         socket.leave(previousTableId);
         const table = await tableService.removeJoiner(previousTableId, userId);
         const previousFloor = table.floor.toString();
@@ -596,7 +610,6 @@ export default (ioRoom: any, io: any) => {
         socket.leave(tableIdTemp);
         await tableService.removeJoiner(tableIdTemp, userId);
         ioRoom.to(tableIdTemp).emit("table:user-leave", { userId, peerId });
-
         const tables = await tableService.getTablesByRoomAndFloor(
           roomId,
           floor
@@ -605,6 +618,7 @@ export default (ioRoom: any, io: any) => {
           tables: TableReadDto.fromArray(tables),
           floor,
         });
+        delete socket.data.tableId;
       }
     } catch (err) {
       socket.emit("table:err", err);
@@ -617,6 +631,30 @@ export default (ioRoom: any, io: any) => {
     const roomId = socket.data.roomId;
     const peerId = socket.data.peerId;
     ioRoom.to(roomId).emit("present:pin", { userId, peerId });
+  };
+
+  const tableShareScreen = async function (peerId: string) {
+    const socket: Socket = this;
+    const { tableId } = socket.data;
+    const userId = socket.data.userData.userId;
+    const user = await userService.findUserById(userId);
+    socket.data.sharePeerId = peerId;
+    socket.broadcast.to(tableId).emit("table:user-share-screen", {
+      user: UserReadDetailDto.fromUser(user),
+      peerId: peerId,
+    });
+  };
+
+  const tableStopShareScreen = async function (peerId: string) {
+    const socket: Socket = this;
+    const { tableId } = socket.data;
+    const userId = socket.data.userData.userId;
+    const user = await userService.findUserById(userId);
+    delete socket.data.sharePeerId;
+    socket.broadcast.to(tableId).emit("table:user-stop-share-screen", {
+      user: UserReadDetailDto.fromUser(user),
+      peerId: peerId,
+    });
   };
 
   const divideTables = async function () {
@@ -646,6 +684,8 @@ export default (ioRoom: any, io: any) => {
     getMessages,
     sendTableMessage,
     joinTable,
+    tableShareScreen,
+    tableStopShareScreen,
     joinPreviousTable,
     joinPresent,
     stopPresenting,

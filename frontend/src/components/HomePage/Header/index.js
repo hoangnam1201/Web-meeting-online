@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import "./header.css";
 import imgLogo from "../../../assets/logomeeting.png";
 import Avatar from "react-avatar";
 import Swal from "sweetalert2";
 import { useCookies } from "react-cookie";
 import { useSelector } from "react-redux";
-import { getInfoAPI, logoutAPI } from "../../../api/user.api";
+import { logoutAPI } from "../../../api/user.api";
 import { useDispatch } from "react-redux";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {
   actionRemoveUserInfo,
   getUserInfo,
 } from "../../../store/actions/userInfoAction";
 import Scroll from "react-scroll";
-import { CircularProgress } from "@mui/material";
+import { Button, CircularProgress, IconButton } from "@mui/material";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {
@@ -49,25 +49,23 @@ const Header = React.memo(({ type = 0, ...rest }) => {
 
   return (
     <div>
-      <section id="header" className="shadow-sm relative z-30">
+      <section id="header" className={`shadow relative z-40 ${type === 0 ? 'bg-pink-50' : 'bg-gray-50'} py-1`}>
         <div className="container-fluid">
           <nav className="navbar navbar-expand-lg navbar-dark">
-            <div className="container flex justify-between items-center">
-              <Link to="/" className="navbar-brand min-w-max">
+            <div className="flex justify-between items-center">
+              <Link to="/" className="navbar-brand min-w-max md:ml-5">
                 <img
                   width="150"
                   height="100"
                   src={imgLogo}
                   alt=""
+                  className="bg-white rounded-full"
                   referrerPolicy="no-referrer"
                 />
               </Link>
-              <div
-                className="collapse navbar-collapse mr-10"
-                id="navbarSuportedContent"
-              >
+              <div >
                 {type === 0 ? (
-                  <ul className="navbar-nav ml-auto flex justify-center">
+                  <ul className="flex justify-center gap-5">
                     <li className="nav-item active">
                       <Link className="nav-link" to="/">
                         Home
@@ -91,70 +89,84 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                   </ul>
                 ) : (
                   <ul>
-                    <li className="nav-item active">
-                      <Link className="nav-link" to="/user/my-event">
-                        My Event
+                    <li>
+                      <Link to="/user/my-event">
+                        <button className=" outline-none bg-white rounded-full py-1 px-4 text-sm text-blue-600">
+                          MY EVENT
+                        </button>
                       </Link>
                     </li>
                   </ul>
                 )}
               </div>
               {type === 1 ? (
-                <div className="collapse navbar-collapse mr-10">
+                <div className="mr-10">
                   <div
                     className="relative p-2"
-                    onClick={() => setShowAvatarMenu(!showAvatarMenu)}
                   >
                     {currentUser?.loading && (
                       <div>
                         <CircularProgress size="3rem" />
                       </div>
                     )}
-                    {!currentUser?.loading &&
-                      (currentUser?.user?.picture ? (
-                        <img
-                          src={currentUser?.user?.picture}
-                          alt=""
-                          referrerPolicy="no-referrer"
-                          className="cursor-pointer rounded-full w-12"
-                        ></img>
-                      ) : (
-                        <Avatar
-                          name={currentUser?.user?.name}
-                          size="50"
-                          round={true}
-                          className="cursor-pointer"
-                        ></Avatar>
-                      ))}
+                    <Button endIcon={
+                      <AccountCircleIcon fontSize="large"
+                        className=" text-gray-400"
+                      />
+                    }
+                      onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+                    >
+                      account
+                    </Button>
 
                     {showAvatarMenu && (
-                      <div className="absolute z-30 mt-2 bg-pink-50 rounded-lg shadow-lg w-40 left-1/2 transform -translate-x-1/2">
-                        <ul className="p-1">
-                          <li className="font-bold text-gray-500 border-b-2 p-3 overflow-hidden text-ellipsis">
-                            {currentUser?.user?.name}
-                          </li>
-                          {currentUser?.user?.role === "ADMIN" && (
-                            <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
-                              <Link underline="none" to="/admin">
-                                Admin dashboard
+                      <React.Fragment>
+                        <div className="fixed top-0 left-0 w-full h-full z-20"
+                          onClick={() => setShowAvatarMenu(false)}
+                        ></div>
+                        <div className="absolute z-30 mt-2 bg-gray-50 rounded-lg shadow-lg w-40 left-full transform -translate-x-full">
+                          <ul className="p-1">
+                            <li className="font-bold text-gray-500 border-b-2 p-3 overflow-hidden text-ellipsis flex gap-2 justify-center items-center">
+                              <div>{(currentUser?.user?.picture ? (
+                                <img
+                                  src={currentUser?.user?.picture}
+                                  alt=""
+                                  referrerPolicy="no-referrer"
+                                  className="cursor-pointer rounded-full w-9"
+                                ></img>
+                              ) : (
+                                <Avatar
+                                  name={currentUser?.user?.name}
+                                  size="36"
+                                  round={true}
+                                  className="cursor-pointer"
+                                ></Avatar>
+                              ))}</div>
+                              {currentUser?.user?.name}
+                            </li>
+                            {currentUser?.user?.role === "ADMIN" && (
+                              <li className="py-3 font-medium hover:bg-gray-100 text-gray-500">
+                                <Link underline="none" to="/admin">
+                                  Admin dashboard
+                                </Link>
+                              </li>
+                            )}
+                            <li className="py-3 font-medium hover:bg-gray-100 text-gray-500">
+                              <Link underline="none" to="/user/profile">
+                                Profile
                               </Link>
                             </li>
-                          )}
-                          <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
-                            <Link underline="none" to="/user/profile">
-                              Profile
-                            </Link>
-                          </li>
-                          <li className="py-3 font-medium hover:bg-pink-100 text-gray-500">
-                            <button onClick={handleLogout}>Log out</button>
-                          </li>
-                        </ul>
-                      </div>
+                            <li className="py-3 font-medium hover:bg-gray-100 text-gray-500">
+                              <button onClick={handleLogout}>Log out</button>
+                            </li>
+                          </ul>
+                        </div>
+                      </React.Fragment>
                     )}
                   </div>
                 </div>
               ) : (
-                <div className="collapse navbar-collapse mr-10 flex min-w-min items-center justify-center">
+                <div className="mr-10 flex min-w-min items-center justify-center">
                   <Link to="/auth/login">
                     <button
                       variant="outlined"

@@ -37,12 +37,21 @@ const ManageUser = () => {
   });
 
   useEffect(() => {
-    dispatch(getUserPagingAction(pageIndex, ""));
-  }, [pageIndex]);
+    dispatch(getUserPagingAction(pageIndex,
+      searchValue.searchText,
+      searchValue.role));
+  }, [])
 
   const selectedUser = (ids) => {
     dispatch(selectedUserAction(ids));
   };
+
+  const onPageChange = (page) => {
+    setPageIndex(page)
+    dispatch(getUserPagingAction(page,
+      searchValue.searchText,
+      searchValue.role));
+  }
 
   const updateUserPermission = (data) => {
     const _user = { ids: user?.selectedUser, permission: data };
@@ -68,16 +77,18 @@ const ManageUser = () => {
           </div>
           <SearchUser
             onChange={(value) => {
+              setPageIndex(0);
               setSearchValue({ ...searchValue, searchText: value });
-              dispatch(getUserPagingAction(pageIndex, value, searchValue.role));
+              dispatch(getUserPagingAction(0, value, searchValue.role));
             }}
           />
           <Autocomplete
             className="w-80 outline-none shadow-lg bg-slate-100"
             onChange={(e, value) => {
-              value && setSearchValue({ ...searchValue, role: value.role });
+              setPageIndex(0);
+              setSearchValue({ ...searchValue, role: value?.role });
               dispatch(
-                getUserPagingAction(pageIndex, "", value ? value.role : null)
+                getUserPagingAction(0, "", value ? value.role : null)
               );
             }}
             loading={user?.loading === "loading"}
@@ -111,8 +122,8 @@ const ManageUser = () => {
                     key={u.id}
                     onClick={() => selectedUser(u.id)}
                     className={`group rounded-md mt-3 ${user?.selectedUser?.indexOf(u.id) !== -1
-                        ? "border-2 border-gray-500"
-                        : ""
+                      ? "border-2 border-gray-500"
+                      : ""
                       } `}
                   >
                     <div className="grid grid-cols-4 px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-500 shadow-md group-hover:bg-slate-300">
@@ -152,8 +163,9 @@ const ManageUser = () => {
             <div className="flex justify-end">
               <Stack spacing={2}>
                 <Pagination
-                  count={user?.totalPages + 1}
-                  onChange={(e, value) => setPageIndex(value - 1)}
+                  count={user?.totalPages}
+                  onChange={(e, value) => onPageChange(value - 1)}
+                  page={pageIndex + 1}
                   color="primary"
                 />
               </Stack>

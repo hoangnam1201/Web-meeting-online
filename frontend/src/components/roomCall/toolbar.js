@@ -87,7 +87,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   };
 
   const shareScreen = async () => {
-    connection.current.getDisplayMediaStream();
+    connection.current.shareScreen('table');
   };
 
   const onPresent = () => {
@@ -106,7 +106,6 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
   const cancelSeleted = () => {
     if (!roomCall.joinLoading) dispatch(setSeletedTable(null));
   };
-
 
   return (
     <div {...rest}>
@@ -218,7 +217,6 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
             {mediaStatus.video ? (
               <IconButton
                 onClick={turnOffVideo}
-                disabled={connection.current.isShare}
               >
                 <PhotoCameraFrontIcon
                   className="text-blue-500"
@@ -233,7 +231,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
             <IconButton onClick={shareScreen}>
               <ScreenShareIcon
                 fontSize="large"
-                className={`${connection.current.isShare && "text-blue-500"}`}
+                className={`${roomCall.sharing && "text-blue-500"}`}
               />
             </IconButton>
             <IconButton
