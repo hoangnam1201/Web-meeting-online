@@ -1,3 +1,5 @@
+import Connection from "../../services/connection";
+
 export const ROOMCALL_SETACCESSMEDIA = "ROOMCALL_SETACCESSMEDIA";
 export const ROOMCALL_SHOWCHAT = "ROOMCALL_SHOWCHAT";
 export const ROOMCALL_SHOWLOBBY = "ROOMCALL_SHOWLOBBY";
@@ -116,6 +118,7 @@ export const roomCallJoinTable = (id, mediaStatus) => {
   return (dispatch, getState) => {
     const roomCall = getState().roomCall;
     dispatch(roomCallSetJoinLoading(true))
+    Connection.stopShareTrack()
     roomCall.socket.emit(
       "table:join",
       { tableId: id },

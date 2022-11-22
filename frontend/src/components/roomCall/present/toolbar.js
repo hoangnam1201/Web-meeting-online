@@ -12,6 +12,7 @@ import { IconButton } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { confirmSwal } from "../../../services/swalServier";
 import { useHistory } from "react-router-dom";
+import Connection from "../../../services/connection";
 
 const Toolbar = ({ connection, mediaStatus, ...rest }) => {
   const dispatch = useDispatch();
@@ -21,23 +22,23 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
   const history = useHistory();
 
   const turnOffAudio = () => {
-    connection.current.turnOffAudio();
+    Connection.turnOffAudio();
   };
 
   const turnOnAudio = () => {
-    connection.current.turnOnAudio();
+    Connection.turnOnAudio();
   };
 
   const turnOffVideo = () => {
-    connection.current.turnOffVideo();
+    Connection.turnOffVideo();
   };
 
   const turnOnVideo = () => {
-    connection.current.turnOnVideo();
+    Connection.turnOnVideo();
   };
 
   const shareScreen = async () => {
-    connection.current.getDisplayMediaStream();
+    Connection.shareScreen('present');
   };
 
   return (
@@ -71,7 +72,6 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
           {mediaStatus.video ? (
             <IconButton
               onClick={turnOffVideo}
-              disabled={connection.current.isShare}
             >
               <PhotoCameraFrontIcon fontSize="large" className="text-white" />
             </IconButton>
@@ -83,7 +83,7 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
           <IconButton onClick={() => shareScreen()}>
             <ScreenShareIcon
               fontSize="large"
-              className={`${connection.current.isShare ? "text-blue-500" : "text-white"
+              className={`${roomCall.sharing ? "text-blue-500" : "text-white"
                 }`}
             />
           </IconButton>
@@ -105,7 +105,7 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
             }
           >
             <div>
-              <LogoutSharpIcon/>
+              <LogoutSharpIcon />
             </div>
             exit room
           </button>

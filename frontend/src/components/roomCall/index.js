@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { getUserInfo } from "../../store/actions/userInfoAction";
 
 const RoomCall = () => {
-  const connection = useRef(null);
+  const connectionRef = useRef(null);
   const dispatch = useDispatch();
   const [roomMessages, setRoomMessage] = useState([]);
   const [tableMessages, setTableMessage] = useState([]);
@@ -23,11 +23,12 @@ const RoomCall = () => {
   const [joinError, setJoinError] = useState(null);
 
   useEffect(() => {
-    connection.current = new Connection({ updateInstance, history });
-    connection.current.initMyStream();
+    // connectionRef.current = new Connection({ updateInstance, history });
+    Connection.staticContructor({ updateInstance })
+    Connection.initMyStream();
     dispatch(getUserInfo());
     return () => {
-      connection.current.destoryDisconnect();
+      // connectionRef.current.destoryDisconnect();
     };
   }, []);
 
@@ -64,14 +65,13 @@ const RoomCall = () => {
     <div>
       {!access ? (
         <CheckMedia
-          connection={connection}
           canAccess={canAccess}
           myStream={myStream}
           joinError={joinError}
         />
       ) : (
         <RoomDetail
-          connection={connection}
+          connection={connectionRef}
           streamDatas={streamDatas}
           roomMessages={roomMessages}
           myStream={myStream}

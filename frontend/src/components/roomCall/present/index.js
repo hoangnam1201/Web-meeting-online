@@ -7,7 +7,6 @@ import VideoContainer from "./videoContainer";
 const Present = ({
   mediaStatus,
   open,
-  connection,
   myStream,
   streamDatas,
   roomMessages,
@@ -47,7 +46,6 @@ const Present = ({
               >
                 <VideoContainer
                   myStream={myStream}
-                  connection={connection}
                   streamDatas={streamDatas}
                 />
               </div>
@@ -62,7 +60,6 @@ const Present = ({
               )}
             </div>
             <Toolbar
-              connection={connection}
               mediaStatus={mediaStatus}
             />
           </div>

@@ -28,8 +28,9 @@ import { Link, useHistory } from "react-router-dom";
 import PeopleIcon from "@mui/icons-material/People";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { LinearProgress, Switch } from "@mui/material";
+import Connection from "../../services/connection";
 
-const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
+const Toolbar = ({ mediaStatus, userJoined, ...rest }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const currentUser = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
@@ -71,23 +72,23 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
     startRecording();
   };
   const turnOffAudio = () => {
-    connection.current.turnOffAudio();
+    Connection.turnOffAudio();
   };
 
   const turnOnAudio = () => {
-    connection.current.turnOnAudio();
+    Connection.turnOnAudio();
   };
 
   const turnOffVideo = () => {
-    connection.current.turnOffVideo();
+    Connection.turnOffVideo();
   };
 
   const turnOnVideo = () => {
-    connection.current.turnOnVideo();
+    Connection.turnOnVideo();
   };
 
   const shareScreen = async () => {
-    connection.current.shareScreen('table');
+    Connection.shareScreen('table');
   };
 
   const onPresent = () => {
@@ -98,8 +99,8 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
 
   const joinTableHandler = () => {
     if (roomCall && roomCall.selectedTable && !roomCall.joinLoading) {
-      connection.current.clearTableMessages();
-      connection.current.clearPeers();
+      Connection.clearTableMessages();
+      Connection.clearPeers();
       dispatch(roomCallJoinTable(roomCall.selectedTable, mediaStatus));
     }
   };
@@ -265,7 +266,7 @@ const Toolbar = ({ connection, mediaStatus, userJoined, ...rest }) => {
             <div className="border-l-2 border-gray-400 px-3 flex items-end">
               <button
                 className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
-                onClick={() => connection.current.leaveTable()}
+                onClick={() => Connection.leaveTable()}
               >
                 <div>
                   <EventSeatIcon className="text-gray-500" />

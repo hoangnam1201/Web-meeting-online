@@ -31,8 +31,9 @@ export default (io: any) => {
     socket.on("disconnecting", _roomHandler.leaveRoom);
     socket.on("present:join", _roomHandler.joinPresent);
     socket.on("present:stop", _roomHandler.stopPresenting);
+    socket.on("present:share-screen", _roomHandler.shareScreen);
+    socket.on("present:stop-share-screen", _roomHandler.stopShareScreen);
     socket.on("table:leave", _roomHandler.leaveTable);
-    socket.on("present:pin", _roomHandler.pin);
   };
   roomNamespace.on("connection", connection);
 };

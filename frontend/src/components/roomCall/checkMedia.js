@@ -10,7 +10,7 @@ import { getRoomAPI, updateStateRoomApi } from "../../api/room.api";
 import { useSelector } from "react-redux";
 import { toastError } from "../../services/toastService";
 
-const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
+const CheckMedia = ({ myStream, canAccess, joinError }) => {
   const myVideo = useRef(null);
   const roomCall = useSelector(state => state.roomCall);
   const currentUser = useSelector(state => state.userReducer);
@@ -19,19 +19,19 @@ const CheckMedia = ({ connection, myStream, canAccess, joinError }) => {
   const { id } = useParams();
 
   const turnOffAudio = () => {
-    connection.current.turnOffAudio();
+    Connection.turnOffAudio();
   };
 
   const turnOnAudio = () => {
-    connection.current.turnOnAudio();
+    Connection.turnOnAudio();
   };
 
   const turnOffVideo = () => {
-    connection.current.turnOffVideo();
+    Connection.turnOffVideo();
   };
 
   const turnOnVideo = () => {
-    connection.current.turnOnVideo();
+    Connection.turnOnVideo();
   };
 
   const openRoomHandler = () => {

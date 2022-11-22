@@ -276,11 +276,14 @@ export default (ioRoom: any, io: any) => {
             .emit("room:info", RoomReadDetailDto.fromRoom(roomInfo));
           socket.to(roomId).emit("present:close");
         }
+        if (sharePeerId)
+          socket
+            .to(roomId)
+            .emit("present:user-stop-share-screen", { peerId: sharePeerId });
         socket.to(roomId).emit("present:user-leave", { userId, peerId });
         return;
       }
       const tableId = socket.data.tableId;
-      const sharePeerId = socket.data.sharePeerId;
       if (tableId) {
         if (sharePeerId)
           socket
@@ -625,12 +628,28 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  const pin = async function name() {
+  const shareScreen = async function (peerId: string) {
     const socket: Socket = this;
+    const { roomId } = socket.data;
     const userId = socket.data.userData.userId;
-    const roomId = socket.data.roomId;
-    const peerId = socket.data.peerId;
-    ioRoom.to(roomId).emit("present:pin", { userId, peerId });
+    const user = await userService.findUserById(userId);
+    socket.data.sharePeerId = peerId;
+    socket.broadcast.to(roomId).emit("present:user-share-screen", {
+      user: UserReadDetailDto.fromUser(user),
+      peerId: peerId,
+    });
+  };
+
+  const stopShareScreen = async function (peerId: string) {
+    const socket: Socket = this;
+    const { roomId } = socket.data;
+    const userId = socket.data.userData.userId;
+    const user = await userService.findUserById(userId);
+    delete socket.data.sharePeerId;
+    socket.broadcast.to(roomId).emit("present:user-stop-share-screen", {
+      user: UserReadDetailDto.fromUser(user),
+      peerId: peerId,
+    });
   };
 
   const tableShareScreen = async function (peerId: string) {
@@ -674,6 +693,8 @@ export default (ioRoom: any, io: any) => {
 
   return {
     buzzUser,
+    shareScreen,
+    stopShareScreen,
     kickUser,
     joinRoom,
     joinFloor,
@@ -692,7 +713,6 @@ export default (ioRoom: any, io: any) => {
     closeRoom,
     changeMedia,
     acceptRequest,
-    pin,
     divideTables,
   };
 };

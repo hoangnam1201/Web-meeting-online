@@ -127,22 +127,25 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                         <div className="absolute z-30 mt-2 bg-gray-50 rounded-lg shadow-lg w-40 left-full transform -translate-x-full">
                           <ul className="p-1">
                             <li className="font-bold text-gray-500 border-b-2 p-3 overflow-hidden text-ellipsis flex gap-2 justify-center items-center">
-                              <div>{(currentUser?.user?.picture ? (
-                                <img
-                                  src={currentUser?.user?.picture}
-                                  alt=""
-                                  referrerPolicy="no-referrer"
-                                  className="cursor-pointer rounded-full w-9"
-                                ></img>
-                              ) : (
-                                <Avatar
-                                  name={currentUser?.user?.name}
-                                  size="36"
-                                  round={true}
-                                  className="cursor-pointer"
-                                ></Avatar>
-                              ))}</div>
-                              {currentUser?.user?.name}
+                              <div className="min-w-max">
+                                {(currentUser?.user?.picture ? (
+                                  <img
+                                    src={currentUser?.user?.picture}
+                                    alt=""
+                                    referrerPolicy="no-referrer"
+                                    className="cursor-pointer rounded-full w-9"
+                                  ></img>
+                                ) : (
+                                  <Avatar
+                                    name={currentUser?.user?.name}
+                                    size="36"
+                                    round={true}
+                                    className="cursor-pointer"
+                                  ></Avatar>
+                                ))}</div>
+                              <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+                                {currentUser?.user?.name}
+                              </p>
                             </li>
                             {currentUser?.user?.role === "ADMIN" && (
                               <li className="py-3 font-medium hover:bg-gray-100 text-gray-500">
