@@ -31,6 +31,7 @@ const RequestItem = ({ request }) => {
           <img
             src={request.user?.picture}
             alt=""
+            referrerPolicy="no-referrer"
             className="cursor-pointer rounded-full w-12"
           />
         </div>

@@ -45,7 +45,8 @@ const Error = ({ type }) => {
 
   return (
     <div className="p-4">
-      <img alt="Under development" className={classes.image} src={errorImage} />
+      <img alt="Under development" className={classes.image} src={errorImage}
+        referrerPolicy="no-referrer" />
       <div className="text-xl font-medium text-gray-500">
         The page you are looking for isn’t here
       </div>

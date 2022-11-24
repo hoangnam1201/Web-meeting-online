@@ -24,8 +24,30 @@ export default () => {
 
   const getScoresInQuiz = async (req: Request, res: Response) => {
     const { quizId } = req.params;
+    const { take = 0, page = 0 } = req.query;
     try {
-      const submissions = await submissionService.getScoresInQuiz(quizId);
+      const submissions = await submissionService.getScoresInQuiz(
+        quizId,
+        parseInt(take.toString()),
+        parseInt(page.toString())
+      );
+      res.status(200).json({ status: 200, data: submissions });
+    } catch (e) {
+      console.log(e);
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
+    }
+  };
+
+  const getScoresByQuiz = async (req: Request, res: Response) => {
+    const { quizId } = req.params;
+    const { userId } = req.userData;
+    try {
+      const submissions = await submissionService.getScoresByQuiz(
+        quizId,
+        userId
+      );
       res.status(200).json({ status: 200, data: submissions });
     } catch (e) {
       console.log(e);
@@ -55,16 +77,13 @@ export default () => {
     const { submissionId } = req.params;
     const { data } = req.body;
     try {
-      const submission = await submissionService.addAnswer(
-        submissionId,
-        data
-      );
+      const submission = await submissionService.addAnswer(submissionId, data);
       res.status(200).json({
         status: 200,
         data: submissionReadDetailDTO.fromSubmission(submission),
       });
     } catch (e) {
-      console.log(e)
+      console.log(e);
       return res
         .status(500)
         .json({ status: 500, msg: "Internal Server Error" });
@@ -124,6 +143,7 @@ export default () => {
   return {
     getSubmissionInQuiz,
     getScoresInQuiz,
+    getScoresByQuiz,
     getSubmissionById,
     getSubmissionByQuiz,
     submitSubmission,

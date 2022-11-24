@@ -73,7 +73,7 @@ export default function QuizManagement() {
         (q) => q._id === question.selectedQuestion
       )
       let type = data.type;
-      if (data.type === 'ONE' || data.type === 'MUTIPLE') {
+      if (data.type === 'ONE' || data.type === 'MULTIPLE') {
         type = 'CHOICE';
       }
       reset({
@@ -108,6 +108,10 @@ export default function QuizManagement() {
         data.type = 'ONE'
       }
     }
+    if (data.type === 'FILLIN') {
+      data.choices = data.choices?.map(c => ({ ...c, isTrue: true }))
+    }
+    console.log(data)
     if (!question.selectedQuestion) {
       dispatch(
         addQuestionAction({ ...data, quiz: id }, id, () => {

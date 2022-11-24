@@ -39,6 +39,7 @@ const JoinerItem = ({ joiner }) => {
         {joiner?.picture ? (
           <img
             src={joiner?.picture}
+            referrerPolicy="no-referrer"
             alt=""
             className="cursor-pointer rounded-full w-12"
           />

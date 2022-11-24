@@ -10,7 +10,7 @@ const initialState = {
   loading: false,
   err: "",
   data: [],
-  selectedQuiz: [],
+  selectedQuiz: null,
   current: null,
 };
 

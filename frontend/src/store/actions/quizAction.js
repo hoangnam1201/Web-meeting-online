@@ -5,6 +5,7 @@ import {
   getQuizById,
   updateQuizApi,
 } from "../../api/quiz.api";
+import { toastSuccess } from "../../services/toastService";
 
 export const QUIZ_REQUEST = "QUIZ_REQUEST";
 export const QUIZ_SUCCESS = "QUIZ_SUCCESS";
@@ -46,15 +47,11 @@ const quizSelected = (id) => {
 export const selectQuizAction = (id, callback) => {
   return (dispatch, getState) => {
     const quizState = getState().quizReducer;
-    let selectedQuiz = [];
-    const index = quizState.selectedQuiz.indexOf(id);
-    if (index !== -1) {
-      quizState.selectedQuiz.splice(index, 1);
-      selectedQuiz = [...quizState.selectedQuiz];
-    } else {
-      selectedQuiz = [...quizState.selectedQuiz, id];
+    if (quizState.selectedQuiz === id) {
+      dispatch(quizSelected(null));
+      return
     }
-    dispatch(quizSelected(selectedQuiz));
+    dispatch(quizSelected(id));
     if (callback) {
       callback();
     }
@@ -100,6 +97,7 @@ export const addQuizAction = (data, roomId, callback) => {
     try {
       await createQuizApi(data);
       dispatch(getQuizAction(roomId));
+      toastSuccess('successfully')
       if (callback) {
         callback();
       }
@@ -120,6 +118,7 @@ export const updateQuizActon = (id, data, callback) => {
     try {
       await updateQuizApi(id, data);
       dispatch(getQuizAction(data.room));
+      toastSuccess('successfully')
       if (callback) {
         callback();
       }
@@ -140,6 +139,7 @@ export const deleteQuizAction = (id, roomId) => {
     try {
       await deleteQuizApi(id);
       dispatch(getQuizAction(roomId));
+      toastSuccess('successfully')
     } catch (err) {
       console.log(err);
       if (err.response) {

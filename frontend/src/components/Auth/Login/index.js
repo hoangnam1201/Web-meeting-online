@@ -129,6 +129,7 @@ function Login(props) {
             <img
               src={imgLogo}
               alt="logo"
+              referrerPolicy="no-referrer"
               className="h-14 w-auto ml-auto mr-auto"
             />
             <p className="text-2xl font-semibold my-1 tracking-wider text-orange-500">

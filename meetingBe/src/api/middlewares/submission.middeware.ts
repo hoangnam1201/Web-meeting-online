@@ -63,7 +63,6 @@ export class SubmissionMiddleware {
       submission.quiz.toString()
     );
     if (timeNow - submission.startDate >= quiz.duration*60000) {
-      console.log('time out')
       const submission =
         await SubmissionMiddleware.submissionService.changeStateSubmit(
           submissionId,

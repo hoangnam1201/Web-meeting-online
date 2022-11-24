@@ -25,6 +25,12 @@ submissionRouter.get(
 );
 
 submissionRouter.get(
+  "/my-scores/:quizId",
+  AuthMiddlesware.verifyToken,
+  submissionController.getScoresByQuiz
+);
+
+submissionRouter.get(
   "/submissions-in-quiz/:quizId",
   AuthMiddlesware.verifyToken,
   submissionController.getSubmissionInQuiz

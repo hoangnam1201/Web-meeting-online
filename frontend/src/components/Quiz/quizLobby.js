@@ -3,6 +3,7 @@ import React from 'react'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
+import { getMyCoresAPI } from '../../api/submission.api';
 import { submissionCreateSubmissions, submissionGetCurrentSubmission, submissionGetQuizDetail, submissionGetSubmissions } from '../../store/actions/submissionAction';
 
 const QuizLobby = () => {
@@ -14,7 +15,6 @@ const QuizLobby = () => {
     dispatch(submissionGetQuizDetail(id));
     dispatch(submissionGetSubmissions(id));
   }, [id])
-
 
   const checkStart = () => {
     const dateNow = new Date().getTime();
@@ -71,6 +71,7 @@ const QuizLobby = () => {
                   <td className='py-2 w-10'></td>
                   <td className='py-2'>Start date</td>
                   <td className='py-2'>Status</td>
+                  <td className='py-2'>Number of correct answers</td>
                   <td className='py-2'>Score</td>
                   <td></td>
                 </tr>
@@ -85,9 +86,10 @@ const QuizLobby = () => {
                         (<p className='py-1 px-3 rounded-full text-white bg-green-500 inline-block'>doing</p>)
                         : (<p className='py-1 px-3 rounded-full text-white bg-blue-500 inline-block'>submitted</p>)}
                     </td>
-                    <td className='border-b'></td>
+                    <td className='border-b'>{s?.countCorrect} / {s?.countQuestion}</td>
+                    <td className='border-b'>{s?.score}</td>
                     <td className='border-b'>
-                      {s.status === 'DOING' && <Button onClick={() => dispatch(submissionGetCurrentSubmission(s._id))}>continute</Button> }
+                      {s.status === 'DOING' && <Button onClick={() => dispatch(submissionGetCurrentSubmission(s._id))}>continute</Button>}
                     </td>
                   </tr>
                 ))}

@@ -9,6 +9,7 @@ import { Room } from "../../models/room.model";
 import { User } from "../../models/user.model";
 import FileService from "../../services/file.service";
 import MailService from "../../services/mail.service";
+import QueueService from "../../services/queue.service";
 import RoomService from "../../services/room.service";
 import UserService from "../../services/user.service";
 
@@ -17,6 +18,7 @@ export default () => {
   const mailService = MailService();
   const userService = UserService();
   const fileService = FileService();
+  const queueService = QueueService();
 
   const createRoom = async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -295,23 +297,38 @@ export default () => {
     const file = req.files?.importFile;
 
     try {
+      //remove old members
       await roomService.removeAllMembers(roomId);
+      await queueService.deleteQueuesByRoomId(roomId);
+      //convert file => json
       const emails = fileService
         .excelToJson(file.data)
         .map((u: { Email: string; email: string }) =>
           u.Email ? u.Email : u.email
         );
       const users = await userService.findUserByEmails(emails);
+      //add new members
       await roomService.addMembers(
         users.map((u) => u._id),
         roomId
       );
+
+      // create new queue
+      //users don't exits in db
+      const queueEmails = emails.filter(
+        (e) => users.findIndex((u) => u.email === e) === -1
+      );
+      await queueService.createQueues(queueEmails, roomId);
+
+      //send mail
       const ids = users.reduce((total, currentUser) => {
         return total + " " + currentUser.email;
       }, "");
-      await mailService.sendInvitation(roomId, ids);
+      if (ids) await mailService.sendInvitation(roomId, ids);
+      //res
       res.status(200).json({ status: 200, data: null });
-    } catch {
+    } catch (e) {
+      console.log(e);
       return res
         .status(500)
         .json({ status: 500, msg: "Internal Server Error" });
@@ -341,7 +358,8 @@ export default () => {
       const room = await roomService.getDetail(roomId);
       const membersReadDto = UserReadDto.fromArrayUser(room.members as User[]);
       const stream = fileService.jsonToExcel(membersReadDto, []);
-
+      const a = await queueService.getAll();
+      console.log(a);
       //response
       res.setHeader(
         "Content-disposition",

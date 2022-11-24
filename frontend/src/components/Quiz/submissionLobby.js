@@ -52,7 +52,7 @@ const SubmissionLobby = () => {
 
       setTimer(minutes + ":" + seconds);
       if (--timer < 0) {
-        dispatch(submissionSubmitSubmissionAction())
+        dispatch(submissionSubmitSubmissionAction(answer))
       }
     }, 1000);
   }
@@ -176,8 +176,19 @@ const SubmissionLobby = () => {
             <div className='flex justify-between mt-4'>
               <Button variant='outlined' disabled={!submissionState?.questions[indexQuestion - 1]}
                 onClick={previousQuestion}>previous</Button>
-              <Button variant='outlined' disabled={!submissionState?.questions[indexQuestion + 1]}
-                onClick={nextQuestion}>next</Button>
+              {
+                submissionState?.questions[indexQuestion + 1] ? (
+                  <Button variant='outlined' disabled={!submissionState?.questions[indexQuestion + 1]}
+                    onClick={nextQuestion}>next</Button>
+                ) : (
+                  <Button variant='outlined' className='mt-4'
+                    onClick={() => {
+                      confirmSwal('Submit submission', 'Are you sure?', () => {
+                        dispatch(submissionSubmitSubmissionAction(answer))
+                      })
+                    }}>Submit</Button>
+                )
+              }
             </div>
           </div>
         )}
@@ -196,7 +207,7 @@ const SubmissionLobby = () => {
           <Button variant='outlined' className='mt-4'
             onClick={() => {
               confirmSwal('Submit submission', 'Are you sure?', () => {
-                dispatch(submissionSubmitSubmissionAction())
+                dispatch(submissionSubmitSubmissionAction(answer))
               })
             }}>Submit</Button>
         </div>

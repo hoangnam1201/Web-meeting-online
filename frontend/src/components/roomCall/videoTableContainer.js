@@ -87,7 +87,6 @@ export const MyVideo = React.memo(({ sharing = false, myStream, ...rest }) => {
             <IconButton
               onClick={() => {
                 if (!selectedVideo) {
-                  console.log(myStream.peerId)
                   dispatch(setSelectedVideoAction(myStream.peerId));
                 }
                 else dispatch(setSelectedVideoAction(null));
@@ -152,6 +151,7 @@ export const Video = ({ streamData = {}, onPin, isPin = false, ...rest }) => {
         {!media.video && (user?.picture ? (
           <img
             src={user?.picture}
+            referrerPolicy="no-referrer"
             alt=""
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full"
           />

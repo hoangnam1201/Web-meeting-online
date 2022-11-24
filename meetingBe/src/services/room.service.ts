@@ -267,6 +267,10 @@ export default () => {
   };
 
   const removeAllMembers = async (roomId: string) => {
+    await userModel.updateMany(
+      { invitedRooms: roomId },
+      { $pull: { invitedRooms: roomId } }
+    );
     return roomModel.findOneAndUpdate(
       { _id: roomId },
       { members: [] },

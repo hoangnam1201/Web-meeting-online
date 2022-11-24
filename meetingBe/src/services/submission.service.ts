@@ -65,6 +65,29 @@ export default () => {
         quiz: new Types.ObjectId(quizId),
         userId: new Types.ObjectId(userId),
       })
+      .addFields({
+        answers: {
+          $map: {
+            input: "$answers",
+            as: "answer",
+            in: {
+              questionId: "$$answer.questionId",
+              answers: {
+                $map: {
+                  input: "$$answer.answers",
+                  as: "a",
+                  in: {
+                    answerId: "$$a.answerId",
+                    content: {
+                      $concat: [{ $toString: "$$a.answerId" }, "$$a.content"],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      })
       .lookup({
         from: "questions",
         localField: "answers.questionId",
@@ -72,32 +95,82 @@ export default () => {
         as: "questions",
         pipeline: [
           {
-            $project: {
-              choices: {
-                $filter: {
-                  input: "$choices",
-                  as: "choice",
-                  cond: "$$choice.isTrue",
-                },
+            $match: {
+              $expr: {
+                $or: [
+                  { $eq: ["$type", "ONE"] },
+                  { $eq: ["$type", "MULTIPLE"] },
+                  { $eq: ["$type", "FILLIN"] },
+                ],
               },
             },
           },
           {
-            $addFields: {
-              choices: "$choices._id",
+            $project: {
+              type: 1,
+              choices: {
+                $map: {
+                  input: {
+                    $filter: {
+                      input: "$choices",
+                      as: "choice",
+                      cond: {
+                        $and: ["$$choice.isTrue"],
+                      },
+                    },
+                  },
+                  as: "c",
+                  in: {
+                    _id: "$$c._id",
+                    content: {
+                      $concat: [{ $toString: "$$c._id" }, "$$c.content"],
+                    },
+                  },
+                },
+              },
             },
           },
         ],
       })
-      .unwind("$answers", "$questions")
-      .project({
-        _id: 1,
-        userId: 1,
-        quiz: 1,
+      .unwind(
+        { path: "$answers", preserveNullAndEmptyArrays: true },
+        { path: "$questions", preserveNullAndEmptyArrays: true }
+      )
+      .addFields({
         isCorrect: {
           $cond: [
             {
-              $setEquals: ["$questions.choices", "$answers.answerIds"],
+              $or: [
+                {
+                  $and: [
+                    {
+                      $eq: ["$questions.type", "FILLIN"],
+                    },
+                    {
+                      $setEquals: [
+                        "$questions.choices.content",
+                        "$answers.answers.content",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  $and: [
+                    {
+                      $or: [
+                        { $eq: ["$questions.type", "ONE"] },
+                        { $eq: ["$questions.type", "MULTIPLE"] },
+                      ],
+                    },
+                    {
+                      $setEquals: [
+                        "$questions.choices._id",
+                        "$answers.answers.answerId",
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
             1,
             0,
@@ -108,6 +181,8 @@ export default () => {
         _id: "$_id",
         userId: { $first: "$userId" },
         quiz: { $first: "$quiz" },
+        status: { $first: "$status" },
+        startDate: { $first: "$startDate" },
         countCorrect: { $sum: "$isCorrect" },
       })
       .lookup({
@@ -126,18 +201,45 @@ export default () => {
         quiz: 1,
         countCorrect: 1,
         userId: 1,
+        startDate: 1,
+        status: 1,
         countQuestion: { $arrayElemAt: ["$countQuestion.count", 0] },
       })
+      .sort({ startDate: 1 })
       .addFields({
         score: {
           $multiply: [{ $divide: ["$countCorrect", "$countQuestion"] }, 100],
         },
       });
   };
-  const getScoresInQuiz = (quizId: string) => {
+
+  const getScoresInQuiz = (quizId: string, take: number, page: number) => {
     return submissionModel
       .aggregate()
       .match({ quiz: new Types.ObjectId(quizId) })
+      .addFields({
+        answers: {
+          $map: {
+            input: "$answers",
+            as: "answer",
+            in: {
+              questionId: "$$answer.questionId",
+              answers: {
+                $map: {
+                  input: "$$answer.answers",
+                  as: "a",
+                  in: {
+                    answerId: "$$a.answerId",
+                    content: {
+                      $concat: [{ $toString: "$$a.answerId" }, "$$a.content"],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      })
       .lookup({
         from: "questions",
         localField: "answers.questionId",
@@ -145,32 +247,82 @@ export default () => {
         as: "questions",
         pipeline: [
           {
-            $project: {
-              choices: {
-                $filter: {
-                  input: "$choices",
-                  as: "choice",
-                  cond: "$$choice.isTrue",
-                },
+            $match: {
+              $expr: {
+                $or: [
+                  { $eq: ["$type", "ONE"] },
+                  { $eq: ["$type", "MULTIPLE"] },
+                  { $eq: ["$type", "FILLIN"] },
+                ],
               },
             },
           },
           {
-            $addFields: {
-              choices: "$choices._id",
+            $project: {
+              type: 1,
+              choices: {
+                $map: {
+                  input: {
+                    $filter: {
+                      input: "$choices",
+                      as: "choice",
+                      cond: {
+                        $and: ["$$choice.isTrue"],
+                      },
+                    },
+                  },
+                  as: "c",
+                  in: {
+                    _id: "$$c._id",
+                    content: {
+                      $concat: [{ $toString: "$$c._id" }, "$$c.content"],
+                    },
+                  },
+                },
+              },
             },
           },
         ],
       })
-      .unwind("$answers", "$questions")
-      .project({
-        _id: 1,
-        userId: 1,
-        quiz: 1,
+      .unwind(
+        { path: "$answers", preserveNullAndEmptyArrays: true },
+        { path: "$questions", preserveNullAndEmptyArrays: true }
+      )
+      .addFields({
         isCorrect: {
           $cond: [
             {
-              $setEquals: ["$questions.choices", "$answers.answerIds"],
+              $or: [
+                {
+                  $and: [
+                    {
+                      $eq: ["$questions.type", "FILLIN"],
+                    },
+                    {
+                      $setEquals: [
+                        "$questions.choices.content",
+                        "$answers.answers.content",
+                      ],
+                    },
+                  ],
+                },
+                {
+                  $and: [
+                    {
+                      $or: [
+                        { $eq: ["$questions.type", "ONE"] },
+                        { $eq: ["$questions.type", "MULTIPLE"] },
+                      ],
+                    },
+                    {
+                      $setEquals: [
+                        "$questions.choices._id",
+                        "$answers.answers.answerId",
+                      ],
+                    },
+                  ],
+                },
+              ],
             },
             1,
             0,
@@ -181,6 +333,8 @@ export default () => {
         _id: "$_id",
         userId: { $first: "$userId" },
         quiz: { $first: "$quiz" },
+        status: { $first: "$status" },
+        startDate: { $first: "$startDate" },
         countCorrect: { $sum: "$isCorrect" },
       })
       .lookup({
@@ -199,13 +353,21 @@ export default () => {
         quiz: 1,
         countCorrect: 1,
         userId: 1,
+        startDate: 1,
+        status: 1,
         countQuestion: { $arrayElemAt: ["$countQuestion.count", 0] },
       })
+      .sort({ startDate: 1, userId: 1 })
       .addFields({
         score: {
           $multiply: [{ $divide: ["$countCorrect", "$countQuestion"] }, 100],
         },
-      });
+      })
+      .facet({
+        count: [{ $count: "count" }],
+        records: [{ $skip: take * page }, { $limit: take }],
+      })
+      .addFields({ count: { $arrayElemAt: ["$count.count", 0] } });
   };
 
   return {
@@ -215,6 +377,7 @@ export default () => {
     createSubmission,
     changeStateSubmit,
     getSubmissionInQuiz,
+    getScoresByQuiz,
     getScoresInQuiz,
     addAnswer,
   };

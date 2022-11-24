@@ -96,6 +96,7 @@ const AddMembers = () => {
                             src={u?.picture}
                             alt=""
                             className="cursor-pointer rounded-full w-6 mr-3"
+                            referrerPolicy="no-referrer"
                           />
                         ) : (
                           <Avatar

@@ -12,6 +12,7 @@ import ManageUser from "../components/Admin/manageUser";
 import ManageRoom from "../components/Admin/manageRoom";
 import AddMembers from "../components/updateEvent/members";
 import Quiz from "../components/Quiz";
+import QuizScores from "../components/Quiz/quizScores";
 
 export const userRoute = [
   {
@@ -43,6 +44,11 @@ export const userRoute = [
     exact: true,
     path: "/user/management-quiz/:id",
     component: QuizManagement,
+  },
+  {
+    exact: true,
+    path: "/user/quiz-scores/:id",
+    component: QuizScores,
   },
   { exact: true, path: "/user/management-member/:id", component: AddMembers },
 ];

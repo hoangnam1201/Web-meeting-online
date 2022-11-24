@@ -16,6 +16,7 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import SettingsIcon from "@mui/icons-material/Settings";
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import Swal from "sweetalert2";
 import { DesktopDateTimePicker } from "@mui/x-date-pickers";
 
@@ -43,8 +44,8 @@ const QuizManage = (props) => {
   }, [roomId]);
 
   useEffect(() => {
-    if (quiz && quiz.selectedQuiz.length > 0) {
-      const quizData = quiz.data.find((x) => x._id === quiz.selectedQuiz[0]);
+    if (quiz && quiz.selectedQuiz) {
+      const quizData = quiz.data.find((x) => x._id === quiz.selectedQuiz);
       reset({
         name: quizData?.name,
         description: quizData?.description,
@@ -69,12 +70,12 @@ const QuizManage = (props) => {
     dispatch(
       addQuizAction(quiz, roomId, () => {
         reset({
-            name: "",
-            description: "",
-            duration: "",
-            countSubmission: 1,
-            startDate: new Date().getTime(),
-            endDate: new Date().getTime()
+          name: "",
+          description: "",
+          duration: "",
+          countSubmission: 1,
+          startDate: new Date().getTime(),
+          endDate: new Date().getTime()
         });
       })
     );
@@ -145,7 +146,7 @@ const QuizManage = (props) => {
                 return (
                   <div
                     onClick={() => selectedQuiz(q._id)}
-                    className={`group rounded-md mt-4 ${quiz.selectedQuiz.indexOf(q._id) !== -1
+                    className={`group rounded-md mt-4 ${quiz.selectedQuiz === q._id
                       ? "border-2 border-gray-500"
                       : ""
                       } `}
@@ -159,10 +160,18 @@ const QuizManage = (props) => {
                         {q.duration} minutes
                         <div>
                           <Link
+                            to={`/user/quiz-scores/${q._id}`}
+                            target="_blank"
+                            className="mr-4"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <AppRegistrationIcon fontSize="small" />
+                          </Link>
+                          <Link
                             to={`/user/management-quiz/${q._id}`}
                             target="_blank"
                             className="mr-4"
-                          // onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <SettingsIcon fontSize="small" />
                           </Link>
@@ -186,17 +195,10 @@ const QuizManage = (props) => {
                 fullWidth
                 variant="outlined"
                 margin="dense"
-                disabled={quiz?.selectedQuiz.length > 1}
                 InputLabelProps={{ shrink: true }}
                 label="Name of quiz"
                 name="name"
-                {...register("name", {
-                  required: quiz?.selectedQuiz.length > 1 ? null : "Required",
-                  minLength:
-                    quiz?.selectedQuiz.length > 1
-                      ? null
-                      : { value: 5, message: "Min length is 5" },
-                })}
+                {...register("name", { required: 'required' })}
                 error={!!errors?.name}
                 helperText={errors?.name?.message}
               />
@@ -204,16 +206,12 @@ const QuizManage = (props) => {
                 fullWidth
                 variant="outlined"
                 margin="dense"
-                disabled={quiz?.selectedQuiz.length > 1}
                 InputLabelProps={{ shrink: true }}
                 label="Description"
                 name="description"
                 {...register("description", {
-                  required: quiz?.selectedQuiz.length > 1 ? null : "Required",
-                  minLength:
-                    quiz?.selectedQuiz.length > 1
-                      ? null
-                      : { value: 5, message: "Min length is 5" },
+                  required: 'required',
+                  minLength: { value: 5, message: "Min length is 5" },
                 })}
                 error={!!errors?.description}
                 helperText={errors?.description?.message}
@@ -222,7 +220,6 @@ const QuizManage = (props) => {
                 <DesktopDateTimePicker
                   variant="outlined"
                   margin="dense"
-                  disabled={quiz?.selectedQuiz.length > 1}
                   InputLabelProps={{ shrink: true }}
                   id="date-picker-dialog-register"
                   label="Start Date"
@@ -237,7 +234,6 @@ const QuizManage = (props) => {
                 <DesktopDateTimePicker
                   variant="outlined"
                   margin="dense"
-                  disabled={quiz?.selectedQuiz.length > 1}
                   InputLabelProps={{ shrink: true }}
                   id="date-picker-dialog-register"
                   label="End Date"
@@ -259,33 +255,27 @@ const QuizManage = (props) => {
                   required: true, min:
                     { value: 1, message: 'min number of submission is 1' }
                 })}
+                InputLabelProps={{ shrink: true }}
                 error={!!errors?.countSubmission}
                 helperText={errors?.countSubmission?.message}
               />
               <TextField
                 fullWidth
                 variant="outlined"
-                disabled={quiz?.selectedQuiz.length > 1}
                 InputLabelProps={{ shrink: true }}
                 InputProps={{ inputProps: { min: 15, max: 120 } }}
                 margin="dense"
                 type='number'
                 label="Duration (Minutes)"
                 {...register("duration", {
-                  required: quiz?.selectedQuiz.length > 1 ? null : "Required",
-                  max:
-                    quiz?.selectedQuiz.length > 1
-                      ? null
-                      : { value: 120, message: "Max duraion is 120 minutes" },
-                  min:
-                    quiz?.selectedQuiz.length > 1
-                      ? null
-                      : { value: 5, message: "Min duraion is 5 minutes" },
+                  required: "required",
+                  max: { value: 120, message: "Max duraion is 120 minutes" },
+                  min: { value: 5, message: "Min duraion is 5 minutes" },
                 })}
                 error={!!errors?.duration}
                 helperText={errors?.duration?.message}
               />
-              {quiz?.selectedQuiz?.length === 0 ? (
+              {!quiz?.selectedQuiz ? (
                 <LoadingButton
                   onClick={handleSubmit(createQuiz)}
                   variant="contained"

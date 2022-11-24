@@ -32,6 +32,7 @@ import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 import QuizManage from "./quiz";
 import AutoAddTablesDialog from "./autoAddTablesDialog";
+import { toastError, toastSuccess } from "../../services/toastService";
 
 function UpdateEvent() {
   const { id } = useParams();
@@ -129,6 +130,7 @@ function UpdateEvent() {
         await deleteFloorAPI(room._id, tables.currentFloor);
         await getRoom("START", "UPDATE_FLOORS");
       });
+      toastSuccess('deleted successfully');
     } catch (err) {
       console.log(err);
     }
@@ -164,6 +166,7 @@ function UpdateEvent() {
       const userIds = usersSelected.map((s) => s.value);
       await addMembersAPI(id, userIds);
       setUsersSelected(null);
+      toastSuccess('added members successfully');
       await getRoom(null, "UPDATE_MEMBERS");
     } catch (err) {
       console.log(err);
@@ -174,12 +177,17 @@ function UpdateEvent() {
     const files = e.target.files;
     if (!files[0]) return;
 
-    const fd = new FormData();
-    fd.append("importFile", files[0]);
-    setMembersLoading(true);
-    await addMembersByFileAPI(id, fd);
-    await getRoom(null, "UPDATE_MEMBERS");
-    e.target.value = null;
+    try {
+      const fd = new FormData();
+      fd.append("importFile", files[0]);
+      setMembersLoading(true);
+      await addMembersByFileAPI(id, fd);
+      toastSuccess('successfully');
+      await getRoom(null, "UPDATE_MEMBERS");
+      e.target.value = null;
+    } catch (e) {
+      toastError(e.response?.data?.msg)
+    }
   };
 
   const onRemoveMember = async (userId) => {
@@ -194,10 +202,12 @@ function UpdateEvent() {
       });
       if (!isConfirmed) return;
       setMembersLoading(true);
+      toastSuccess('successfully');
       await removeMemberAPI(id, userId);
       await getRoom(null, "UPDATE_MEMBERS");
-    } catch (err) {
-      console.log(err);
+    } catch (e) {
+      toastError(e.response?.data?.msg)
+      console.log(e);
     }
   };
 

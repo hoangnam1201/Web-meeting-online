@@ -175,7 +175,6 @@ export const roomCallResponceRequests = (requestIds, isAccept) => {
   return (dispatch, getState) => {
     const roomCall = getState().roomCall;
     dispatch(setRequestLoading(true));
-    console.log(roomCall.requests.map(r => r._id))
     roomCall.socket.emit("room:accept-request", requestIds, isAccept)
   }
 }

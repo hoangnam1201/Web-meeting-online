@@ -50,7 +50,6 @@ const tableSelectFloor = (floor) => {
 export const tableSelectTableAction = (id) => {
   return (dispatch, getState) => {
     const tableState = getState().tables;
-    console.log(tableState);
     let selectedTables = [];
     const index = tableState.selectedTables.indexOf(id);
 

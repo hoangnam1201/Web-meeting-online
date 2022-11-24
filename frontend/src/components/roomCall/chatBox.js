@@ -209,6 +209,7 @@ export const Message = React.memo(
                     {msgData?.sender?.picture ? (
                       <img
                         src={msgData?.sender?.picture}
+                        referrerPolicy="no-referrer"
                         alt=""
                         className="cursor-pointer rounded-full w-7"
                       />

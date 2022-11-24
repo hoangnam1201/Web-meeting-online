@@ -132,6 +132,7 @@ const ManageUser = () => {
                           <img
                             src={u?.picture}
                             alt=""
+                            referrerPolicy="no-referrer"
                             className="cursor-pointer rounded-full w-6 mr-3"
                           />
                         ) : (

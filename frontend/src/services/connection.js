@@ -332,7 +332,6 @@ class Connection {
       const userCurrent = store.getState().userReducer;
       const { peerId, user } = data;
       toastText(`${user.name} share screen`);
-      console.log(peerId)
 
       const options = {
         metadata: {
@@ -812,7 +811,6 @@ class Connection {
 
   static async initMyStream() {
     try {
-      console.log(this.setting)
       this.myStream.stream = await this.getVideoAudioStream(true, true, 12);
       this.myStream.media = { video: true, audio: true };
       this.setting.updateInstance("myStream", this.myStream);
@@ -822,7 +820,6 @@ class Connection {
       );
       this.setPeersListeners(this.myStream.stream);
     } catch (e) {
-      console.log(e)
       console.log("err to get media");
     }
   };

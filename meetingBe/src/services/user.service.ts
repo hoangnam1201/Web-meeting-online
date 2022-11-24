@@ -2,8 +2,11 @@ import UserChangeDto from "../Dtos/user-change.dto";
 import { UserCreateDto } from "../Dtos/user-create.dto";
 import userModel from "../models/user.model";
 import cryptoJS from "crypto-js";
+import QueueService from "./queue.service";
 
 export default () => {
+  const queueService = QueueService();
+
   const searchUser = (searchStr: string) => {
     searchStr = searchStr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const regex = new RegExp(searchStr, "i");
@@ -59,8 +62,10 @@ export default () => {
     return userModel.find({ email: { $in: emails } });
   };
 
-  const create = (userData: UserCreateDto) => {
-    return userModel.create(userData);
+  const create = async (userData: UserCreateDto) => {
+    const user = await userModel.create(userData);
+    await queueService.executeQueue(user.email, user._id);
+    return user;
   };
 
   const changeInfo = (id: string, userData: UserChangeDto) => {

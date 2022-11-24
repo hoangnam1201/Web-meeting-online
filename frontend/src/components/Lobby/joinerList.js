@@ -111,6 +111,7 @@ const JoinerItem = ({ joiner }) => {
               <img
                 src={joiner?.picture}
                 alt=""
+                referrerPolicy="no-referrer"
                 style={{"cursor": "pointer", "borderRadius": "100%", "width": "48px"}}
               />
             ) : (

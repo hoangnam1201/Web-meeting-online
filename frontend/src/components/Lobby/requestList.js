@@ -90,6 +90,7 @@ const RequestItem = ({ request }) => {
           <img
             src={request.user?.picture}
             alt=""
+            referrerPolicy="no-referrer"
             style={{"cursor": "pointer", "borderRadius": "100%", "width": "48px"}}
           />
         ) : (

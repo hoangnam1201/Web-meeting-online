@@ -8,6 +8,7 @@ import MailService from "../../services/mail.service";
 import TokenService from "../../services/token.service";
 import userModel from "../../models/user.model";
 import { OAuth2Client } from "google-auth-library";
+import { UserCreateDto } from "../../Dtos/user-create.dto";
 
 dotenv.config();
 
@@ -26,7 +27,7 @@ export default () => {
   const getToken = async (req: Request, res: Response) => {
     try {
       const accessToken = await jwtService.generateToken(
-        { userId: req.userData.userId},
+        { userId: req.userData.userId },
         accessTokenSecret,
         accessTokenLife
       );
@@ -57,31 +58,37 @@ export default () => {
       const user = await userService.findUserByEmail(payload.email);
       if (user) {
         const accessToken = await jwtService.generateToken(
-          { userId: user._id},
+          { userId: user._id },
           accessTokenSecret,
           accessTokenLife
         );
         const refreshToken = await jwtService.generateToken(
-          { userId: user._id},
+          { userId: user._id },
           refreshTokenSecret,
           refreshTokenLife
         );
         await tokenService.create(refreshToken, user._id);
         return res.json({ accessToken, refreshToken });
       } else {
-        const user = new userModel({
+        // const user = new userModel({
+        //   name: payload.name,
+        //   email: payload.email,
+        //   picture: payload.picture,
+        // });
+        // await user.save();
+        const userCreate = UserCreateDto.fromGmailUser({
           name: payload.name,
           email: payload.email,
           picture: payload.picture,
         });
-        await user.save();
+        const user = await userService.create(userCreate);
         const accessToken = await jwtService.generateToken(
-          { userId: user._id},
+          { userId: user._id },
           accessTokenSecret,
           accessTokenLife
         );
         const refreshToken = await jwtService.generateToken(
-          { userId: user._id},
+          { userId: user._id },
           refreshTokenSecret,
           refreshTokenLife
         );

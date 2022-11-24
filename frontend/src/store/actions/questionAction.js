@@ -65,7 +65,7 @@ export const addQuestionAction = (data, quizId, callback) => {
     try {
       await createQuestionApi(data);
       dispatch(getQuestionAction(quizId));
-      toastSuccess('Create success')
+      toastSuccess('Created successfully')
       callback();
     } catch (err) {
       console.log(err);
@@ -83,7 +83,7 @@ export const updateQuestionActon = (id, data) => {
     dispatch(questionRequest());
     try {
       await updateQuestionApi(id, data);
-      toastSuccess('Update question success')
+      toastSuccess('Updated question successfully')
       dispatch(getQuestionAction(data.quiz));
     } catch (err) {
       console.log(err);

@@ -20,6 +20,14 @@ export const submitAnswerAPI = (submissionId, data) => {
   return instance.post('/submission/submit-answers/' + submissionId, { data: [data] })
 }
 
+export const getMyCoresAPI = (quizId) => {
+  return instance.get('/submission/my-scores/' + quizId)
+}
+
+export const getCoresInQuizAPI = (quizId) => {
+  return instance.get('/submission/scores/' + quizId)
+}
+
 export const submitSubmissionAPI = (submissionId) => {
   return instance.put('/submission/submit/' + submissionId)
 }

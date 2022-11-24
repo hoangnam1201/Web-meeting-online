@@ -1,5 +1,5 @@
 import { getAllBriefQuestionInQuizAPI, getQuestionByIdAndSubmissionIdAPI, getQuizById } from "../../api/quiz.api";
-import { createSubmissionAPI, getSubmissionByIdAPI, getSubmissionByQuizIdAPI, submitAnswerAPI, submitSubmissionAPI } from "../../api/submission.api";
+import { createSubmissionAPI, getMyCoresAPI, getSubmissionByIdAPI, getSubmissionByQuizIdAPI, submitAnswerAPI, submitSubmissionAPI } from "../../api/submission.api";
 import { toastError } from "../../services/toastService";
 
 export const SUBMISSION_QUIZLOADING = 'SUBMISSION_QUIZLOADING';
@@ -69,7 +69,7 @@ export const submissionGetSubmissions = (quizId) => {
   return async (dispatch) => {
     dispatch(submissionLoading())
     try {
-      const res = await getSubmissionByQuizIdAPI(quizId);
+      const res = await getMyCoresAPI(quizId);
       dispatch(setSubmissions(res.data));
     } catch (e) {
       toastError(e.response?.data?.msg)
