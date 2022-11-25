@@ -26,12 +26,18 @@ export default () => {
     const { quizId } = req.params;
     const { take = 0, page = 0 } = req.query;
     try {
-      const submissions = await submissionService.getScoresInQuiz(
+      const submissionData = await submissionService.getScoresInQuiz(
         quizId,
         parseInt(take.toString()),
         parseInt(page.toString())
       );
-      res.status(200).json({ status: 200, data: submissions });
+      res.status(200).json({
+        status: 200,
+        data: {
+          ...submissionData[0],
+          count: submissionData[0].count || 0,
+        },
+      });
     } catch (e) {
       console.log(e);
       return res

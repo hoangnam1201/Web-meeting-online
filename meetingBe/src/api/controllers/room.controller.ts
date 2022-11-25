@@ -53,6 +53,31 @@ export default () => {
     }
   };
 
+  const downloadJoiners = async (req: Request, res: Response) => {
+    const roomId = req.params.roomId;
+    try {
+      const joiners = await roomService.getJoiners(roomId);
+      const membersReadDto = UserReadDto.fromArrayUser(joiners as User[]);
+      const stream = fileService.jsonToExcel(membersReadDto, []);
+      //response
+      res.setHeader(
+        "Content-disposition",
+        "attachment; filename=" + `members-${roomId}.xlsx`
+      );
+      res.setHeader(
+        "Content-type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+
+      stream.pipe(res);
+    } catch (err) {
+      return res.status(500).json({
+        status: 500,
+        msg: "Internal Server Error",
+      });
+    }
+  };
+
   const getRooms = async (req: Request, res: Response) => {
     const { ownerId, take = 10, page = 0 } = req.query;
     try {
@@ -358,8 +383,6 @@ export default () => {
       const room = await roomService.getDetail(roomId);
       const membersReadDto = UserReadDto.fromArrayUser(room.members as User[]);
       const stream = fileService.jsonToExcel(membersReadDto, []);
-      const a = await queueService.getAll();
-      console.log(a);
       //response
       res.setHeader(
         "Content-disposition",
@@ -397,5 +420,6 @@ export default () => {
     deleteRoom,
     deleteFloor,
     exportToCSV,
+    downloadJoiners
   };
 };

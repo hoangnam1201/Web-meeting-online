@@ -11,6 +11,11 @@ export default () => {
     return roomModel.findById(id);
   };
 
+  const getJoiners = async (id: string) => {
+    const room = await roomModel.findById(id).populate("joiners");
+    return room.joiners || [];
+  };
+
   const create = (roomData: RoomCreateDto) => {
     return roomModel.create({ ...roomData, floors: [new ObjectId()] });
   };
@@ -310,6 +315,7 @@ export default () => {
 
   return {
     checkCanAccept,
+    getJoiners,
     changeStateRoom,
     findById,
     findOneAndAddJoiner,

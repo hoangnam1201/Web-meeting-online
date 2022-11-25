@@ -121,6 +121,8 @@ export default (ioRoom: any, io: any) => {
       if (checkRoom.owner.toString() !== userId.toString())
         return socket.emit("room:err", "You do not have permission to present");
       const ids = await ioRoom.in(memberId).allSockets();
+
+      await roomService.findOneAndRemoveJoiner(memberId, roomId);
       if (isRemoveMember) {
         await roomService.removeMember(memberId, roomId);
       }

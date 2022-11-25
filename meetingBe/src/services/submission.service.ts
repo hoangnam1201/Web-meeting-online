@@ -357,6 +357,14 @@ export default () => {
         status: 1,
         countQuestion: { $arrayElemAt: ["$countQuestion.count", 0] },
       })
+      .lookup({
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+        pipeline: [{ $project: { name: 1, _id: 1, email: 1 } }],
+      })
+      .addFields({ user: { $arrayElemAt: ["$user", 0] } })
       .sort({ startDate: 1, userId: 1 })
       .addFields({
         score: {

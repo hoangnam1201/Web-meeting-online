@@ -135,6 +135,8 @@ roomRoute.delete(
 
 roomRoute.get("/members/download-csv/:roomId", roomController.exportToCSV);
 
+roomRoute.get("/joiners/download/:roomId", roomController.downloadJoiners);
+
 roomRoute.post(
   "/floors/:roomId",
   [AuthMiddlesware.verifyToken, AuthMiddlesware.checkClassOwnership],
