@@ -10,15 +10,55 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemButton, Popover, ListItemIcon, IconButton
+  ListItemButton, Popover, ListItemIcon, IconButton, Card
 } from "@mui/material";
 import BlockIcon from '@mui/icons-material/Block';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import InfoIcon from '@mui/icons-material/Info';
+import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
+import { downloadJoinersAPI } from "../../api/room.api";
+import { useParams } from "react-router-dom";
+import { toastError } from "../../services/toastService";
 
 const JoinerList = ({ joiners }) => {
+  const { id } = useParams();
+  const dowload = async () => {
+    try {
+      const res = await downloadJoinersAPI(id);
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(
+        new Blob([blob])
+      );
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute(
+        'download',
+        `${id}.xlsx`,
+      );
+      // Append to html link element page
+      document.body.appendChild(link);
+      // Start download
+      link.click();
+      // Clean up and remove the link
+      link.parentNode.removeChild(link);
+    } catch (e) {
+      console.log(e)
+      toastError('Error to download');
+    }
+  }
+
   return (
     <List style={{ overflowY: 'auto', width: '300px' }}>
+      <ListItem>
+        <Card variant="outlined">
+          <ListItemButton style={{ padding: '0 1rem' }} onClick={dowload}>
+            <ListItemIcon>
+              <DownloadForOfflineIcon />
+            </ListItemIcon>
+            <ListItemText primary='Download joiner list' />
+          </ListItemButton>
+        </Card>
+      </ListItem>
       {joiners?.map((user, index) => (
         <JoinerItem joiner={user} key={index} />
       ))}
@@ -112,7 +152,7 @@ const JoinerItem = ({ joiner }) => {
                 src={joiner?.picture}
                 alt=""
                 referrerPolicy="no-referrer"
-                style={{"cursor": "pointer", "borderRadius": "100%", "width": "48px"}}
+                style={{ "cursor": "pointer", "borderRadius": "100%", "width": "48px" }}
               />
             ) : (
               <Avatar

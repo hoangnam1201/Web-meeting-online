@@ -111,7 +111,6 @@ export default function QuizManagement() {
     if (data.type === 'FILLIN') {
       data.choices = data.choices?.map(c => ({ ...c, isTrue: true }))
     }
-    console.log(data)
     if (!question.selectedQuestion) {
       dispatch(
         addQuestionAction({ ...data, quiz: id }, id, () => {
@@ -139,12 +138,12 @@ export default function QuizManagement() {
   return (
     <>
       <div className=" flex items-center p-3 shadow">
-        <IconButton onClick={() => {
-          if (quiz)
-            history.push('/user/update-event/' + quiz?.current?.room)
+        {quiz?.current && (<IconButton onClick={() => {
+          history.push('/user/update-event/' + quiz?.current?.room)
         }}>
           <ArrowBackIosIcon />
         </IconButton>
+        )}
         <div className="flex justify-center">
           <h3 className="text-black font-bold text-2xl">{quiz?.current?.name}</h3>
         </div>

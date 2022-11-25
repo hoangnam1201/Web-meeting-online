@@ -5,7 +5,7 @@ import { store } from "../store";
 import { actionRemoveUserInfo } from "../store/actions/userInfoAction";
 import { renewToken } from "./user.api";
 
-const baseURL =
+export const baseURL =
   process.env.REACT_APP_HOST_BASE + "/api/" || "http://localhost:3002/api/";
 
 const instance = axios.create({ baseURL });

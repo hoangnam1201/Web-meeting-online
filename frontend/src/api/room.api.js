@@ -1,4 +1,5 @@
-import instance from "./instanceAxios";
+import axios from "axios";
+import instance, { baseURL } from "./instanceAxios";
 
 export const getInvitedRoomAPI = () => {
   return instance.get("/room/invited-room");
@@ -66,4 +67,8 @@ export const banRoomAPI = (id) => {
 
 export const unbanRoomAPI = (id) => {
   return instance.put("/room/unban-room/" + id);
+};
+
+export const downloadJoinersAPI = (id) => {
+  return fetch(baseURL + "room/joiners/download/" + id, { method: 'GET' });
 };

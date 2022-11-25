@@ -24,8 +24,8 @@ export const getMyCoresAPI = (quizId) => {
   return instance.get('/submission/my-scores/' + quizId)
 }
 
-export const getCoresInQuizAPI = (quizId) => {
-  return instance.get('/submission/scores/' + quizId)
+export const getScoresInQuizAPI = (quizId, take, page) => {
+  return instance.get('/submission/scores/' + quizId, { params: { take, page } })
 }
 
 export const submitSubmissionAPI = (submissionId) => {

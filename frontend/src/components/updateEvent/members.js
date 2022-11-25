@@ -21,13 +21,13 @@ const AddMembers = () => {
   const user = useSelector((state) => state.userManageReducer);
   const dispatch = useDispatch();
   const [pageIndex, setPageIndex] = useState(0);
-  const [searchValue, setSearchValue] = useState({});
+  const [searchValue, setSearchValue] = useState('');
   const { id } = useParams();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    dispatch(getUserPagingAction(pageIndex, ""));
+    dispatch(getUserPagingAction(pageIndex, searchValue));
   }, [pageIndex]);
 
   const selectedUser = (ids) => {
@@ -60,8 +60,8 @@ const AddMembers = () => {
 
           <SearchUser
             onChange={(value) => {
-              setSearchValue({ ...searchValue, searchText: value });
-              dispatch(getUserPagingAction(pageIndex, value, searchValue.role));
+              setSearchValue(value);
+              dispatch(getUserPagingAction(pageIndex, value));
             }}
           />
         </div>
@@ -83,11 +83,10 @@ const AddMembers = () => {
                   <div
                     key={u.id}
                     onClick={() => selectedUser(u.id)}
-                    className={`group rounded-md mt-3 ${
-                      user?.selectedUser?.indexOf(u.id) !== -1
-                        ? "border-2 border-gray-500"
-                        : ""
-                    } `}
+                    className={`group rounded-md mt-3 ${user?.selectedUser?.indexOf(u.id) !== -1
+                      ? "border-2 border-gray-500"
+                      : ""
+                      } `}
                   >
                     <div className="grid grid-cols-2 px-4 py-2 bg-gray-100 rounded-md text-sm text-gray-500 shadow-md group-hover:bg-slate-300">
                       <div className="text-left border-r-2 border-gray-300 flex items-center">
@@ -120,7 +119,7 @@ const AddMembers = () => {
             <div className="flex justify-end">
               <Stack spacing={2}>
                 <Pagination
-                  count={user?.totalPages + 1}
+                  count={user?.totalPages}
                   onChange={(e, value) => setPageIndex(value - 1)}
                   color="primary"
                 />

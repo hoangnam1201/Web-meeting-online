@@ -78,7 +78,6 @@ const VideoContainer = ({ myStream, streamDatas }) => {
           {roomCall?.sharing && (
             <MyVideo
               style={{ height: heightCam }}
-              className="h-full"
               myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
             />
           )}
@@ -86,7 +85,6 @@ const VideoContainer = ({ myStream, streamDatas }) => {
           <MyVideo
             style={{ height: heightCam }}
             myStream={{ ...myStream, peerId: Connection.myID }}
-            className="h-full"
           />
           {streamDatas &&
             Object.keys(streamDatas).map((key, index) => {

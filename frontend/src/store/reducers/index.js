@@ -11,6 +11,7 @@ import { questionReducer } from "./questionReducer";
 import { userManageReducer } from "./userManageReducer";
 import { roomManageReducer } from "./roomManageReducer";
 import { submissionReducer } from './submissionReducer';
+import { scoreReducer } from './scoreReducer';
 
 export const rootReducer = combineReducers({
   userReducer,
@@ -21,6 +22,7 @@ export const rootReducer = combineReducers({
   tables: TablesReducer,
   globalNofification: globalnofificationReducer,
   notifyMessageReducer,
+  scoreReducer,
   quizReducer,
   questionReducer,
   userManageReducer,
