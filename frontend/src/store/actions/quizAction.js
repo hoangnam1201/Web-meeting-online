@@ -57,6 +57,14 @@ export const selectQuizAction = (id, callback) => {
     }
   };
 };
+
+export const clearSelectQuizAction = ()=>{
+  return (dispatch, getState) => {
+    const quizState = getState().quizReducer;
+    if (quizState.selectedQuiz.length) return dispatch(quizSelected([]))
+  };
+}
+
 export const getQuizAction = (roomId) => {
   return async (dispatch) => {
     dispatch(quizRequest());
@@ -118,6 +126,7 @@ export const updateQuizActon = (id, data, callback) => {
     try {
       await updateQuizApi(id, data);
       dispatch(getQuizAction(data.room));
+      dispatch(clearSelectQuizAction())
       toastSuccess('successfully')
       if (callback) {
         callback();

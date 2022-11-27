@@ -83,7 +83,7 @@ export const getUserPagingAction = (pageIndex, searchStr, role) => {
       dispatch(
         userSuccess({
           items: records,
-          totalPages: Math.round(count / pageSize),
+          totalPages: Math.ceil(count / pageSize),
           currentPage: pageIndex,
         })
       );

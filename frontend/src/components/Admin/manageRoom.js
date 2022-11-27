@@ -105,7 +105,7 @@ const ManageRoom = () => {
         <div className="grid grid-cols-4">
           <div
             className="flex flex-col col-span-3 shadow-md p-2"
-            style={{ height: "650px" }}
+            style={{ height: "750px" }}
           >
             <div
               className="mb-4 p-1 self-start w-64 justify-start"
