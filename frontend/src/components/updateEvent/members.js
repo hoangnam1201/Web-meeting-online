@@ -122,6 +122,7 @@ const AddMembers = () => {
                   count={user?.totalPages}
                   onChange={(e, value) => setPageIndex(value - 1)}
                   color="primary"
+                  page={pageIndex + 1}
                 />
               </Stack>
             </div>
