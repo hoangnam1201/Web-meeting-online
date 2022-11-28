@@ -65,7 +65,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
               </Link>
               <div >
                 {type === 0 ? (
-                  <ul className="flex justify-center gap-5">
+                  <ul className="hidden xl:flex lg:flex justify-center gap-5">
                     <li className="nav-item active">
                       <Link className="nav-link" to="/">
                         Home
@@ -91,7 +91,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                   <ul>
                     <li>
                       <Link to="/user/my-event">
-                        <button className=" outline-none bg-white rounded-full py-1 px-4 text-sm text-blue-600">
+                        <button className="outline-none bg-white rounded-full p-1 md:py-1 md:px-4 text-sm text-blue-600">
                           MY EVENT
                         </button>
                       </Link>
@@ -100,7 +100,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                 )}
               </div>
               {type === 1 ? (
-                <div className="mr-10">
+                <div className="lg:mr-10">
                   <div
                     className="relative p-2"
                   >
@@ -114,6 +114,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                           className=" text-gray-400"
                         />
                       }
+                      className="text-sm"
                         onClick={() => setShowAvatarMenu(!showAvatarMenu)}
                       >
                         account
@@ -169,11 +170,11 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                   </div>
                 </div>
               ) : (
-                <div className="mr-10 flex min-w-min items-center justify-center">
+                <div className="md:mr-10 flex min-w-min items-center justify-center">
                   <Link to="/auth/login">
                     <button
                       variant="outlined"
-                      className="mr-10 py-2 px-5 rounded text-stone-500 bg-stone-50 shadow hover:bg-stone-200 whitespace-nowrap"
+                      className="text-sm mr-2 p-2 md:text-md md:mr-10 md:py-2 md:px-5 rounded text-stone-500 bg-stone-50 shadow hover:bg-stone-200 whitespace-nowrap"
                     >
                       Sign In
                     </button>
@@ -181,7 +182,7 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                   <Link to="/auth/register">
                     <button
                       variant="outlined"
-                      className="py-2 px-5 rounded bg-stone-400 hover:bg-stone-500 text-white shadow whitespace-nowrap"
+                      className="text-sm mr-2 p-2 md:text-md md:mr-10 md:py-2 md:px-5 rounded bg-stone-400 hover:bg-stone-500 text-white shadow whitespace-nowrap"
                     >
                       Sign Up
                     </button>

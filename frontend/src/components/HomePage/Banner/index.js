@@ -14,7 +14,7 @@ const Banner = () => {
   return (
     <>
       <div className="flex justify-center items-center bg-orange-50 relative py-12 z-30">
-        <div className="flex flex-col justify-center items-center text-black mr-32 mb-14">
+        <div className="flex flex-col justify-center items-center text-black md:mr-32 md:mb-14">
           <h2 className="font-bold text-4xl">Study, Metting Online</h2>
           <p className="pt-5 pb-1">We provide an online meeting support platform</p>
           <p className="py-5 pt-1">Support Divide The Room Into Small Groups</p>
@@ -26,7 +26,7 @@ const Banner = () => {
             Read more
           </Button>
         </div>
-        <div className="col-sm-12 col-sm-6 w-1/2">
+        <div className="hidden md:block col-sm-12 col-sm-6 w-1/2">
           <Swiper
             spaceBetween={10}
             autoplay={{

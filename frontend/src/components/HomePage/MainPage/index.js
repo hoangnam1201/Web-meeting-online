@@ -58,10 +58,10 @@ const MainPage = () => {
           <h1 className=" text-4xl font-bold text-stone-500 tracking-wider py-4">
             Beautiful Interface & Call With Table Group
           </h1>
-          <div className=" grid lg:grid-cols-5 grid-cols-2 gap-4">
-            <Table7 className="h-full col-span-2" />
-            <Table2 className="h-full w-56" />
-            <Table3 className="h-full" />
+          <div className="grid lg:grid-cols-5 grid-cols-1 gap-4">
+            <Table7 className="hidden md:block h-full col-span-2" />
+            <Table2 className="hidden md:block h-full w-56" />
+            <Table3 className="hidden md:block h-full" />
             <Table4 className="h-full" />
           </div>
         </div>
@@ -188,10 +188,10 @@ const MainPage = () => {
         maxWidth={false}
       >
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item md={6} xs={12}>
             <img width="500" height="500" src={imgMeeting} alt="meet" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item md={6} xs={12}>
             <div className={classes.textContent}>
               <h2 className={classes.title2}>UTE Meeting</h2>
               <p>
@@ -211,7 +211,7 @@ const MainPage = () => {
                   as well as iOS and Android OS
                 </li>
               </ul>
-              <Button variant="contained" color="warning">
+              <Button className="text-sm" variant="contained" color="warning">
                 Start using the service today
               </Button>
             </div>

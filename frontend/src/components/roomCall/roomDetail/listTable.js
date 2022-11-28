@@ -23,7 +23,7 @@ const ListTable = ({
 
   return (
     <div className="relative">
-      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-2 relative z-0 grid-flow-row-dense">
+      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-2 relative z-0 grid-flow-row-dense">
         {tables?.map((t) => {
           switch (t.numberOfSeat) {
             case 1:

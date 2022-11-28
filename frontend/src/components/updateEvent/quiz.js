@@ -132,8 +132,8 @@ const QuizManage = (props) => {
         </div>
         <div className="grid grid-cols-3">
           <div
-            className="flex flex-col col-span-2"
-            style={{ height: "5 00px" }}
+            className="flex flex-col col-span-3 md:col-span-2"
+            style={{ height: "500px" }}
           >
             <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-md">
               <div className="text-left border-r-2 border-gray-500">
@@ -156,7 +156,7 @@ const QuizManage = (props) => {
                       <div className="text-left border-r-2 border-gray-300">
                         {q.name}
                       </div>
-                      <div className="text-left pl-3 flex justify-between">
+                      <div className="text-left pl-3 block md:flex justify-between">
                         {q.duration} minutes
                         <div>
                           <Link
@@ -186,7 +186,7 @@ const QuizManage = (props) => {
               })}
             </div>
           </div>
-          <div className="p-4">
+          <div className="p-4 col-span-3 md:col-span-1">
             <div className="text-left text-md text-gray-500 font-semibold">
               Create quiz
             </div>
