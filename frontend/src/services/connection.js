@@ -820,6 +820,7 @@ class Connection {
       );
       this.setPeersListeners(this.myStream.stream);
     } catch (e) {
+      console.log(e);
       console.log("err to get media");
     }
   };

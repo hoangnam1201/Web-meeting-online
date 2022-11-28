@@ -104,21 +104,21 @@ const Header = React.memo(({ type = 0, ...rest }) => {
                   <div
                     className="relative p-2"
                   >
-                    {currentUser?.loading && (
+                    {currentUser?.loading ? (
                       <div>
                         <CircularProgress size="3rem" />
                       </div>
+                    ) : (
+                      <Button endIcon={
+                        <AccountCircleIcon fontSize="large"
+                          className=" text-gray-400"
+                        />
+                      }
+                        onClick={() => setShowAvatarMenu(!showAvatarMenu)}
+                      >
+                        account
+                      </Button>
                     )}
-                    <Button endIcon={
-                      <AccountCircleIcon fontSize="large"
-                        className=" text-gray-400"
-                      />
-                    }
-                      onClick={() => setShowAvatarMenu(!showAvatarMenu)}
-                    >
-                      account
-                    </Button>
-
                     {showAvatarMenu && (
                       <React.Fragment>
                         <div className="fixed top-0 left-0 w-full h-full z-20"

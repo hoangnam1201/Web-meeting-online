@@ -28,19 +28,19 @@ const uri = process.env.HOST_DB || "mongodb://localhost:27017/meetingdb";
 mongoose.connect(uri);
 
 // socketjs
-const io = new Server({
+const io = new Server( {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
   maxHttpBufferSize: 1e8,
-})
+});
 initIOServer(io);
 
 // peerjs
 const peerServer = ExpressPeerServer(httpServer, {
   path: "/meeting",
-  proxied: 'true'
+  proxied: "true",
 });
 app.use("/peerjs", peerServer);
 
