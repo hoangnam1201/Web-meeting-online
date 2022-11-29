@@ -244,7 +244,7 @@ function UpdateEvent() {
             </p>
           </div>
           <div className=" bg-gray-100 py-2 rounded-sm tracking-widest text-left px-3 text-gray-500 flex justify-between">
-            <p>{`${window.location.origin.toString()}/room/${id}`}</p>
+            <p className="break-all">{`${window.location.origin.toString()}/room/${id}`}</p>
             <button
               onClick={() => {
                 navigator.clipboard.writeText(
@@ -261,7 +261,7 @@ function UpdateEvent() {
         <div className="grid grid-cols-3 shadow-md p-4 mt-4">
           <div className="text-md col-span-3 text-left">
             <div className="h-2">{tables?.loading && <LinearProgress />}</div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-col md:flex-row">
               <div>
                 <p className=" font-semibold text-md">Tables</p>
                 <p className="text-gray-400 font-thin text-sm">
@@ -269,7 +269,7 @@ function UpdateEvent() {
                   divide the group
                 </p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-col md:flex-row">
                 <Button
                   className=" min-w-max"
                   variant="outlined"
@@ -289,7 +289,7 @@ function UpdateEvent() {
             </div>
           </div>
           <div
-            className="flex flex-col col-span-2 p-4"
+            className="flex flex-col col-span-3 md:col-span-2 p-4"
             style={{ height: "700px" }}
           >
             <div className="grid grid-cols-3 px-4 py-1 bg-gray-200 rounded-md relative">
@@ -388,7 +388,7 @@ function UpdateEvent() {
               </div>
             </div>
           </div>
-          <div className="p-4">
+          <div className="p-4 col-span-3 md:col-span-1">
             <div className="text-left text-md text-gray-500 font-semibold">
               Table
             </div>
@@ -516,7 +516,7 @@ function UpdateEvent() {
         </div>
 
         <div className="grid grid-cols-3 mt-4 border-b-2">
-          <div className="flex justify-between col-span-3 p-4">
+          <div className="block md:flex md:justify-between col-span-3 p-4">
             <div className="text-xl font-semibold text-left">
               <p className=" font-semibold text-md"> Members </p>
               <p className="text-gray-400 font-thin text-sm">
@@ -527,13 +527,13 @@ function UpdateEvent() {
                 google account at least once
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="block md:flex mt-2 gap-2">
               <Link to={`/user/management-member/${id}`}>
                 <Button variant="contained" color="primary">
                   Add more member
                 </Button>
               </Link>
-              <div>
+              <div className="mt-2 md:mt-0">
                 <Button variant="outlined">
                   <label>
                     Import by xlsx file
@@ -570,7 +570,7 @@ function UpdateEvent() {
             </div>
           </div>
           <div
-            className="flex flex-col col-span-2 p-4 shadow-md"
+            className="flex flex-col col-span-3 md:col-span-2 p-4 shadow-md"
             style={{ height: "700px" }}
           >
             <div className="grid grid-cols-2 px-4 py-2 bg-gray-200 rounded-md">
@@ -599,7 +599,7 @@ function UpdateEvent() {
                 })}
             </div>
           </div>
-          <div className="p-4">
+          <div className="p-4 col-span-3 md:col-span-1">
             <div className="text-left text-md text-gray-500 font-semibold">
               user
             </div>

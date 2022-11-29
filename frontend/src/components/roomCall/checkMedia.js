@@ -66,7 +66,7 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center gap-8 w-full">
+    <div className="min-h-screen flex justify-center items-center flex-col lg:flex-row gap-8 w-full">
       <div
         className="relative bg-black border-2 overflow-hidden rounded-md"
         style={{ width: "500px", height: "376px" }}
@@ -86,7 +86,7 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
           </div>
         )}
       </div>
-      <div className="w-96">
+      <div className="w-64 md:w-96">
         <div className="py-4">
           <p className="text-2xl text-gray-500 font-semibold">
             {roomInfo?.name}

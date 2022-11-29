@@ -183,6 +183,7 @@ const MyEvent = () => {
               color="primary"
               startIcon={<EventNoteIcon />}
               onClick={handleAdd}
+              className="text-sm mb-2 md:text-md"
             >
               New Events
             </Button>
