@@ -87,6 +87,19 @@ export default () => {
     }
   };
 
+  const getById = async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    try {
+      const user = await userService.findUserById(userId);
+      const userRead = UserReadDetailDto.fromUser(user);
+      return res.status(200).json({ status: 200, data: userRead });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ status: 500, data: null, msg: "Internal Server Errror" });
+    }
+  };
+
   const getDetail = async (req: Request, res: Response) => {
     const userId = req.userData.userId;
     try {
@@ -140,6 +153,7 @@ export default () => {
     findUserById,
     register,
     getDetail,
+    getById,
     changeInfor,
     changePassword,
     updatePermission,

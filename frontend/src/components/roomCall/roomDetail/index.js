@@ -13,6 +13,7 @@ import ListTable from "./listTable";
 import ListQuiz from "./listQuiz";
 import { isMobile } from "react-device-detect";
 import MobileToolbar from "../toolbarMobile";
+import UserInfoDialog from "./userInfoDialog";
 
 const RoomDetail = ({
   roomTables,
@@ -47,6 +48,7 @@ const RoomDetail = ({
     <div
       className="min-h-screen relative bg-blue-50 pb-20"
     >
+      <UserInfoDialog />
       {!roomCall?.roomInfo?.isPresent && (
         <>
           <VideoTableContainer

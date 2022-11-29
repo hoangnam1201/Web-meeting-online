@@ -27,6 +27,10 @@ export const getInfoAPI = () => {
   return instance.get("/user/get-detail");
 };
 
+export const getInfoByIdAPI = (id) => {
+  return instance.get("/user/get-by-id/" + id);
+}
+
 export const searchUserAPI = (str) => {
   return instance.get("/user/search", { params: { searchValue: str } });
 };

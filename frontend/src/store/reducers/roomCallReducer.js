@@ -12,6 +12,8 @@ import {
   ROOMCALL_SETREQUEST,
   ROOMCALL_SHOWQUIZS,
   ROOMCALL_SETSHARING,
+  ROOMCALL_SETSELETEDUSERINFO,
+  ROOMCALL_GETUSERLOADING,
 } from "../actions/roomCallAction";
 
 const initState = {
@@ -36,6 +38,8 @@ const initState = {
   requestLoading: false,
   //share
   sharing: false,
+  //
+  seletedUserInfo: null,
 };
 
 export const roomCallReducer = (state = initState, { type, payload }) => {
@@ -54,6 +58,8 @@ export const roomCallReducer = (state = initState, { type, payload }) => {
       return { ...state, showLobby: payload };
     case ROOMCALL_SETSHARING:
       return { ...state, sharing: payload };
+    case ROOMCALL_SETSELETEDUSERINFO:
+      return { ...state, seletedUserInfo: payload };
     case ROOMCALL_JOINLOADING:
       const selectedTable = payload ? state.selectedTable : null;
       return { ...state, joinLoading: payload, selectedTable }

@@ -4,7 +4,7 @@ import SeatAvatar from "./seatAvatar";
 
 const Seat3top = ({ users = [] }) => {
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative z-0 flex flex-col items-center">
       <div className="flex">
         <div className=" bg-red-200 w-4 h-12 rounded-lg transform translate-x-1/2 z-10" />
         <div>

@@ -1,4 +1,7 @@
+import { toast } from "react-toastify";
+import { getInfoByIdAPI } from "../../api/user.api";
 import Connection from "../../services/connection";
+import { toastError } from "../../services/toastService";
 
 export const ROOMCALL_SETACCESSMEDIA = "ROOMCALL_SETACCESSMEDIA";
 export const ROOMCALL_SHOWCHAT = "ROOMCALL_SHOWCHAT";
@@ -15,6 +18,7 @@ export const ROOMCALL_SETSELETEDTABLE = 'ROOMCALL_SETSELETEDTABLE';
 export const ROOMCALL_SETREQUESTLOADING = 'ROOMCALL_SETREQUESTLOADING';
 export const ROOMCALL_SETREQUEST = 'ROOMCALL_SETREQUEST';
 export const ROOMCALL_SHOWQUIZS = 'ROOMCALL_SHOWQUIZLIST';
+export const ROOMCALL_SETSELETEDUSERINFO = 'ROOMCALL_SETSELETEDUSERINFO'
 
 const setRequestLoading = (isloading) => {
   return {
@@ -100,6 +104,13 @@ export const setSeletedTable = (id) => {
   }
 }
 
+export const roomCallSetSeletedUserInfo = (id) => {
+  return {
+    type: ROOMCALL_SETSELETEDUSERINFO,
+    payload: id
+  }
+}
+
 export const roomCallSetJoinLoading = (isloading) => {
   return {
     type: ROOMCALL_JOINLOADING,
@@ -107,12 +118,14 @@ export const roomCallSetJoinLoading = (isloading) => {
   }
 }
 
+
 export const roomCallSetChatLoading = (isloading) => {
   return {
     type: ROOMCALL_CHATLOADING,
     payload: isloading
   }
 }
+
 
 export const roomCallJoinTable = (id, mediaStatus) => {
   return (dispatch, getState) => {
