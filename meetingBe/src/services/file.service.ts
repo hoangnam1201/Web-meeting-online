@@ -68,7 +68,8 @@ export default () => {
 
       // return XLSX.stream.to_csv(workSheet);
       return stream;
-    } catch {
+    } catch (e) {
+      console.log(e);
       throw new Error("Internal Server Error");
     }
   };

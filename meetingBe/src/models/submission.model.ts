@@ -1,4 +1,5 @@
 import { model, ObjectId, Schema, SchemaTypes, Types } from "mongoose";
+import { Question } from "./question.model";
 
 export class submission {
   _id: Types.ObjectId;
@@ -7,7 +8,7 @@ export class submission {
   startDate: number;
   status: "DOING" | "SUBMITTED";
   answers: {
-    questionId: Types.ObjectId;
+    questionId: Types.ObjectId | Question;
     answers: {
       answerId: Types.ObjectId;
       content: string;

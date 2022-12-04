@@ -378,7 +378,14 @@ export default () => {
       .addFields({ count: { $arrayElemAt: ["$count.count", 0] } });
   };
 
+  const getAnswers = (submissionId: string) => {
+    return submissionModel
+      .findById(submissionId)
+      .populate("answers.questionId");
+  };
+
   return {
+    getAnswers,
     getById,
     getByQuiz,
     getCountByQuiz,

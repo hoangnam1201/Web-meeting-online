@@ -27,9 +27,11 @@ const JoinerList = ({ joiners }) => {
   const dowload = async () => {
     try {
       const res = await downloadJoinersAPI(id);
-      const blob = await res.blob();
       const url = window.URL.createObjectURL(
-        new Blob([blob])
+        new Blob([res], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        })
       );
       const link = document.createElement('a');
       link.href = url;

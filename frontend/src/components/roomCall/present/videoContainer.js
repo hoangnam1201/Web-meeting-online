@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { MyVideo, Video } from "../videoTableContainer";
 import { useDispatch, useSelector } from "react-redux";
 import { useResizeDetector } from "react-resize-detector";
@@ -15,6 +15,7 @@ const VideoContainer = ({ myStream, streamDatas }) => {
   const ref = useRef();
   const [fullScreen, setFullScreen] = useState(false);
   const [sizeCam, setSizeCam] = useState({ width: 0, height: 0 });
+  const [shareStreamData, setShareStreamData] = useState(null);
 
   useResizeDetector({
     onResize: () => {
@@ -27,11 +28,22 @@ const VideoContainer = ({ myStream, streamDatas }) => {
     displayCam();
   }, [Object.values(streamDatas).length, shareScreen, selectedVideo]);
 
+  useEffect(() => {
+    if (shareScreen)
+      setShareStreamData({
+        stream: Connection.shareStream,
+        media: { video: true, audio: false },
+        peerId: Connection.sharePeerId
+      })
+    else
+      setShareStreamData(null)
+  }, [shareScreen?.isSharing])
+
   const displayCam = () => {
     const widthScreen = ref.current.clientWidth;
     const aspectRatio = 1.777; //16:9
     const countVideo = (shareScreen?.isSharing ? 2 : 1) + Object.keys(streamDatas).length;
-    let cols = 1;
+    let cols = 1
     switch (countVideo) {
       case 1:
         cols = 1;
@@ -57,6 +69,7 @@ const VideoContainer = ({ myStream, streamDatas }) => {
     setSizeCam({ width: camWidth, height: camHeight });
   };
 
+
   return (
     <div
       ref={ref}
@@ -78,21 +91,21 @@ const VideoContainer = ({ myStream, streamDatas }) => {
         {shareScreen?.isSharing && (
           <MyVideo
             style={{ ...sizeCam }}
-            className='h-32 w-40'
-            myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
+            className='h-32 w-40 transition-all'
+            myStream={shareStreamData}
           />
         )}
         <MyVideo
           style={{ ...sizeCam }}
-          className='h-32 w-40'
-          myStream={{ ...myStream, peerId: Connection.myID }}
+          className='h-32 w-40 transition-all'
+          myStream={myStream}
         />
         {streamDatas &&
           Object.keys(streamDatas).map((key, index) => {
             return (
               <Video
                 style={{ ...sizeCam }}
-                className="bg-black rounded-md overflow-hidden"
+                className="bg-black rounded-md overflow-hidden transition-all"
                 streamData={streamDatas[key]}
                 key={index}
                 isPin={selectedVideo === key}

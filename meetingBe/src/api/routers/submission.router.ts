@@ -31,6 +31,12 @@ submissionRouter.get(
 );
 
 submissionRouter.get(
+  "/download/:submissionId",
+  AuthMiddlesware.verifyToken,
+  submissionController.downloadSubmission
+);
+
+submissionRouter.get(
   "/submissions-in-quiz/:quizId",
   AuthMiddlesware.verifyToken,
   submissionController.getSubmissionInQuiz

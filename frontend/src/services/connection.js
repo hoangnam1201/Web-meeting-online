@@ -710,6 +710,7 @@ class Connection {
   static initializePeersEvents() {
     this.myPeer.on("open", (id) => {
       this.myID = id;
+      this.myStream.peerId = id;
       store.dispatch(roomCallSetPeerId(id));
       this.setting.updateInstance(
         "canAccess",
@@ -991,6 +992,7 @@ class Connection {
     try {
       this.myStream.stream = await this.getVideoAudioStream(true, true, 12);
       this.myStream.media = { video: true, audio: true };
+      this.myStream.peerId = this.myID;
       this.setting.updateInstance("myStream", this.myStream);
       this.setting.updateInstance(
         "canAccess",

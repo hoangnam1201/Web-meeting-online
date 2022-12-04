@@ -70,5 +70,5 @@ export const unbanRoomAPI = (id) => {
 };
 
 export const downloadJoinersAPI = (id) => {
-  return fetch(baseURL + "room/joiners/download/" + id, { method: 'GET' });
+  return instance.get(baseURL + "room/joiners/download/" + id, { responseType: 'blob' });
 };

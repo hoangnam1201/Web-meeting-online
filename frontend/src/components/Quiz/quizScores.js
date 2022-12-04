@@ -1,10 +1,11 @@
-import { IconButton, Pagination, TablePagination } from '@mui/material';
+import { Button, IconButton, Pagination, TablePagination } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useDispatch, useSelector } from 'react-redux';
 import { submissionGetQuizDetail } from '../../store/actions/submissionAction';
 import { getScoresAction } from '../../store/actions/scoreAction';
+import { downloadSubmissionAPI } from '../../api/submission.api';
 
 const QuizScores = () => {
   const { id } = useParams();
@@ -30,6 +31,28 @@ const QuizScores = () => {
     dispatch(getScoresAction(id, rowsPerPage, pageState.page))
   }
 
+  const download = async (submissionId, startDate) => {
+    const res = await downloadSubmissionAPI(submissionId)
+    const url = window.URL.createObjectURL(
+      new Blob([res], {
+        type:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      })
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute(
+      'download',
+      `submission-${submissionId}-${startDate}.xlsx`,
+    );
+    // Append to html link element page
+    document.body.appendChild(link);
+    // Start download
+    link.click();
+    // Clean up and remove the link
+    link.parentNode.removeChild(link);
+  }
+
   return (
     <div>
       <div className='flex gap-3 justify-start items-center bg-gray-50 shadow-sm p-2'>
@@ -38,7 +61,10 @@ const QuizScores = () => {
         )}
         <p className='text-xl tracking-wider'>{submissionState?.quizDetail?.name} scores</p>
       </div>
-      <div className='md:mx-6 mt-4 shadow-md flex-col flex'>
+      <p className='mt-4 text-left mx-5 text-sm'>
+       <span className='font-bold'>note: </span>in downloaded file, the first row is question and the second row is answer from the user
+      </p>
+      <div className='md:mx-6 mx-4 shadow-md flex-col flex'>
         <div className='w-full'>
           <table className='w-full table-fixed '>
             <thead>
@@ -47,6 +73,7 @@ const QuizScores = () => {
                 <td className='py-2'>User</td>
                 <td className='py-2'>Number of correct answers</td>
                 <td className='py-2'>Score</td>
+                <td className='py-2'></td>
               </tr>
             </thead>
             <tbody>
@@ -59,6 +86,9 @@ const QuizScores = () => {
                   </td>
                   <td className='border-b py-1'>{s?.countCorrect} / {s?.countQuestion}</td>
                   <td className='border-b py-1 overflow-hidden text-ellipsis whitespace-nowrap'>{s?.score}</td>
+                  <td className='border-b py-1 overflow-hidden text-ellipsis whitespace-nowrap'>
+                    <Button onClick={() => download(s._id, s.startDate)}>download</Button>
+                  </td>
                 </tr>
               ))}
               <tr>

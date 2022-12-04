@@ -18,6 +18,19 @@ const VideoTableContainer = ({
   const selectedVideo = useSelector((state) => state.selectedVideo);
   const shareScreen = useSelector(state => state.shareScreenReducer);
   const callAll = useSelector(state => state.callAllReducer);
+  const [shareStreamData, setShareStreamData] = useState(null);
+
+  useEffect(() => {
+    if (shareScreen)
+      setShareStreamData({
+        stream: Connection.shareStream,
+        media: { video: true, audio: false },
+        peerId: Connection.sharePeerId
+      })
+    else
+      setShareStreamData(null)
+  }, [shareScreen?.isSharing])
+
   const onPin = (peerId) => {
     if (!selectedVideo)
       return dispatch(setSelectedVideoAction(peerId));
@@ -30,12 +43,12 @@ const VideoTableContainer = ({
         {shareScreen.isSharing && (
           <MyVideo
             className="w-44 h-32 bg-gray-600 rounded-md overflow-hidden"
-            myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
+            myStream={shareStreamData}
           />
         )}
         <MyVideo
           className="w-44 h-32 bg-gray-600 rounded-md overflow-hidden"
-          myStream={{ ...myStream, peerId: Connection.myID }}
+          myStream={myStream}
         />
         {callAll?.hostStream && (
           <Video

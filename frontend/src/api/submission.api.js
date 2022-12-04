@@ -31,3 +31,7 @@ export const getScoresInQuizAPI = (quizId, take, page) => {
 export const submitSubmissionAPI = (submissionId) => {
   return instance.put('/submission/submit/' + submissionId)
 }
+
+export const downloadSubmissionAPI = (submissionId) => {
+  return instance.get('/submission/download/' + submissionId, { responseType: 'blob' })
+}
