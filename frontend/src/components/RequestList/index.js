@@ -25,7 +25,7 @@ const RequestItem = ({ request }) => {
   };
 
   return (
-    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-800 px-2">
+    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-200 px-2">
       {request?.picture ? (
         <div className="flex items-center gap-4">
           <img
@@ -46,7 +46,7 @@ const RequestItem = ({ request }) => {
         </div>
       )}
       <div className="w-0 flex-grow overflow-x-hidden">
-        <p className="whitespace-nowrap text-left font-semibold text-gray-100">
+        <p className="whitespace-nowrap text-left font-semibold text-gray-400">
           {request.user?.name.length < 15
             ? request.user?.name
             : `${request.user?.name.slice(0, 15)}...`}

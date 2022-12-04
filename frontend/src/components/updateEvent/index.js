@@ -38,7 +38,6 @@ function UpdateEvent() {
   const { id } = useParams();
   const tables = useSelector((state) => state.tables);
   //quiz
-  const quiz = useSelector((state) => state.quizReducer);
   const dispatch = useDispatch();
   const [room, setRoom] = useState(null);
   const [notFound, setNotFound] = useState(false);

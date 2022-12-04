@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Connection from "../../services/connection";
 import { IconButton, Button, CircularProgress, Alert } from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
@@ -9,6 +9,7 @@ import { useParams } from "react-router";
 import { getRoomAPI, updateStateRoomApi } from "../../api/room.api";
 import { useSelector } from "react-redux";
 import { toastError } from "../../services/toastService";
+import hark from "hark";
 
 const CheckMedia = ({ myStream, canAccess, joinError }) => {
   const myVideo = useRef(null);
@@ -17,6 +18,8 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
   const [roomInfo, setRoomInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
+  const speech = useRef();
+  const [volume, setVolume] = useState(0);
 
   const turnOffAudio = () => {
     Connection.turnOffAudio();
@@ -46,7 +49,8 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
 
   useEffect(() => {
     getRoomInfo()
-  }, []);
+
+  }, [id]);
 
   const getRoomInfo = () => {
     getRoomAPI(id).then((res) => {
@@ -55,11 +59,18 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
     });
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!myStream.stream) return;
     myVideo.current.srcObject = myStream.stream;
-    myVideo.current.muted = myStream.stream;
-  }, [myStream]);
+    speech.current = hark(myStream.stream);
+    speech.current.setInterval(100)
+    speech.current.on('volume_change', (e) => {
+      setVolume(Math.round((100 + e) / 30))
+    })
+    return () => {
+      speech.current?.stop();
+    }
+  }, [myStream?.media]);
 
   const joinRoomHandler = () => {
     roomCall.socket.emit("room:join", id);
@@ -67,24 +78,26 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
 
   return (
     <div className="min-h-screen flex justify-center items-center flex-col lg:flex-row gap-8 w-full">
-      <div
-        className="relative bg-black border-2 overflow-hidden rounded-md"
-        style={{ width: "500px", height: "376px" }}
-      >
-        <video
-          ref={myVideo}
-          muted
-          autoPlay
+      <div>
+        <div
+          className="relative bg-black border-2 overflow-hidden rounded-md"
           style={{ width: "500px", height: "376px" }}
-        />
-        {!myStream?.media?.video && (
-          <div
-            className="absolute z-20 top-1/2 left-1/2 text-white transform -translate-x-1/2
+        >
+          <video
+            ref={myVideo}
+            autoPlay
+            muted
+            style={{ width: "500px", height: "376px" }}
+          />
+          {!myStream?.media?.video && (
+            <div
+              className="absolute z-20 top-1/2 left-1/2 text-white transform -translate-x-1/2
                 -translate-y-1/2 text-xl font-semibold"
-          >
-            The camera is off
-          </div>
-        )}
+            >
+              The camera is off
+            </div>
+          )}
+        </div>
       </div>
       <div className="w-64 md:w-96">
         <div className="py-4">
@@ -99,13 +112,22 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
           <>
             <div className="flex justify-center gap-4 mb-4 ">
               {myStream?.media?.audio ? (
-                <IconButton
-                  variant="contained"
-                  color="primary"
-                  onClick={turnOffAudio}
-                >
-                  <MicIcon fontSize="large" />
-                </IconButton>
+                <div className="flex flex-col items-center">
+                  <div>
+                    <IconButton
+                      variant="contained"
+                      color="primary"
+                      onClick={turnOffAudio}
+                    >
+                      <MicIcon fontSize="large" />
+                    </IconButton>
+                  </div>
+                  <div className="flex gap-1">
+                    {Array.from({ length: volume + 1 }, (_, index) => index).map(i => (
+                      <div className="h-1 w-2 rounded-full bg-blue-700" key={i + 'key'} />
+                    ))}
+                  </div>
+                </div>
               ) : (
                 <IconButton
                   variant="contained"

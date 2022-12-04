@@ -48,10 +48,35 @@ export default (ioRoom: any, io: any) => {
         socket.data.roomId = roomId;
 
         const room = await roomService.findOneAndAddJoiner(roomId, userId);
+
         if (!room) return socket.emit("error:bad-request", "not found room");
 
         socket.emit("room:info", RoomReadDetailDto.fromRoom(room));
         const user = await userService.findUserById(userId);
+
+        //check if call all
+        const sockets = await ioRoom
+          .in(roomId + room.owner.toString())
+          .fetchSockets();
+        if (sockets[0]?.data?.callAll) {
+          const host = await userService.findUserById(
+            sockets[0]?.data.userData.userId
+          );
+          if (host) {
+            socket.emit("room:host-call-all", {
+              user: UserReadDetailDto.fromUser(host),
+              peerId: sockets[0].data.peerId,
+              media: sockets[0].data.callAll,
+            });
+            if (sockets[0]?.data?.sharePeerId)
+              socket.emit("room:user-share-screen", {
+                user: UserReadDetailDto.fromUser(host),
+                peerId: sockets[0]?.data?.sharePeerId,
+              });
+          }
+        }
+
+        //
         ioRoom
           .to(roomId)
           .emit(
@@ -211,6 +236,29 @@ export default (ioRoom: any, io: any) => {
 
       socket.to(socketIds).emit("room:info", RoomReadDetailDto.fromRoom(room));
       const users = await userService.getUsersByIds(userIds);
+
+      //check if call all
+      const sockets = await ioRoom
+        .in(roomId + room.owner.toString())
+        .fetchSockets();
+      if (sockets[0]?.data?.callAll) {
+        const host = await userService.findUserById(
+          sockets[0]?.data.userData.userId
+        );
+        if (host) {
+          socket.to(socketIds).emit("room:host-call-all", {
+            user: UserReadDetailDto.fromUser(host),
+            peerId: sockets[0].data.peerId,
+            media: sockets[0].data.callAll,
+          });
+          if (sockets[0]?.data?.sharePeerId)
+            socket.to(socketIds).emit("room:user-share-screen", {
+              user: UserReadDetailDto.fromUser(host),
+              peerId: sockets[0]?.data?.sharePeerId,
+            });
+        }
+      }
+      //
       ioRoom
         .to(roomId)
         .emit(
@@ -251,11 +299,8 @@ export default (ioRoom: any, io: any) => {
 
   const leaveRoom = async function () {
     const socket: Socket = this;
-    const roomId = socket.data.roomId;
+    const { roomId, peerId, sharePeerId, floor, callAll } = socket.data;
     const userId = socket.data.userData.userId;
-    const peerId = socket.data.peerId;
-    const sharePeerId = socket.data.sharePeerId;
-    const floor = socket.data.floor;
 
     try {
       const room = await roomService.findOneAndRemoveJoiner(roomId, userId);
@@ -266,6 +311,7 @@ export default (ioRoom: any, io: any) => {
         state: "leave",
       });
 
+      //presenting
       if (room.isPresent) {
         //stop presenting if user is owner
         if (room.owner.toString() === userId.toString()) {
@@ -285,8 +331,23 @@ export default (ioRoom: any, io: any) => {
         socket.to(roomId).emit("present:user-leave", { userId, peerId });
         return;
       }
+
+      //if call all
+      if (callAll) {
+        socket.broadcast.to(roomId).emit("room:host-close-call-all", peerId);
+        if (sharePeerId) {
+          socket.broadcast.to(roomId).emit("room:user-stop-share-screen", {
+            user: UserReadDetailDto.fromUser(user),
+            peerId: sharePeerId,
+          });
+          delete socket.data.sharePeerId;
+        }
+      }
+
+      //leave previous table
       const tableId = socket.data.tableId;
       if (tableId) {
+        //if is sharing
         if (sharePeerId)
           socket
             .to(tableId)
@@ -296,6 +357,7 @@ export default (ioRoom: any, io: any) => {
           roomId,
           floor
         );
+
         socket
           .in(roomId)
           .to(floor)
@@ -395,15 +457,8 @@ export default (ioRoom: any, io: any) => {
 
       // check previous tables
       const previousTableId = socket.data.tableId;
-      const sharePeerId = socket.data.sharePeerId;
       checkPrevious: if (previousTableId) {
         ioRoom.to(previousTableId).emit("table:user-leave", { userId, peerId });
-        if (sharePeerId)
-          socket.broadcast
-            .to(previousTableId)
-            .emit("table:user-stop-share-screen", {
-              peerId: sharePeerId,
-            });
         socket.leave(previousTableId);
         const table = await tableService.removeJoiner(previousTableId, userId);
         const previousFloor = table.floor.toString();
@@ -516,20 +571,17 @@ export default (ioRoom: any, io: any) => {
     type: string
   ) {
     const socket: Socket = this;
-    const tableId = socket.data.tableId;
-    const userId = socket.data.userData.userId;
-    const peerId = socket.data.peerId;
-    const roomId = socket.data.roomId;
+    const { roomId, callAll, peerId, tableId } = socket.data;
 
     if (type.toLowerCase() === "present") {
-      ioRoom
-        .to(roomId)
-        .emit("present:media", { peerId: peerId, userId: userId, media });
+      ioRoom.to(roomId).emit("present:media", { peerId: peerId, media });
       return;
     }
-    ioRoom
-      .to(tableId)
-      .emit("table:media", { peerId: peerId, userId: userId, media });
+
+    if (callAll) {
+      ioRoom.to(roomId).emit("room:media", { peerId: peerId, media });
+    }
+    ioRoom.to(tableId).emit("table:media", { peerId: peerId, media });
   };
 
   const present = async function (time: number) {
@@ -545,6 +597,7 @@ export default (ioRoom: any, io: any) => {
       const room = await roomService.findOneAndUpdatePresent(roomId, true);
       await tableService.findAndClearJoiner(roomId);
       ioRoom.to(roomId).emit("room:present", { time, tables: [] });
+      delete socket.data.callAll;
 
       setTimeout(() => {
         ioRoom.to(roomId).emit("room:info", RoomReadDetailDto.fromRoom(room));
@@ -630,25 +683,30 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
-  const shareScreen = async function (peerId: string) {
+  const shareScreen = async function (
+    peerId: string,
+    scope: string,
+    subPeerId: string
+  ) {
     const socket: Socket = this;
     const { roomId } = socket.data;
     const userId = socket.data.userData.userId;
     const user = await userService.findUserById(userId);
     socket.data.sharePeerId = peerId;
-    socket.broadcast.to(roomId).emit("present:user-share-screen", {
+    socket.broadcast.to(roomId).emit(scope + ":user-share-screen", {
       user: UserReadDetailDto.fromUser(user),
       peerId: peerId,
+      subPeerId,
     });
   };
 
-  const stopShareScreen = async function (peerId: string) {
+  const stopShareScreen = async function (peerId: string, scope: string) {
     const socket: Socket = this;
-    const { roomId } = socket.data;
+    const { roomId, tableId } = socket.data;
     const userId = socket.data.userData.userId;
     const user = await userService.findUserById(userId);
     delete socket.data.sharePeerId;
-    socket.broadcast.to(roomId).emit("present:user-stop-share-screen", {
+    socket.broadcast.to(roomId).emit(scope + ":user-stop-share-screen", {
       user: UserReadDetailDto.fromUser(user),
       peerId: peerId,
     });
@@ -693,7 +751,52 @@ export default (ioRoom: any, io: any) => {
     }
   };
 
+  const callAll = async function (
+    peerId: string,
+    media: { audio: boolean; video: boolean },
+    callback: (data: boolean) => void
+  ) {
+    const socket: Socket = this;
+    const { roomId, callAll } = socket.data;
+    const { userId } = socket.data.userData;
+    const user = await userService.findUserById(userId);
+    if (callAll) return;
+    socket.data.callAll = media;
+    socket.data.peerId = peerId;
+    socket.broadcast.to(roomId).emit("room:host-call-all", {
+      user: UserReadDetailDto.fromUser(user),
+      peerId,
+      media,
+    });
+    callback && callback(true);
+  };
+
+  const closeCallAll = async function (
+    peerId: string,
+    callback: (data: boolean) => void
+  ) {
+    const socket: Socket = this;
+    const { roomId, tableId } = socket.data;
+    const { userId } = socket.data.userData;
+
+    socket.broadcast.to(roomId).emit("room:host-close-call-all", peerId);
+    // join current table
+    if (tableId) {
+      const temp = { ...socket.data.callAll };
+      const user = await userService.findUserById(userId);
+      socket.broadcast.to(tableId).emit("table:user-joined", {
+        user: UserReadDetailDto.fromUser(user),
+        peerId,
+        media: temp,
+      });
+    }
+    delete socket.data.callAll;
+    callback && callback(false);
+  };
+
   return {
+    callAll,
+    closeCallAll,
     buzzUser,
     shareScreen,
     stopShareScreen,

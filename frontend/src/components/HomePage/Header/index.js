@@ -13,7 +13,7 @@ import {
   getUserInfo,
 } from "../../../store/actions/userInfoAction";
 import Scroll from "react-scroll";
-import { Button, CircularProgress, IconButton } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 
 //type: 0-unlogin 1-logged
 const Header = React.memo(({ type = 0, ...rest }) => {

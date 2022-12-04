@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-export const toastText = (text) => {
+export const toastText = (text, theme = 'colored') => {
   toast(text, {
     position: "top-right",
     autoClose: 3000,
@@ -8,7 +8,7 @@ export const toastText = (text) => {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    theme: "colored",
+    theme: theme,
   })
 };
 

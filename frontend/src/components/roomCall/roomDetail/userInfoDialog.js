@@ -50,6 +50,7 @@ const UserInfoDialog = () => {
             ) : <ReactAvatar
               name={user?.name}
               size={50}
+              round
             />}
             <div>
               <Box>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
+import CoPresentIcon from '@mui/icons-material/CoPresent';
 import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
@@ -29,12 +30,13 @@ import PeopleIcon from "@mui/icons-material/People";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { LinearProgress, Switch } from "@mui/material";
 import Connection from "../../services/connection";
+import { callAllAction, closeCallAllAction } from "../../store/actions/callAllAction";
 
 const Toolbar = ({ mediaStatus, userJoined, ...rest }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const currentUser = useSelector((state) => state.userReducer);
+  const callAll = useSelector(state => state.callAllReducer);
   const dispatch = useDispatch();
-  const history = useHistory();
   const [autoHidden, setAutoHidden] = useState(false);
   const { status, startRecording, stopRecording, clearBlobUrl } = useReactMediaRecorder({
     screen: true,
@@ -88,7 +90,10 @@ const Toolbar = ({ mediaStatus, userJoined, ...rest }) => {
   };
 
   const shareScreen = async () => {
-    Connection.shareScreen('table');
+    if (callAll?.isCallAll)
+      Connection.shareScreen('room');
+    else
+      Connection.shareScreen('table');
   };
 
   const onPresent = () => {
@@ -96,6 +101,12 @@ const Toolbar = ({ mediaStatus, userJoined, ...rest }) => {
       roomCall.socket.emit("room:present", 8);
     });
   };
+
+  const onCallAll = () => {
+    if (!callAll?.isCallAll)
+      return dispatch(callAllAction());
+    dispatch(closeCallAllAction());
+  }
 
   const joinTableHandler = () => {
     if (roomCall && roomCall.selectedTable && !roomCall.joinLoading) {
@@ -194,6 +205,16 @@ const Toolbar = ({ mediaStatus, userJoined, ...rest }) => {
                   </Link>
                 </div>
               </div>
+              <button
+                className={`p-2 ${callAll?.isCallAll ? 'text-blue-500' : 'text-gray-500'} focus:outline-none text-sm font-semibold`}
+                disabled={callAll?.loading}
+                onClick={onCallAll}
+              >
+                <div>
+                  <CoPresentIcon />
+                </div>
+                call all
+              </button>
               <button
                 className="p-2 text-gray-500 focus:outline-none text-sm font-semibold"
                 onClick={onPresent}

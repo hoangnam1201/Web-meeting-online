@@ -34,7 +34,7 @@ const JoinerItem = ({ joiner }) => {
     });
   };
   return (
-    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-800 text-black px-2">
+    <div className="flex gap-4 items-center justify-between py-2 hover:bg-gray-100 px-2">
       <div className="flex items-center gap-4">
         {joiner?.picture ? (
           <img
@@ -53,7 +53,7 @@ const JoinerItem = ({ joiner }) => {
         )}
         <div className="flex-grow overflow-x-hidden">
           <div className="flex items-center">
-            <p className="whitespace-nowrap text-left font-semibold text-gray-100">
+            <p className="whitespace-nowrap text-left font-semibold text-gray-500">
               {joiner?.name.length < 15
                 ? joiner?.name
                 : `${joiner?.name.slice(0, 15)}...`}

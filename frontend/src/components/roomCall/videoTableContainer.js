@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MicOffIcon from "@mui/icons-material/MicOff";
+import MicIcon from "@mui/icons-material/Mic";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import Avatar from "react-avatar";
 import { IconButton } from "@mui/material";
 import { setSelectedVideoAction } from "../../store/actions/selectedVideoAction";
 import Connection from "../../services/connection";
+import hark from "hark";
 
 const VideoTableContainer = ({
   myStream,
@@ -13,8 +15,9 @@ const VideoTableContainer = ({
   ...rest
 }) => {
   const dispatch = useDispatch();
-  const selectedVideo = useSelector((state) => state.selectedVideo)
-  const roomCall = useSelector(state => state.roomCall);
+  const selectedVideo = useSelector((state) => state.selectedVideo);
+  const shareScreen = useSelector(state => state.shareScreenReducer);
+  const callAll = useSelector(state => state.callAllReducer);
   const onPin = (peerId) => {
     if (!selectedVideo)
       return dispatch(setSelectedVideoAction(peerId));
@@ -24,7 +27,7 @@ const VideoTableContainer = ({
   return (
     <div {...rest}>
       <div className="flex gap-4 justify-center">
-        {roomCall.sharing && (
+        {shareScreen.isSharing && (
           <MyVideo
             className="w-44 h-32 bg-gray-600 rounded-md overflow-hidden"
             myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
@@ -34,6 +37,22 @@ const VideoTableContainer = ({
           className="w-44 h-32 bg-gray-600 rounded-md overflow-hidden"
           myStream={{ ...myStream, peerId: Connection.myID }}
         />
+        {callAll?.hostStream && (
+          <Video
+            className="w-44 h-32 bg-black rounded-md overflow-hidden"
+            streamData={callAll?.hostStream}
+            onPin={() => onPin(callAll?.hostStream?.peerId)}
+            isPin={callAll?.hostStream?.peerId === selectedVideo}
+          />
+        )}
+        {callAll?.hostShareStream && (
+          <Video
+            className="w-44 h-32 bg-black rounded-md overflow-hidden"
+            streamData={callAll?.hostShareStream}
+            onPin={() => onPin(callAll?.hostShareStream?.peerId)}
+            isPin={callAll?.hostShareStream?.peerId === selectedVideo}
+          />
+        )}
         {streamDatas &&
           Object.keys(streamDatas).map((key, index) => {
             return (
@@ -55,14 +74,26 @@ export const MyVideo = React.memo(({ sharing = false, myStream, ...rest }) => {
   const videoRef = useRef(null);
   const selectedVideo = useSelector(state => state.selectedVideo);
   const dispatch = useDispatch();
+  const speech = useRef();
+  const [speaking, setSpeaking] = useState(false);
 
   useEffect(() => {
     if (!myStream) return;
     const stream = myStream.stream;
     if (!stream) return;
-
-    videoRef.current.muted = true;
     videoRef.current.srcObject = stream;
+    if (myStream.media.audio) {
+      speech.current = hark(myStream.stream, { interval: 200 });
+      speech.current.on('speaking', () => {
+        setSpeaking(true)
+      })
+      speech.current.on('stopped_speaking', () => {
+        setSpeaking(false)
+      })
+    }
+    return () => {
+      speech.current?.stop();
+    }
   }, [myStream]);
 
   return (
@@ -71,8 +102,8 @@ export const MyVideo = React.memo(({ sharing = false, myStream, ...rest }) => {
         <video
           ref={videoRef}
           autoPlay
-          className="h-full w-full"
           muted
+          className="h-full w-full"
           hidden={!myStream?.media.video}
           style={{ maxHeight: "100%" }}
         />
@@ -82,14 +113,20 @@ export const MyVideo = React.memo(({ sharing = false, myStream, ...rest }) => {
             <div hidden={myStream.media.audio}>
               <MicOffIcon className="text-red-500" />
             </div>
+            <div className="relative" hidden={!speaking || !myStream.media.audio}>
+              <MicIcon className="text-white -z-10 absolute w-full h-full animate-ping" />
+              <MicIcon className="text-blue-500" />
+            </div>
           </div>
           <div>
             <IconButton
               onClick={() => {
-                if (!selectedVideo) {
-                  dispatch(setSelectedVideoAction(myStream.peerId));
+                if (selectedVideo === myStream?.peerId) {
+                  dispatch(setSelectedVideoAction(null));
+                  return;
                 }
-                else dispatch(setSelectedVideoAction(null));
+                console.log(myStream.peerId)
+                dispatch(setSelectedVideoAction(myStream.peerId));
               }}
             >
               <PushPinIcon className={`${selectedVideo === myStream?.peerId ? 'text-blue-500' : 'text-white'} `} fontSize="small" />
@@ -112,25 +149,39 @@ export const MyVideo = React.memo(({ sharing = false, myStream, ...rest }) => {
 export const Video = ({ streamData = {}, onPin, isPin = false, ...rest }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
+  const speech = useRef();
+  const [speaking, setSpeaking] = useState(false);
   const { stream = null,
     user = null,
     media = { video: false, audio: false } } = streamData;
 
   useEffect(() => {
     if (!stream) return;
-    videoRef.current.muted = true;
     videoRef.current.srcObject = stream;
     audioRef.current.srcObject = stream;
-  }, [stream]);
+    if (streamData.media.audio) {
+      speech.current = hark(streamData.stream, { interval: 200 });
+      speech.current.on('speaking', () => {
+        setSpeaking(true)
+      })
+      speech.current.on('stopped_speaking', () => {
+        setSpeaking(false)
+      })
+    }
+    return () => {
+      speech.current?.stop();
+      setSpeaking(false);
+    }
+  }, [stream, media.audio]);
 
   return (
     <div {...rest}>
-      {streamData && <div className="h-full w-full relative rounded-md overflow-hidden bg-black">
+      {streamData && <div className="h-full w-full z-0 relative rounded-md overflow-hidden bg-black">
         <video
           ref={videoRef}
           className={`h-full w-full ${!media.video && "hidden"}`}
+          muted
           autoPlay
-          muted={true}
         />
         <audio ref={audioRef} autoPlay />
         <div className="w-full absolute top-1 left-1 z-10 flex justify-between items-center px-3">
@@ -141,12 +192,16 @@ export const Video = ({ streamData = {}, onPin, isPin = false, ...rest }) => {
             <div hidden={media.audio}>
               <MicOffIcon className="text-red-500" />
             </div>
+            <div className="relative" hidden={!speaking || !media.audio}>
+              <MicIcon className="text-white -z-10 absolute w-full h-full animate-ping" />
+              <MicIcon className="text-blue-500" />
+            </div>
           </div>
-          <div>
+          {onPin && <div>
             <IconButton onClick={onPin}>
               <PushPinIcon className={`${isPin ? 'text-blue-500' : 'text-white'} `} fontSize="small" />
             </IconButton>
-          </div>
+          </div>}
         </div>
         {!media.video && (user?.picture ? (
           <img
@@ -166,5 +221,7 @@ export const Video = ({ streamData = {}, onPin, isPin = false, ...rest }) => {
     </div>
   );
 };
+
+
 
 export default React.memo(VideoTableContainer);

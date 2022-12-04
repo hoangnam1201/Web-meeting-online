@@ -13,6 +13,7 @@ import ManageRoom from "../components/Admin/manageRoom";
 import AddMembers from "../components/updateEvent/members";
 import Quiz from "../components/Quiz";
 import QuizScores from "../components/Quiz/quizScores";
+import NotFound from "../components/notFound";
 
 export const userRoute = [
   {
@@ -51,6 +52,10 @@ export const userRoute = [
     component: QuizScores,
   },
   { exact: true, path: "/user/management-member/:id", component: AddMembers },
+  {
+    path: '*',
+    component: NotFound
+  }
 ];
 
 export const roomRoute = [
@@ -59,6 +64,10 @@ export const roomRoute = [
     path: "/room/:id",
     component: RoomCall,
   },
+  {
+    path: '*',
+    component: NotFound
+  }
 ];
 
 export const quizRoute = [
@@ -67,6 +76,10 @@ export const quizRoute = [
     path: "/quiz/:id",
     component: Quiz,
   },
+  {
+    path: '*',
+    component: NotFound
+  }
 ]
 
 export const authRoute = [
@@ -80,6 +93,10 @@ export const authRoute = [
     path: "/auth/register",
     component: Register,
   },
+  {
+    path: '*',
+    component: NotFound
+  }
 ];
 
 export const homeRoute = [
@@ -88,6 +105,10 @@ export const homeRoute = [
     path: ["/", "/home"],
     component: HomePage,
   },
+  {
+    path: '*',
+    component: NotFound
+  }
 ];
 
 export const adminRoute = [
@@ -101,4 +122,8 @@ export const adminRoute = [
     path: "/admin/room",
     component: ManageRoom,
   },
+  {
+    path: '*',
+    component: NotFound
+  }
 ];

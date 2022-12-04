@@ -22,6 +22,7 @@
     "date-fns": "^2.23.0",
     "dotenv": "^16.0.1",
     "formik": "^2.2.9",
+    "hark": "^1.2.3",
     "history": "^5.3.0",
     "jwt-decode": "^3.1.2",
     "material-ui-dropzone": "^3.5.0",

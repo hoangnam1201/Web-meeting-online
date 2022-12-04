@@ -28,6 +28,7 @@ const RoomDetail = ({
 }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const selectedVideo = useSelector((state) => state.selectedVideo)
+  const callAll = useSelector(state => state.callAllReducer);
   const [mediaStatus, setMediaStatus] = useState({
     audio: false,
     video: false,
@@ -44,6 +45,23 @@ const RoomDetail = ({
     );
   }, [myStream]);
 
+  const pinVideo = () => {
+    if (selectedVideo)
+      switch (selectedVideo) {
+        case Connection?.myID:
+          return <PinVideo streamData={myStream} />
+        case Connection?.sharePeerId:
+          return <PinVideo streamData={{ stream: Connection?.shareStream, media: { video: true, audio: false } }} />
+        case callAll?.hostStream?.peerId:
+          return <PinVideo streamData={callAll?.hostStream} />
+        case callAll?.hostShareStream?.peerId:
+          return <PinVideo streamData={callAll?.hostShareStream} />
+        default:
+          return <PinVideo streamData={streamDatas[selectedVideo]} />
+      }
+
+  }
+
   return (
     <div
       className="min-h-screen relative bg-blue-50 pb-20"
@@ -56,11 +74,7 @@ const RoomDetail = ({
             streamDatas={streamDatas}
             myStream={myStream}
           />
-          {selectedVideo && (
-            (Connection?.myID === selectedVideo) ? <PinVideo streamData={myStream} /> :
-              (Connection?.sharePeerId === selectedVideo) ? (<PinVideo streamData={{ stream: Connection?.shareStream, media: { video: true, audio: false } }} />) :
-                selectedVideo ? <PinVideo streamData={streamDatas[selectedVideo]} /> : null
-          )}
+          {pinVideo()}
         </>
       )}
       <div className="text-xl font-semibold py-4 text-gray-500">

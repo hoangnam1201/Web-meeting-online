@@ -125,6 +125,7 @@ const ChatBox = ({ roomMessages, tableMessages, ...rest }) => {
                 <Message
                   key={index}
                   msgData={m}
+                  width={300}
                   type={currentUser.user._id === m.sender._id ? 0 : 1}
                   position={getPosition(
                     m,
@@ -191,13 +192,14 @@ const ChatBox = ({ roomMessages, tableMessages, ...rest }) => {
 };
 
 export const Message = React.memo(
-  ({ nameClass, msgData, type, position, ...rest }) => {
+  ({ width, nameClass, msgData, type, position, ...rest }) => {
     const timeAgo = moment(msgData.createdAt).fromNow();
     return (
       <div {...rest}>
         <div
-          className={`flex flex-col ${type === 0 ? "items-end" : "items-start"
-            } px-2 overflow-hidden w-full text-left`}
+          className={`flex flex-nowrap min-w-max flex-col ${type === 0 ? "items-end" : "items-start"
+            } px-2 overflow-hidden text-left`}
+          style={{ width }}
         >
           <div
             className={`flex p-1 ${type === 0 && "flex-row-reverse"} w-full`}
@@ -239,9 +241,9 @@ export const Message = React.memo(
               )}
               {(position === "CENTER" || position === "CENTER-END") && (
                 <div
-                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${type === 0 ? "bg-blue-100" : "bg-gray-200"
+                  className={`px-4 py-1 overflow-hidden whitespace-normal break-words text-sm font-thin  ${type === 0 ? "bg-blue-100" : "bg-gray-200"
                     } rounded-lg`}
-                  style={{ maxWidth: "70%" }}
+                  style={{ maxWidth: '70%' }}
                 >
                   {msgData.files.map((f, index) => (
                     <div className="flex items-center" key={index}>
@@ -285,12 +287,12 @@ export const Message = React.memo(
               )}
               {position === "TOP" && (
                 <div
-                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin  ${type === 0 ? "bg-blue-100" : "bg-gray-200"
+                  className={`px-4 py-1 inline-block overflow-hidden whitespace-normal break-words text-sm font-thin  ${type === 0 ? "bg-blue-100" : "bg-gray-200"
                     } ${type === 0
                       ? "rounded-l-lg rounded-tr-xl"
                       : "rounded-r-lg rounded-tl-xl"
                     }`}
-                  style={{ maxWidth: "70%" }}
+                  style={{ maxWidth: '70%' }}
                 >
                   {msgData.files.map((f, index) => (
                     <div className="flex items-center" key={index}>
@@ -334,12 +336,12 @@ export const Message = React.memo(
               )}
               {position === "BOTTOM" && (
                 <div
-                  className={`px-4 py-1 whitespace-normal break-words text-sm font-thin ${type === 0 ? "bg-blue-100" : "bg-gray-200"
+                  className={`px-4 overflow-hidden py-1 whitespace-normal break-words text-sm font-thin ${type === 0 ? "bg-blue-100" : "bg-gray-200"
                     } ${type === 0
                       ? "rounded-l-lg rounded-br-xl"
                       : "rounded-r-lg rounded-bl-xl"
                     }`}
-                  style={{ maxWidth: "70%" }}
+                  style={{ maxWidth: '70%' }}
                 >
                   {msgData.files.map((f, index) => (
                     <div className="flex items-center" key={index}>

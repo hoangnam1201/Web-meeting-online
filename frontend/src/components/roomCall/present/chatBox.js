@@ -87,38 +87,32 @@ const ChatBox = ({ roomMessages, userJoined }) => {
         <Tabs value={tab} onChange={(e, tabValue) => setTab(tabValue)}>
           <Tab
             label="Chat"
-            style={{ color: "white", padding: "10px" }}
-            className="text-white"
+            style={{ padding: "10px" }}
           />
           <Tab
             label="Participants"
-            style={{ color: "white", padding: "10px" }}
-            className="text-white"
+            style={{ padding: "10px" }}
           />
           {roomCall?.roomInfo?.owner._id === currentUser?.user._id ? (
             <Tab
               label="Requests"
-              style={{ color: "white", padding: "10px" }}
-              className="text-white"
+              style={{ padding: "10px" }}
             />
           ) : (
             ""
           )}
         </Tabs>
-        <IconButton onClick={() => dispatch(roomShowChatAction(false))}>
-          <ArrowRightAltIcon fontSize="large" style={{ color: "white" }} />
-        </IconButton>
       </div>
       {tab === 0 && (
         <div className="flex-grow h-0 flex flex-col">
           <div className="flex-grow h-0 py-4">
-            <div className="overflow-auto scroll-sm h-full flex flex-col-reverse">
+            <div className="overflow-y-auto overflow-x-hidden scroll-sm h-full flex flex-col-reverse">
               <div className="flex flex-col-reverse">
                 {roomMessages?.map((m, index, messages) => (
                   <Message
                     msgData={m}
-                    nameClass={"text-white"}
                     key={index}
+                    width={320}
                     type={currentUser.user._id === m.sender._id ? 0 : 1}
                     position={getPosition(
                       m,
@@ -167,7 +161,7 @@ const ChatBox = ({ roomMessages, userJoined }) => {
           <div className={`${!roomCall?.chatLoading && "invisible"}`}>
             <LinearProgress />
           </div>
-          <div className="flex h-12 flex-grow-0 p-1 bg-slate-500">
+          <div className="flex h-12 flex-grow-0 p-1 shadow-md border bg-slate-300 flex-nowrap overflow-hidden">
             <input
               className="px-5 py-2 w-full focus:outline-none bg-gray-100 rounded-full"
               value={msgText}
@@ -178,17 +172,17 @@ const ChatBox = ({ roomMessages, userJoined }) => {
             <IconButton>
               <label>
                 <input type="file" hidden multiple onChange={onFileChange} />
-                <AttachFileIcon className="text-white" />
+                <AttachFileIcon />
               </label>
             </IconButton>
             <IconButton onClick={handleSendMessage}>
-              <SendIcon className="text-white" />
+              <SendIcon />
             </IconButton>
           </div>
         </div>
       )}
       {tab === 1 && (
-        <div className="flex-grow h-0 flex flex-col scroll-smooth overflow-y-scroll scroll-sm font-bold text-gray-100">
+        <div className="flex-grow h-0 flex flex-col scroll-smooth overflow-y-scroll scroll-sm font-bold">
           <JoinerList joiners={userJoined} />
         </div>
       )}
@@ -198,7 +192,7 @@ const ChatBox = ({ roomMessages, userJoined }) => {
             <div className="flex flex-col">
               <div className="px-4 flex justify-start my-2">
                 <button
-                  className="shadow-lg text-blue-900 bg-slate-400 px-4 py-1 text-sm rounded-md hover:bg-gray-100"
+                  className="shadow-lg text-blue-900  px-4 py-1 text-sm rounded-md hover:bg-gray-100"
                   onClick={replyHandlerAll}
                 >
                   ACCEPT ALL

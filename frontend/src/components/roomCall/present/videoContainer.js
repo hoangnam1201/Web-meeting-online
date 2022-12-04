@@ -4,29 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { useResizeDetector } from "react-resize-detector";
 import { setSelectedVideoAction } from "../../../store/actions/selectedVideoAction";
 import Connection from "../../../services/connection";
+import { IconButton } from "@mui/material";
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const VideoContainer = ({ myStream, streamDatas }) => {
   const selectedVideo = useSelector((state) => state.selectedVideo);
-  const roomCall = useSelector(state => state.roomCall);
+  const shareScreen = useSelector(state => state.shareScreenReducer);
   const dispatch = useDispatch()
   const ref = useRef();
-  const [heightCam, setHeightCam] = useState(0);
-
-  const getCols = () => {
-    if (selectedVideo) return "";
-    switch (Object.values(streamDatas).length) {
-      case 0:
-        return "";
-      case 1:
-        return "grid-cols-2 grid gap-2  ";
-      case 2:
-        return "grid-cols-2 grid gap-2 ";
-      case 3:
-        return "grid-cols-2 grid gap-2 ";
-      default:
-        return "grid-cols-4 grid gap-2 ";
-    }
-  };
+  const [fullScreen, setFullScreen] = useState(false);
+  const [sizeCam, setSizeCam] = useState({ width: 0, height: 0 });
 
   useResizeDetector({
     onResize: () => {
@@ -37,18 +25,16 @@ const VideoContainer = ({ myStream, streamDatas }) => {
 
   useEffect(() => {
     displayCam();
-  }, [Object.values(streamDatas).length]);
+  }, [Object.values(streamDatas).length, shareScreen, selectedVideo]);
 
   const displayCam = () => {
     const widthScreen = ref.current.clientWidth;
     const aspectRatio = 1.777; //16:9
+    const countVideo = (shareScreen?.isSharing ? 2 : 1) + Object.keys(streamDatas).length;
     let cols = 1;
-    switch (Object.values(streamDatas).length) {
-      case 0:
-        cols = 1;
-        break;
+    switch (countVideo) {
       case 1:
-        cols = 2;
+        cols = 1;
         break;
       case 2:
         cols = 2;
@@ -57,71 +43,90 @@ const VideoContainer = ({ myStream, streamDatas }) => {
         cols = 2;
         break;
       default:
-        cols = 4;
+        cols = 4
         break;
     }
-    if (cols === 1) {
-      setHeightCam(ref.current.clientHeight - 16);
+    if (!selectedVideo) {
+      const camWidth = (widthScreen - 8 * cols) / cols
+      const camHeight = camWidth / aspectRatio;
+      setSizeCam({ width: camWidth, height: camHeight });
       return
     }
-    const calHeight = (widthScreen - 8 * cols) / cols / aspectRatio;
-    setHeightCam(calHeight);
+    const camHeight = 120;
+    const camWidth = camHeight * aspectRatio;
+    setSizeCam({ width: camWidth, height: camHeight });
   };
 
   return (
     <div
       ref={ref}
-      className={`p-3 w-full h-full overflow-auto mr-4 scroll-none ${getCols()}`}
+      className='w-full h-full mr-4 flex flex-col'
     >
-      {!selectedVideo ? (
-        <>
-          {roomCall?.sharing && (
-            <MyVideo
-              style={{ height: heightCam }}
-              myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
-            />
-          )}
-
+      <div className={`h-full relative scroll-none transition-all flex gap-2 ${selectedVideo ?
+        `items-start overflow-x-auto overflow-y-hidden justify-center ${fullScreen ? 'max-h-0' : 'max-h-32'}`
+        : 'flex-wrap justify-center content-start max-h-full overflow-y-auto'}`}>
+        {selectedVideo && <div className="fixed z-20 left-2">
+          {fullScreen ?
+            <IconButton className="bg-gray-600 shadow opacity-40 hover:opacity-80" onClick={() => { setFullScreen(false) }}>
+              <ExpandMoreIcon className="text-white" />
+            </IconButton>
+            : <IconButton className="bg-gray-600 shadow" onClick={() => { setFullScreen(true) }}>
+              <ExpandLessIcon className="text-white" />
+            </IconButton>
+          }
+        </div>}
+        {shareScreen?.isSharing && (
           <MyVideo
-            style={{ height: heightCam }}
-            myStream={{ ...myStream, peerId: Connection.myID }}
+            style={{ ...sizeCam }}
+            className='h-32 w-40'
+            myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
           />
-          {streamDatas &&
-            Object.keys(streamDatas).map((key, index) => {
-              return (
-                <Video
-                  style={{ height: heightCam }}
-                  className="bg-black rounded-md overflow-hidden"
-                  streamData={streamDatas[key]}
-                  key={index}
-                  onPin={() => {
-                    if (!selectedVideo)
-                      return dispatch(setSelectedVideoAction(key));
-                    return dispatch(setSelectedVideoAction(null));
-                  }}
-                />)
-            })}
-        </>
-      ) : (selectedVideo === Connection?.myID ? (
+        )}
         <MyVideo
+          style={{ ...sizeCam }}
+          className='h-32 w-40'
           myStream={{ ...myStream, peerId: Connection.myID }}
-          className="h-full w-auto"
         />
-      ) : (selectedVideo === Connection?.sharePeerId ? (
-        <MyVideo
-          myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
-          className="h-full w-auto"
-        />
-      ) : (< Video
-        className="bg-black rounded-md overflow-hidden h-full relative"
-        streamData={streamDatas[selectedVideo]}
-        isPin={true}
-        onPin={() => {
-          return dispatch(setSelectedVideoAction(null));
-        }}
-      />)
-      ))}
-    </div>
+        {streamDatas &&
+          Object.keys(streamDatas).map((key, index) => {
+            return (
+              <Video
+                style={{ ...sizeCam }}
+                className="bg-black rounded-md overflow-hidden"
+                streamData={streamDatas[key]}
+                key={index}
+                isPin={selectedVideo === key}
+                onPin={() => {
+                  if (selectedVideo === key)
+                    return dispatch(setSelectedVideoAction(null));
+                  dispatch(setSelectedVideoAction(key));
+                }}
+              />)
+          })}
+      </div>
+      <div className="h-0 flex-grow bg-black rounded-lg">
+        {selectedVideo && (selectedVideo === Connection?.myID ? (
+          <MyVideo
+            myStream={{ ...myStream, peerId: Connection.myID }}
+            className="h-full w-auto"
+          />
+        ) : (selectedVideo === Connection?.sharePeerId ? (
+          <MyVideo
+            myStream={{ stream: Connection.shareStream, media: { video: true, audio: false }, peerId: Connection.sharePeerId }}
+            className="h-full w-auto"
+          />
+        ) : (
+          <Video
+            className="bg-black rounded-md overflow-hidden relativew w-full h-full"
+            streamData={streamDatas[selectedVideo]}
+            isPin={true}
+            onPin={() => {
+              return dispatch(setSelectedVideoAction(null));
+            }}
+          />
+        )))}
+      </div>
+    </div >
   );
 };
 

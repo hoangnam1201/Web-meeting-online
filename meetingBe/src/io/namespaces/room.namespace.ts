@@ -22,6 +22,10 @@ export default (io: any) => {
     socket.on("room:present", _roomHandler.present);
     socket.on("room:accept-request", _roomHandler.acceptRequest);
     socket.on("room:divide-tables", _roomHandler.divideTables);
+    socket.on("room:call-all", _roomHandler.callAll);
+    socket.on("room:close-call-all", _roomHandler.closeCallAll);
+    socket.on("room:share-screen", _roomHandler.shareScreen);
+    socket.on("room:stop-share-screen", _roomHandler.stopShareScreen);
     socket.on("table:join", _roomHandler.joinTable);
     socket.on("table:join-previous", _roomHandler.joinPreviousTable);
     socket.on("table:send-message", _roomHandler.sendTableMessage);
@@ -31,8 +35,6 @@ export default (io: any) => {
     socket.on("disconnecting", _roomHandler.leaveRoom);
     socket.on("present:join", _roomHandler.joinPresent);
     socket.on("present:stop", _roomHandler.stopPresenting);
-    socket.on("present:share-screen", _roomHandler.shareScreen);
-    socket.on("present:stop-share-screen", _roomHandler.stopShareScreen);
     socket.on("table:leave", _roomHandler.leaveTable);
   };
   roomNamespace.on("connection", connection);

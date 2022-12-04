@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Connection from "../../services/connection";
 import CheckMedia from "./checkMedia";
 import RoomDetail from "./roomDetail";
-import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getUserInfo } from "../../store/actions/userInfoAction";
 
@@ -17,7 +16,6 @@ const RoomCall = () => {
   const [access, setAccess] = useState(false);
   const [roomTables, setRoomTables] = useState([]);
   const [currentFloor, setCurrentFloor] = useState(null);
-  const history = useHistory();
   const [userJoined, setUserJoined] = useState([]);
   const [userRequests, setUserRequests] = useState({});
   const [joinError, setJoinError] = useState(null);
@@ -28,7 +26,7 @@ const RoomCall = () => {
     Connection.initMyStream();
     dispatch(getUserInfo());
     return () => {
-      // connectionRef.current.destoryDisconnect();
+      Connection.disconnect()
     };
   }, []);
 

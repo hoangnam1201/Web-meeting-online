@@ -5,13 +5,9 @@ const initState = null;
 export const selectedVideoReducer = (state = initState, { type, payload }) => {
     switch (type) {
         case SELECTEDVIDEO_SET:
-            if (!state || !payload)
-                return payload
-            return state
+            return payload
         case SELECTEDVIDEO_REMOVE:
-            if (state === payload)
-                return null
-            return state
+            return null
         default:
             return state
     }
