@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ChatIcon from "@mui/icons-material/Chat";
+import PeopleIcon from "@mui/icons-material/People";
 import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOff from "@mui/icons-material/VideocamOff";
@@ -7,7 +8,7 @@ import LogoutSharpIcon from "@mui/icons-material/LogoutSharp";
 import MicIcon from "@mui/icons-material/Mic";
 import PausePresentationIcon from "@mui/icons-material/PausePresentation";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
-import { roomShowChatAction } from "./../../../store/actions/roomCallAction";
+import { roomShowChatAction, roomShowLobbyAction } from "./../../../store/actions/roomCallAction";
 import { IconButton, Switch } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { confirmSwal } from "../../../services/swalServier";
@@ -19,6 +20,7 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
   const [autoHidden, setAutoHidden] = useState(false);
   const currentUser = useSelector((state) => state.userReducer);
   const roomCall = useSelector(state => state.roomCall);
+  const shareScreenState = useSelector(state => state.shareScreenReducer);
   const history = useHistory();
 
   const turnOffAudio = () => {
@@ -54,7 +56,7 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
               }}
             >
               <div>
-                <PausePresentationIcon className="text-gray-600" />
+                <PausePresentationIcon />
               </div>
               Stop present
             </button>
@@ -63,37 +65,45 @@ const Toolbar = ({ connection, mediaStatus, ...rest }) => {
         <div className="flex gap-4 px-4">
           {mediaStatus.audio ? (
             <IconButton onClick={turnOffAudio}>
-              <MicIcon fontSize="large" className="text-gray-600" />
+              <MicIcon fontSize="large" className="text-blue-500" />
             </IconButton>
           ) : (
             <IconButton onClick={turnOnAudio}>
-              <MicOffIcon fontSize="large" className="text-gray-600" />
+              <MicOffIcon fontSize="large" />
             </IconButton>
           )}
           {mediaStatus.video ? (
             <IconButton
               onClick={turnOffVideo}
             >
-              <PhotoCameraFrontIcon fontSize="large" className="text-gray-600" />
+              <PhotoCameraFrontIcon fontSize="large" className="text-blue-500" />
             </IconButton>
           ) : (
             <IconButton onClick={turnOnVideo}>
-              <VideocamOff fontSize="large" className="text-gray-600" />
+              <VideocamOff fontSize="large" />
             </IconButton>
           )}
           <IconButton onClick={() => shareScreen()}>
             <ScreenShareIcon
               fontSize="large"
-              className={`${roomCall.sharing ? "text-blue-500" : "text-gray-600"
+              className={`${shareScreenState.isSharing ? "text-blue-500" : ""
                 }`}
             />
+          </IconButton>
+          <IconButton
+            onClick={(e) => {
+              dispatch(roomShowLobbyAction(true));
+              e.stopPropagation();
+            }}
+          >
+            <PeopleIcon fontSize="large" />
           </IconButton>
           <IconButton
             onClick={() => {
               dispatch(roomShowChatAction(!roomCall?.showChat));
             }}
           >
-            <ChatIcon fontSize="large" className="text-gray-600" />
+            <ChatIcon fontSize="large" className={roomCall.showChat ? 'text-blue-500' : ''} />
           </IconButton>
         </div>
         <div className="border-l-2 border-gray-400 text-gray-600 px-3 flex gap-4 items-end">

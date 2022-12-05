@@ -118,21 +118,21 @@ export default () => {
               return total + c.content + "\n";
             return total;
           }, []);
-          result[question.content] = answer;
+          result = [...result, { question: question.content, answer }];
           return result;
         }
         if (question.type === "ESSAY") {
-          result[question.content] = a.essay;
+          result = [...result, { question: question.content, answer: a.essay }];
           return result;
         }
         //type === fillin
         const answer = a.answers.reduce((total, answer) => {
           return total + answer.content + "\n";
         }, "");
-        result[question.content] = answer;
+        result = [...result, { question: question.content, answer }];
         return result;
-      }, {});
-      const stream = fileService.jsonToExcel([answers], []);
+      }, []);
+      const stream = fileService.jsonToExcel(answers, []);
       res.setHeader(
         "Content-disposition",
         "attachment; filename=" +

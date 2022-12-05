@@ -61,10 +61,8 @@ const QuizScores = () => {
         )}
         <p className='text-xl tracking-wider'>{submissionState?.quizDetail?.name} scores</p>
       </div>
-      <p className='mt-4 text-left mx-5 text-sm'>
-       <span className='font-bold'>note: </span>in downloaded file, the first row is question and the second row is answer from the user
-      </p>
-      <div className='md:mx-6 mx-4 shadow-md flex-col flex'>
+      
+      <div className='md:mx-6 m-4 shadow-md flex-col flex'>
         <div className='w-full'>
           <table className='w-full table-fixed '>
             <thead>

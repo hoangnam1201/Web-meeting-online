@@ -159,7 +159,7 @@ export const MyVideo = React.memo(({ sharing = false, myStream, ...rest }) => {
   );
 });
 
-export const Video = ({ streamData = {}, onPin, isPin = false, ...rest }) => {
+export const Video = ({ streamData = {}, onPin, isPin = false, muted = false, ...rest }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const speech = useRef();
@@ -171,7 +171,8 @@ export const Video = ({ streamData = {}, onPin, isPin = false, ...rest }) => {
   useEffect(() => {
     if (!stream) return;
     videoRef.current.srcObject = stream;
-    audioRef.current.srcObject = stream;
+    if (!muted)
+      audioRef.current.srcObject = stream;
     if (streamData.media.audio) {
       speech.current = hark(streamData.stream, { interval: 200 });
       speech.current.on('speaking', () => {
@@ -196,7 +197,7 @@ export const Video = ({ streamData = {}, onPin, isPin = false, ...rest }) => {
           muted
           autoPlay
         />
-        <audio ref={audioRef} autoPlay />
+        {!muted && <audio ref={audioRef} autoPlay />}
         <div className="w-full absolute top-1 left-1 z-10 flex justify-between items-center px-3">
           <div className="flex gap-2 w-5/6">
             <div className="text-shadow text-white text-ellipsis overflow-hidden whitespace-nowrap ">

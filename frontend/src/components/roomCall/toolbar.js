@@ -36,6 +36,7 @@ const Toolbar = ({ mediaStatus, userJoined, ...rest }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const currentUser = useSelector((state) => state.userReducer);
   const callAll = useSelector(state => state.callAllReducer);
+  const shareScreenState = useSelector(state => state.shareScreenReducer);
   const dispatch = useDispatch();
   const [autoHidden, setAutoHidden] = useState(false);
   const { status, startRecording, stopRecording, clearBlobUrl } = useReactMediaRecorder({
@@ -253,7 +254,7 @@ const Toolbar = ({ mediaStatus, userJoined, ...rest }) => {
             <IconButton onClick={shareScreen}>
               <ScreenShareIcon
                 fontSize="large"
-                className={`${roomCall.sharing && "text-blue-500"}`}
+                className={`${shareScreenState.isSharing && "text-blue-500"}`}
               />
             </IconButton>
             <IconButton

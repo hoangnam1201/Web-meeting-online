@@ -205,7 +205,6 @@ export default (ioRoom: any, io: any) => {
     const roomId = socket.data.roomId;
     const requests = await requestService.getByIds(requestIds);
     const socketIds = requests.map((r) => r.socketId);
-    const userIds = requests.map((r) => r.user.toString());
 
     //response requests
     await requestService.deleteRequests(requestIds);
@@ -219,20 +218,22 @@ export default (ioRoom: any, io: any) => {
       });
 
     try {
+      const userIds: string[] = [];
+      const clientSockets = await socket.in(socketIds).fetchSockets();
+      for (const s of clientSockets) {
+        const userId = requests.find((x) => x.socketId === s.id).user;
+        userIds.push(userId.toString());
+        s.join(roomId);
+        s.join(`${roomId}${userId}`);
+        s.data.roomId = roomId;
+      }
+
       const room: Room = await roomService.findOneAndAddJoiners(
         roomId,
         userIds
       );
 
       if (!room) return socket.emit("error:bad-request", "not found room");
-
-      const clientSockets = await socket.in(socketIds).fetchSockets();
-      for (const s of clientSockets) {
-        const userId = requests.find((x) => x.socketId === s.id).user;
-        s.join(roomId);
-        s.join(`${roomId}${userId}`);
-        s.data.roomId = roomId;
-      }
 
       socket.to(socketIds).emit("room:info", RoomReadDetailDto.fromRoom(room));
       const users = await userService.getUsersByIds(userIds);

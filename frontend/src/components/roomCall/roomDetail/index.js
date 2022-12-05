@@ -14,6 +14,7 @@ import ListQuiz from "./listQuiz";
 import { isMobile } from "react-device-detect";
 import MobileToolbar from "../toolbarMobile";
 import UserInfoDialog from "./userInfoDialog";
+import { useCallback } from "react";
 
 const RoomDetail = ({
   roomTables,
@@ -29,6 +30,7 @@ const RoomDetail = ({
   const roomCall = useSelector((state) => state.roomCall);
   const selectedVideo = useSelector((state) => state.selectedVideo)
   const callAll = useSelector(state => state.callAllReducer);
+  const [pinVideoData, setPinVideoData] = useState(null);
   const [mediaStatus, setMediaStatus] = useState({
     audio: false,
     video: false,
@@ -45,22 +47,20 @@ const RoomDetail = ({
     );
   }, [myStream]);
 
-  const pinVideo = () => {
-    if (selectedVideo)
-      switch (selectedVideo) {
-        case Connection?.myID:
-          return <PinVideo streamData={myStream} />
-        case Connection?.sharePeerId:
-          return <PinVideo streamData={{ stream: Connection?.shareStream, media: { video: true, audio: false } }} />
-        case callAll?.hostStream?.peerId:
-          return <PinVideo streamData={callAll?.hostStream} />
-        case callAll?.hostShareStream?.peerId:
-          return <PinVideo streamData={callAll?.hostShareStream} />
-        default:
-          return <PinVideo streamData={streamDatas[selectedVideo]} />
-      }
-
-  }
+  useEffect(() => {
+    switch (selectedVideo) {
+      case Connection?.myID:
+        return setPinVideoData(myStream);
+      case Connection?.sharePeerId:
+        return setPinVideoData({ stream: Connection?.shareStream, media: { video: true, audio: false } });
+      case callAll?.hostStream?.peerId:
+        return setPinVideoData(callAll?.hostStream);
+      case callAll?.hostShareStream?.peerId:
+        return setPinVideoData(callAll?.hostShareStream);
+      default:
+        return setPinVideoData(streamDatas[selectedVideo]);
+    }
+  }, [selectedVideo])
 
   return (
     <div
@@ -74,7 +74,7 @@ const RoomDetail = ({
             streamDatas={streamDatas}
             myStream={myStream}
           />
-          {pinVideo()}
+          <PinVideo streamData={pinVideoData} />
         </>
       )}
       <div className="text-xl font-semibold py-4 text-gray-500">

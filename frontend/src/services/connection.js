@@ -14,7 +14,7 @@ import {
   roomSetRoomInfoAction,
   roomSetSocketAction,
 } from "../store/actions/roomCallAction";
-import { toastJoinLeaveRoom, toastJoinTable, toastRequest, toastText } from "./toastService";
+import { toastError, toastJoinLeaveRoom, toastJoinTable, toastRequest, toastText } from "./toastService";
 import { removeSelectedVideoAction, setSelectedVideoAction } from "../store/actions/selectedVideoAction";
 import { callAllSetHostShareStream, callAllSetHostStream, callAllSetIsCallAll } from "../store/actions/callAllAction";
 import { shareScreenSetState } from "../store/actions/shareScreenAction";
@@ -833,6 +833,10 @@ class Connection {
 
 
   static disconnect() {
+    this.clearCallAllPeers();
+    this.clearPeers();
+    this.tableMessages = [];
+    this.roomMessages = [];
     this.isMeetting = false;
     this.socket?.offAny();
     this.socket?.disconnect();
@@ -925,6 +929,7 @@ class Connection {
       });
     } catch (e) {
       console.log(e);
+      toastError('Browser version does not support screen sharing')
     }
 
   }

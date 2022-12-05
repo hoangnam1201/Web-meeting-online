@@ -7,6 +7,7 @@ import Connection from "../../../services/connection";
 import { IconButton } from "@mui/material";
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { isMobile } from "react-device-detect";
 
 const VideoContainer = ({ myStream, streamDatas }) => {
   const selectedVideo = useSelector((state) => state.selectedVideo);
@@ -44,19 +45,21 @@ const VideoContainer = ({ myStream, streamDatas }) => {
     const aspectRatio = 1.777; //16:9
     const countVideo = (shareScreen?.isSharing ? 2 : 1) + Object.keys(streamDatas).length;
     let cols = 1
-    switch (countVideo) {
-      case 1:
-        cols = 1;
-        break;
-      case 2:
-        cols = 2;
-        break;
-      case 3:
-        cols = 2;
-        break;
-      default:
-        cols = 4
-        break;
+    if (!isMobile) {
+      switch (countVideo) {
+        case 1:
+          cols = 1;
+          break;
+        case 2:
+          cols = 2;
+          break;
+        case 3:
+          cols = 2;
+          break;
+        default:
+          cols = 4
+          break;
+      }
     }
     if (!selectedVideo) {
       const camWidth = (widthScreen - 8 * cols) / cols
@@ -133,6 +136,7 @@ const VideoContainer = ({ myStream, streamDatas }) => {
             className="bg-black rounded-md overflow-hidden relativew w-full h-full"
             streamData={streamDatas[selectedVideo]}
             isPin={true}
+            muted={true}
             onPin={() => {
               return dispatch(setSelectedVideoAction(null));
             }}

@@ -3,7 +3,6 @@ import { User } from "../models/user.model";
 export class UserReadPermissionDto {
   id: string;
   name: string;
-  phone: string;
   email: string;
   role: string;
   maxNoE: number;
@@ -13,7 +12,6 @@ export class UserReadPermissionDto {
     const userRead = new UserReadPermissionDto();
     userRead.id = user._id.toString();
     userRead.name = user.name;
-    userRead.phone = user.phone;
     userRead.email = user.email;
     userRead.maxNoE = user.maxNoE;
     userRead.role = user.role;

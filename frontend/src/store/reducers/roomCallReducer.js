@@ -66,6 +66,9 @@ export const roomCallReducer = (state = initState, { type, payload }) => {
     case ROOMCALL_SETREQUEST:
       return { ...state, requestLoading: false, requests: payload }
     case ROOMCALL_ADDREQUEST:
+      const index = state.requests.findIndex(r => r.user._id === payload.user._id);
+      if (index !== -1)
+        state.requests.splice(index, 1);
       return { ...state, requests: [...state.requests, payload] };
     default:
       return state;

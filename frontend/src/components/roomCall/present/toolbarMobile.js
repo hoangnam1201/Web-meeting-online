@@ -3,41 +3,31 @@ import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import ChatIcon from "@mui/icons-material/Chat";
 import MicOffIcon from "@mui/icons-material/MicOff";
-import PresentToAllIcon from "@mui/icons-material/PresentToAll";
+import ScreenShareIcon from "@mui/icons-material/ScreenShare";
 import VideocamOff from "@mui/icons-material/VideocamOff";
 import MicIcon from "@mui/icons-material/Mic";
 import PhotoCameraFrontIcon from "@mui/icons-material/PhotoCameraFront";
 import LogoutSharpIcon from "@mui/icons-material/LogoutSharp";
-import DoorBackIcon from "@mui/icons-material/DoorBack";
-import ScreenShareIcon from "@mui/icons-material/ScreenShare";
-import EventSeatIcon from "@mui/icons-material/EventSeat";
-import QuizIcon from '@mui/icons-material/Quiz';
 import { useDispatch, useSelector } from "react-redux";
 import {
   roomCallCloseRoomAction,
-  roomCallJoinTable,
   roomShowChatAction,
   roomShowLobbyAction,
-  roomShowQuizsAction,
-  setSeletedTable,
-} from "../../store/actions/roomCallAction";
-import { sendMessageAction } from "../../store/actions/messageAction";
-import { confirmPresent, confirmSwal } from "../../services/swalServier";
-import { Link } from "react-router-dom";
+} from "../../../store/actions/roomCallAction";
+import { sendMessageAction } from "../../../store/actions/messageAction";
+import { confirmPresent, confirmSwal } from "../../../services/swalServier";
 import PeopleIcon from "@mui/icons-material/People";
-import { Box, Drawer, LinearProgress, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Switch } from "@mui/material";
-import Connection from "../../services/connection";
+import { Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from "@mui/material";
+import Connection from "../../../services/connection";
 import AppSettingsAltIcon from '@mui/icons-material/AppSettingsAlt';
-import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
-import GroupIcon from '@mui/icons-material/Group';
-import SettingsIcon from '@mui/icons-material/Settings';
+import PausePresentationIcon from "@mui/icons-material/PausePresentation";
+import DoorBackIcon from '@mui/icons-material/DoorBack';
 
 const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
   const roomCall = useSelector((state) => state.roomCall);
   const currentUser = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-  const [autoHidden, setAutoHidden] = useState(false);
 
   const stateMessage = useSelector(
     (state) => state.notifyMessageReducer.isReceive
@@ -59,22 +49,14 @@ const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
     Connection.turnOnVideo();
   };
 
+  const shareScreen = async () => {
+    Connection.shareScreen('table');
+  };
+
   const onPresent = () => {
     confirmPresent(() => {
       roomCall.socket.emit("room:present", 8);
     });
-  };
-
-  const joinTableHandler = () => {
-    if (roomCall && roomCall.selectedTable && !roomCall.joinLoading) {
-      Connection.clearTableMessages();
-      Connection.clearPeers();
-      dispatch(roomCallJoinTable(roomCall.selectedTable, mediaStatus));
-    }
-  };
-
-  const cancelSeleted = () => {
-    if (!roomCall.joinLoading) dispatch(setSeletedTable(null));
   };
 
   const openNewTab = (url) => {
@@ -83,34 +65,6 @@ const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
 
   return (
     <div>
-      {roomCall?.selectedTable && (
-        <div className=" fixed left-1/2 bottom-0 -translate-x-1/2 -translate-y-1/2 transform z-10 shadow-lg bg-white py-1 px-10">
-          <div className="flex items-center gap-4">
-            <p className=" whitespace-nowrap max-w-xs text-ellipsis overflow-hidden">
-              you is selecting <b>{roomCall?.selectedTable}</b>
-            </p>
-            <div className="flex gap-2">
-              <button
-                className="p-1 px-4 bg-gray-500 hover:bg-gray-600 text-white shadow-md rounded"
-                onClick={joinTableHandler}
-                disabled={roomCall?.joinLoading}
-              >
-                join
-              </button>
-              <button
-                className="p-1 shadow-md"
-                onClick={cancelSeleted}
-                disabled={roomCall?.joinLoading}
-              >
-                cancel
-              </button>
-            </div>
-          </div>
-          <div className={`${!roomCall?.joinLoading && "invisible"}`}>
-            <LinearProgress />
-          </div>
-        </div>
-      )}
       <div className=" fixed bottom-0 left-0 bg-gray-100 rounded-full shadow-md transform -translate-y-1/2 translate-x-1/2 border border-gray-200">
         <IconButton onClick={() => setOpen(true)}>
           <AppSettingsAltIcon fontSize="large" />
@@ -130,12 +84,6 @@ const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
           )}
         </IconButton>
         <IconButton
-          onClick={() => {
-            dispatch(roomShowQuizsAction(true))
-          }}>
-          <QuizIcon fontSize="large" />
-        </IconButton>
-        <IconButton
           onClick={(e) => {
             dispatch(roomShowLobbyAction(true));
             e.stopPropagation();
@@ -143,7 +91,6 @@ const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
         >
           <PeopleIcon fontSize="large" />
         </IconButton>
-
       </div>
 
       <React.Fragment>
@@ -195,7 +142,7 @@ const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
                 )
               }
               <ListItemButton
-                onClick={() => { Connection.shareScreen('table') }}
+                onClick={() => { Connection.shareScreen('present') }}
               >
                 <ListItemIcon>
                   <ScreenShareIcon />
@@ -205,42 +152,15 @@ const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
               {roomCall?.roomInfo?.owner._id === currentUser?.user._id && (
                 <React.Fragment>
                   <ListItemButton
-                    onClick={onPresent}>
-                    <ListItemIcon>
-                      <PresentToAllIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Present' />
-                  </ListItemButton>
-                  <ListItemButton
                     onClick={() => {
-                      openNewTab(
-                        `/user/update-event/${roomCall?.roomInfo?._id}`
-                      )
+                      Connection.stopShareTrack()
+                      roomCall.socket.emit("present:stop");
                     }}
                   >
                     <ListItemIcon>
-                      <SettingsIcon />
+                      <PausePresentationIcon />
                     </ListItemIcon>
-                    <ListItemText primary='Room setting' />
-                  </ListItemButton>
-                  <ListItemButton
-                    onClick={() => openNewTab(`/user/management-groups/${roomCall?.roomInfo?._id}`)}
-                  >
-                    <ListItemIcon>
-                      <GroupIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Group management' />
-                  </ListItemButton>
-                  <ListItemButton onClick={() => {
-                    confirmSwal("Divide Into Tables", "", () => {
-                      roomCall.socket.emit("room:divide-tables");
-                    })
-                  }
-                  }>
-                    <ListItemIcon>
-                      <TableRestaurantIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='divide into tables' />
+                    <ListItemText primary='Present' />
                   </ListItemButton>
                   <ListItemButton onClick={() => {
                     confirmSwal('Are you sure?', "close room", () => {
@@ -256,14 +176,6 @@ const MobileToolbar = ({ mediaStatus, userJoined, ...rest }) => {
                   </ListItemButton>
                 </React.Fragment>
               )}
-              <ListItemButton
-                onClick={() => Connection.leaveTable()}
-              >
-                <ListItemIcon>
-                  <EventSeatIcon />
-                </ListItemIcon>
-                <ListItemText primary='exit table' />
-              </ListItemButton>
               <ListItemButton
                 onClick={() =>
                   confirmSwal("Are you sure?", "", () => {

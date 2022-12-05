@@ -3,6 +3,8 @@ import ChatBox from "./chatBox";
 import Toolbar from "./toolbar";
 import { useSelector } from "react-redux";
 import VideoContainer from "./videoContainer";
+import { isMobile } from "react-device-detect";
+import MobileToolbar from "./toolbarMobile";
 
 const Present = ({
   mediaStatus,
@@ -55,9 +57,14 @@ const Present = ({
                 />
               </div>
             </div>
-            <Toolbar
-              mediaStatus={mediaStatus}
-            />
+            {isMobile ?
+              <MobileToolbar
+                mediaStatus={mediaStatus} />
+              :
+              <Toolbar
+                mediaStatus={mediaStatus}
+              />
+            }
           </div>
         </div>
       )}
