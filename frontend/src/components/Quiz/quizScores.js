@@ -5,7 +5,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useDispatch, useSelector } from 'react-redux';
 import { submissionGetQuizDetail } from '../../store/actions/submissionAction';
 import { getScoresAction } from '../../store/actions/scoreAction';
-import { downloadSubmissionAPI } from '../../api/submission.api';
+import { downloadSubmissionAPI, downloadSubmissionInQuizAPI } from '../../api/submission.api';
 
 const QuizScores = () => {
   const { id } = useParams();
@@ -29,6 +29,27 @@ const QuizScores = () => {
   const rowsPerPageChage = (rowsPerPage) => {
     setPageState({ ...pageState, rowsPerPage })
     dispatch(getScoresAction(id, rowsPerPage, pageState.page))
+  }
+
+  const downloadAll = async () => {
+    const res = await downloadSubmissionInQuizAPI(id)
+    const url = window.URL.createObjectURL(
+      new Blob([res], {
+        type: "application/zip"
+      })
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute(
+      'download',
+      `quiz${id}.zip`,
+    );
+    // Append to html link element page
+    document.body.appendChild(link);
+    // Start download
+    link.click();
+    // Clean up and remove the link
+    link.parentNode.removeChild(link);
   }
 
   const download = async (submissionId, startDate) => {
@@ -61,7 +82,7 @@ const QuizScores = () => {
         )}
         <p className='text-xl tracking-wider'>{submissionState?.quizDetail?.name} scores</p>
       </div>
-      
+
       <div className='md:mx-6 m-4 shadow-md flex-col flex'>
         <div className='w-full'>
           <table className='w-full table-fixed '>
@@ -71,7 +92,11 @@ const QuizScores = () => {
                 <td className='py-2'>User</td>
                 <td className='py-2'>Number of correct answers</td>
                 <td className='py-2'>Score</td>
-                <td className='py-2'></td>
+                <td className='py-2'>
+                  {id &&
+                    <Button onClick={downloadAll}>Download All</Button>
+                  }
+                </td>
               </tr>
             </thead>
             <tbody>

@@ -123,7 +123,7 @@ roomRoute.post(
   roomController.addMembers
 );
 
-roomRoute.delete(
+roomRoute.post(
   "/members/remove-members/:roomId",
   [
     AuthMiddlesware.verifyToken,

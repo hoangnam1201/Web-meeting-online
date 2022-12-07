@@ -300,6 +300,11 @@ export default () => {
   };
 
   const removeMembers = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ status: 400, msg: errors.array()[0] });
+    }
+
     const roomId = req.params.roomId;
     const userIds = req.body.userIds;
     try {
@@ -311,6 +316,7 @@ export default () => {
       await mailService.sendExpulsion(roomId, ids);
       return res.status(200).json({ status: 200, data: null });
     } catch (err) {
+      console.log(err);
       return res
         .status(500)
         .json({ status: 500, msg: "Internal Server Error" });
@@ -346,10 +352,10 @@ export default () => {
       await queueService.createQueues(queueEmails, roomId);
 
       //send mail
-      const ids = users.reduce((total, currentUser) => {
-        return total + " " + currentUser.email;
+      const emailString = emails.reduce((total, email) => {
+        return total + " " + email;
       }, "");
-      if (ids) await mailService.sendInvitation(roomId, ids);
+      if (emailString) await mailService.sendInvitation(roomId, emailString);
       //res
       res.status(200).json({ status: 200, data: null });
     } catch (e) {
@@ -420,6 +426,6 @@ export default () => {
     deleteRoom,
     deleteFloor,
     exportToCSV,
-    downloadJoiners
+    downloadJoiners,
   };
 };

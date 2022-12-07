@@ -384,7 +384,15 @@ export default () => {
       .populate("answers.questionId");
   };
 
+  const getSubmissionAnswers = (quizId: string) => {
+    return submissionModel
+      .find({ quiz: quizId })
+      .populate("answers.questionId")
+      .populate("userId");
+  };
+
   return {
+    getSubmissionAnswers,
     getAnswers,
     getById,
     getByQuiz,

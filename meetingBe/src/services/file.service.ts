@@ -51,6 +51,24 @@ export default () => {
     }
   };
 
+  const jsonToExcelBuffer = (
+    data: object[],
+    merges: { s: { r: number; c: number }; e: { r: number; c: number } }[]
+  ) => {
+    try {
+      const workSheet = XLSX.utils.json_to_sheet(data);
+      workSheet["!merges"] = merges;
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, workSheet, "sheet1");
+      const buffer = XLSX.write(wb, { bookType: "xlsx", type: "buffer" });
+      return buffer;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Internal Server Error");
+    }
+  };
+
   const jsonToExcel = (
     data: object[],
     merges: { s: { r: number; c: number }; e: { r: number; c: number } }[]
@@ -88,5 +106,6 @@ export default () => {
     findById,
     excelToJson,
     jsonToExcel,
+    jsonToExcelBuffer
   };
 };

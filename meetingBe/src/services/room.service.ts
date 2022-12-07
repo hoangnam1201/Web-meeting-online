@@ -288,9 +288,7 @@ export default () => {
       { _id: roomId },
       {
         $pull: {
-          members: {
-            $each: userIds,
-          },
+          members: { $in: userIds },
         },
       }
     );

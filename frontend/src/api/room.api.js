@@ -55,6 +55,10 @@ export const removeMemberAPI = (roomId, userId) => {
   });
 };
 
+export const removeMembersAPI = (roomId, userIds) => {
+  return instance.post("/room/members/remove-members/" + roomId, { userIds });
+};
+
 export const getAllRoomAPI = (pageSize, pageIndex, ownerId) => {
   return instance.get("/room", {
     params: { take: pageSize, page: pageIndex, ownerId: ownerId },

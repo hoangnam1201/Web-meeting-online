@@ -4,6 +4,9 @@ import { submissionReadDTO } from "../../Dtos/submission-read.dto";
 import { Question } from "../../models/question.model";
 import FileService from "../../services/file.service";
 import SubmissionService from "../../services/submission.service";
+import AdmZip from "adm-zip";
+import { Readable } from "stream";
+import { User } from "../../models/user.model";
 
 export default () => {
   const submissionService = SubmissionService();
@@ -152,6 +155,71 @@ export default () => {
     }
   };
 
+  const downloadSubmissionInQuiz = async (req: Request, res: Response) => {
+    const { quizId } = req.params;
+
+    try {
+      const submissions = await submissionService.getSubmissionAnswers(quizId);
+      if (submissions.length <= 0)
+        return res.status(400).json({ status: 400, msg: "not found" });
+
+      //zip files
+      const zip = new AdmZip();
+      // get buffers
+      submissions.forEach((submission) => {
+        const answers = submission.answers.reduce((result: any, a) => {
+          const question = a.questionId as Question;
+          if (question.type === "MULTIPLE" || question.type === "ONE") {
+            const answer = question.choices.reduce((total, c) => {
+              if (
+                a.answers.findIndex(
+                  (aa) => c._id.toString() === aa.answerId.toString()
+                ) !== -1
+              )
+                return total + c.content + "\n";
+              return total;
+            }, []);
+            result = [...result, { question: question.content, answer }];
+            return result;
+          }
+          if (question.type === "ESSAY") {
+            result = [
+              ...result,
+              { question: question.content, answer: a.essay },
+            ];
+            return result;
+          }
+          //type === fillin
+          const answer = a.answers.reduce((total, answer) => {
+            return total + answer.content + "\n";
+          }, "");
+          result = [...result, { question: question.content, answer }];
+          return result;
+        }, []);
+        const buffer = fileService.jsonToExcelBuffer(answers, []);
+        const user = submission.userId as User;
+        zip.addFile(
+          `name[${user.name}]-id[${user._id}]-startDate[${new Date(
+            submission.startDate
+          ).toISOString()}].xlsx`,
+          buffer
+        );
+      });
+      const zipBuffer = zip.toBuffer();
+      const stream = new Readable();
+
+      res.setHeader(
+        "Content-disposition",
+        `attachment; filename=quiz${quizId}.xlsx`
+      );
+      res.setHeader("Content-type", "application/zip");
+
+      stream.push(zipBuffer);
+      stream.push(null);
+      stream.pipe(res);
+    } catch {}
+  };
+
   const submitSubmission = async (req: Request, res: Response) => {
     const { submissionId } = req.params;
     try {
@@ -203,6 +271,7 @@ export default () => {
   };
 
   return {
+    downloadSubmissionInQuiz,
     getSubmissionInQuiz,
     getScoresInQuiz,
     getScoresByQuiz,

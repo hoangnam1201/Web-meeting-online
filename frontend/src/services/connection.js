@@ -779,12 +779,12 @@ class Connection {
   static replaceStream() {
     Object.values(this.callAllPeers).forEach((peer) => {
       peer.peerConnection?.getSenders().forEach((sender) => {
-        if (sender.track.kind === "audio") {
+        if (sender.track?.kind === "audio") {
           if (this.myStream.stream.getAudioTracks().length > 0) {
             sender.replaceTrack(this.myStream.stream.getAudioTracks()[0]);
           }
         }
-        if (sender.track.kind === "video") {
+        if (sender.track?.kind === "video") {
           if (this.myStream.stream.getVideoTracks().length > 0) {
             sender.replaceTrack(this.myStream.stream.getVideoTracks()[0]);
           }
@@ -793,12 +793,12 @@ class Connection {
     });
     Object.values(this.peers).forEach((peer) => {
       peer.peerConnection?.getSenders().forEach((sender) => {
-        if (sender.track.kind === "audio") {
+        if (sender.track?.kind === "audio") {
           if (this.myStream.stream.getAudioTracks().length > 0) {
             sender.replaceTrack(this.myStream.stream.getAudioTracks()[0]);
           }
         }
-        if (sender.track.kind === "video") {
+        if (sender.track?.kind === "video") {
           if (this.myStream.stream.getVideoTracks().length > 0) {
             sender.replaceTrack(this.myStream.stream.getVideoTracks()[0]);
           }
@@ -965,6 +965,7 @@ class Connection {
       this.myStream.media = { ...this.myStream.media, audio: true }
       this.setting.updateInstance("myStream", { ...this.myStream });
     } catch (err) {
+      toastError('Error to turn on audio');
       console.log(err);
     }
   };
@@ -990,6 +991,7 @@ class Connection {
       this.setting.updateInstance("myStream", { ...this.myStream });
     } catch (err) {
       console.log(err);
+      toastError('Error to turn on video');
     }
   };
 
@@ -1005,8 +1007,19 @@ class Connection {
       );
       this.setPeersListeners(this.myStream.stream);
     } catch (e) {
-      console.log(e);
-      console.log("err to get media");
+      try {
+        this.myStream.stream = await this.getVideoAudioStream(false, true, 12);
+        this.myStream.media = { video: false, audio: true };
+        this.myStream.peerId = this.myID;
+        this.setting.updateInstance("myStream", this.myStream);
+        this.setting.updateInstance(
+          "canAccess",
+          this.socket.connected && this.myID && this.myStream.stream
+        );
+        this.setPeersListeners(this.myStream.stream);
+      } catch (e) {
+        toastError('error to open audio')
+      }
     }
   };
 
@@ -1030,10 +1043,10 @@ class Connection {
   static getMediaStatus(stream) {
     let media = { video: false, audio: false };
     stream?.getTracks().forEach((track) => {
-      if (track.kind === "audio" && track.readyState === 'live') {
+      if (track?.kind === "audio" && track.readyState === 'live') {
         media = { ...media, audio: true };
       }
-      if (track.kind === "video" && track.readyState === 'live') {
+      if (track?.kind === "video" && track.readyState === 'live') {
         media = { ...media, video: true };
       }
     });

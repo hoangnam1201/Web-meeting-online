@@ -1,9 +1,10 @@
 import { model, ObjectId, Schema, SchemaTypes, Types } from "mongoose";
 import { Question } from "./question.model";
+import { User } from "./user.model";
 
 export class submission {
   _id: Types.ObjectId;
-  userId: Types.ObjectId;
+  userId: Types.ObjectId | User;
   quiz: Types.ObjectId;
   startDate: number;
   status: "DOING" | "SUBMITTED";

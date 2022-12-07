@@ -7,6 +7,7 @@ import initRouter from "./src/api/routers/index.router";
 import { initIOServer } from "./src/io/index";
 import { ExpressPeerServer } from "peer";
 import fileUpload from "express-fileupload";
+import tooBusy from "toobusy-js";
 import cors from "cors";
 
 interface ExpressApp extends Express {
@@ -28,7 +29,7 @@ const uri = process.env.HOST_DB || "mongodb://localhost:27017/meetingdb";
 mongoose.connect(uri);
 
 // socketjs
-const io = new Server( {
+const io = new Server({
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
@@ -46,6 +47,12 @@ app.use("/peerjs", peerServer);
 
 // api
 app.io = io;
+app.use((req, res, next) => {
+  if (tooBusy()) {
+    res.status(503).json({ msg: "Server is busy right now" });
+  }
+  next();
+});
 initRouter(app);
 
 app.get("/api/test", (req, res) => {
