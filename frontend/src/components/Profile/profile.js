@@ -1,66 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@mui/styles";
-import { TextField, Box, Container, Alert } from "@mui/material";
-
+import { TextField, Box, Avatar, Alert } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ScaleLoader } from "react-spinners";
-import Swal from "sweetalert2";
-import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import DateFnsUtils from "@date-io/date-fns";
-import moment from "moment";
+import ReactAvatar from 'react-avatar';
 import { Helmet } from "react-helmet";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { changeUserInfoAPI } from "../../api/user.api";
 import { LoadingButton } from "@mui/lab";
+import { toastSuccess } from "../../services/toastService";
+import { setUserInfo } from "../../store/actions/userInfoAction";
 
-const useStyles = makeStyles(() => ({
-  root: { marginBottom: "100px", padding: "0 100px" },
-  loaderRoot: {
-    opacity: 0.5,
-  },
-  loaderBox: {
-    display: "inline-block",
-    zIndex: 999,
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%,-50%)",
-  },
-  tabRoot: {
-    flexGrow: 1,
-    backgroundColor: "white",
-    display: "flex",
-    height: 224,
-    width: "100%",
-    marginTop: 30,
-    marginBottom: 100,
-  },
-  tabs: {
-    borderRight: `1px solid black`,
-  },
-  button: {
-    marginTop: 10,
-    width: "200px",
-    marginLeft: "200px",
-  },
-  radioGroup: {
-    flexDirection: "row",
-  },
-  datePicker: {
-    display: "flex",
-    width: "600px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  input: {
-    width: "600px",
-  },
-}));
 const phoneRegExp =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 const schema = yup.object().shape({
@@ -77,60 +28,42 @@ export default function Profiles() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
+    reset
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
-  const classes = useStyles();
+
   const loginInfo = useSelector((state) => state.userReducer?.user);
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [info, setInfo] = useState(null);
   const [errorNotify, setErrorNotify] = useState(null);
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    setInfo({ ...loginInfo });
-    setSelectedDate(new Date(loginInfo?.dob));
-  }, [loginInfo]);
+    resetForm();
+  }, [loginInfo])
+  const resetForm = () => {
+    if (loginInfo)
+      reset({
+        username: loginInfo.name,
+        name: loginInfo.name,
+        phone: loginInfo.phone,
+        email: loginInfo.email
+      })
+  }
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-
-  const handleInfoChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    setInfo({
-      ...info,
-      [name]: value,
-    });
-  };
-
-  const onInfoSubmit = () => {
-    const date = moment(selectedDate).format("yyyy-MM-DD");
-    let data = {
-      name: info.name,
-      dob: date,
-      phone: info.phone,
-    };
+  const onInfoSubmit = (data) => {
     setLoading(true);
     changeUserInfoAPI(data)
       .then((res) => {
         setLoading(false);
         setErrorNotify(null);
-        Swal.fire({
-          icon: "success",
-          title: "Update profile successfull !",
-          timer: 1500,
-          showConfirmButton: false,
-        });
-        loginInfo.name = res.data.name;
-        loginInfo.dob = res.data.dob;
-        loginInfo.phone = res.data.phone;
+        toastSuccess('successfully')
+        dispatch(setUserInfo({ ...loginInfo, name: data.name, email: data.email }))
       })
       .catch((error) => {
+        resetForm();
         setLoading(false);
         if (error?.response?.data?.msg) {
           setErrorNotify(error?.response?.data?.msg);
@@ -143,13 +76,17 @@ export default function Profiles() {
         }
       });
   };
+
   return (
     <>
       <Helmet>
         <title>UTE Meeting - Profile</title>
         <meta charSet="utf-8" name="description" content="Profile" />
       </Helmet>
-      <Box className={classes.loaderBox}>
+      <div>
+        <p className="text-start text-gray-900 p-3 bg-gray-50">User Information</p>
+      </div>
+      <Box>
         <ScaleLoader
           color="#f50057"
           loading={loading}
@@ -159,105 +96,107 @@ export default function Profiles() {
           margin={4}
         />
       </Box>
-      <Container className={`${classes.root} ${loading ? `opacity-50` : null}`}>
+      <div className="flex flex-col items-start justify-start p-4">
+        <div>
+          <p className="text-left text-sm">Avatar:</p>
+          {loginInfo?.picture ? (
+            <Avatar src={loginInfo.picture} sx={{ width: 60, height: 60 }} />
+          ) : <ReactAvatar
+            name={loginInfo?.name}
+            size={60}
+            round
+          />}
+        </div>
+
         <form
-          className={classes.form}
           noValidate
           onSubmit={handleSubmit(onInfoSubmit)}
+          className="flex flex-col items-start w-full md:w-1/3 "
         >
-          <TextField
-            focused
-            className={classes.input}
-            variant="outlined"
-            margin="dense"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            disabled
-            value={info?.username}
-          />
-          <TextField
-            focused
-            className={classes.input}
-            variant="outlined"
-            margin="dense"
-            required
-            fullWidth
-            id="name"
-            label="Fullname"
-            name="name"
-            autoComplete="name"
-            {...register("name")}
-            error={!!errors?.name}
-            helperText={errors?.name?.message}
-            value={info?.name}
-            onChange={handleInfoChange}
-          />
-          <TextField
-            focused
-            className={classes.input}
-            variant="outlined"
-            margin="dense"
-            required
-            fullWidth
-            id="phone"
-            label="Phone number"
-            name="phone"
-            autoComplete="phone"
-            {...register("phone")}
-            error={!!errors.phone}
-            helperText={errors?.phone?.message}
-            value={info?.phone}
-            onChange={handleInfoChange}
-          />
-          <TextField
-            focused
-            className={classes.input}
-            variant="outlined"
-            margin="dense"
-            required
-            fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            disabled
-            value={info?.email}
-          />
-          <LocalizationProvider
-            className={classes.input}
-            dateAdapter={DateFnsUtils}
-          >
-            <DesktopDatePicker
-              margin="dense"
-              id="date-picker-dialog-register"
-              label="Birthday"
-              inputFormat="MM/dd/yyyy"
-              name="dob"
-              value={selectedDate}
-              onChange={handleDateChange}
-              className={classes.datePicker}
+          <label className="block w-full">
+            <p className="text-left mt-4 text-sm">Username:</p>
+            <TextField
+              focused
+              fullWidth
+              variant="outlined"
+              InputLabelProps={{ shrink: true }}
+              required
+              id="username"
+              {...register('username')}
+              disabled
             />
-          </LocalizationProvider>
-
+          </label>
+          <label className="block w-full mt-2">
+            <p className="text-left text-sm">name:</p>
+            <TextField
+              focused
+              variant="outlined"
+              required
+              fullWidth
+              id="name"
+              {...register("name")}
+              error={!!errors?.name}
+              helperText={errors?.name?.message}
+            />
+          </label>
+          <label className="block w-full mt-2">
+            <p className="text-left text-sm">phone:</p>
+            <TextField
+              focused
+              fullWidth
+              variant="outlined"
+              required
+              InputLabelProps={{ shrink: true }}
+              autoComplete="phone"
+              {...register("phone")}
+              error={!!errors.phone}
+              helperText={errors?.phone?.message}
+            />
+          </label>
+          <label className="block w-full mt-2">
+            <p className="text-left">email:</p>
+            <TextField
+              focused
+              fullWidth
+              variant="outlined"
+              margin="dense"
+              required
+              id="email"
+              label="Email"
+              name="email"
+              disabled
+              InputLabelProps={{ shrink: true }}
+              {...register('email')}
+            />
+          </label>
           {errorNotify ? (
             <Alert style={{ marginTop: "15px" }} severity="error">
               {errorNotify}
             </Alert>
           ) : null}
-          <LoadingButton
-            loading={loading}
-            type="submit"
-            variant="contained"
-            autoFocus
-            color="primary"
-            className={classes.button}
-          >
-            Update
-          </LoadingButton>
+          {isDirty && <div>
+            <LoadingButton
+              loading={loading}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
+              Update
+            </LoadingButton>
+            <LoadingButton
+              loading={loading}
+              type="button"
+              variant="contained"
+              color="inherit"
+              className="ml-2"
+              onClick={resetForm}
+            >
+              cancel
+            </LoadingButton>
+          </div>
+          }
         </form>
-      </Container>
+      </div>
     </>
   );
 }

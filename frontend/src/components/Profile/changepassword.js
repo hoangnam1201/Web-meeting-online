@@ -1,49 +1,21 @@
 import React, { useState } from "react";
-import { makeStyles } from "@mui/styles";
-import { Box, TextField, Container, Alert } from "@mui/material";
+import { Box, TextField, Alert } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ScaleLoader } from "react-spinners";
-import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
-import { useCookies } from "react-cookie";
 import { changePasswordAPI } from "../../api/user.api";
 import { LoadingButton } from "@mui/lab";
-
-const useStyles = makeStyles(() => ({
-  root: { marginBottom: "100px", padding: "0 100px" },
-  loaderRoot: {
-    opacity: 0.5,
-  },
-  loaderBox: {
-    display: "inline-block",
-    zIndex: 999,
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%,-50%)",
-  },
-  button: {
-    marginTop: 10,
-    width: "200px",
-    marginLeft: "200px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  input: {
-    width: "600px",
-  },
-}));
+import { toastSuccess } from "../../services/toastService";
 
 const schema = yup.object().shape({
   oldPassword: yup.string().required("Please input old password !"),
-  password: yup.string().required("Please input new password !"),
+  password: yup.string().required("Please input new password !")
+    .notOneOf([yup.ref('oldPassword')], 'The new password have to different old password'),
   passwordConfirmation: yup
     .string()
-    .required("Please input confirm password !")
+    .required("Please input confirmation password !")
     .oneOf([yup.ref("password")], "Password incorrect !"),
 });
 
@@ -52,50 +24,24 @@ export default function ChangePassword() {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({
     mode: "onBlur",
     resolver: yupResolver(schema),
   });
-  const classes = useStyles();
-  // const accessToken = localStorage
-  //   ? JSON.parse(localStorage.getItem("user"))
-  //   : "";
+
   const [loading, setLoading] = useState(false);
   const [errorNotify, setErrorNotify] = useState(null);
-  const [cookies] = useCookies(["u_auth"]);
-  const [password, setPassword] = useState({
-    oldPassword: "",
-    password: "",
-    passwordConfirmation: "",
-  });
 
-  const handleInfoChange = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    setPassword({
-      ...password,
-      [name]: value,
-    });
-  };
-
-  const onPasswordSubmit = () => {
+  const onPasswordSubmit = (data) => {
     setLoading(true);
+    setErrorNotify(null)
 
-    const data = {
-      oldPassword: password.oldPassword,
-      password: password.password,
-      passwordConfirmation: password.passwordConfirmation,
-    };
     changePasswordAPI(data)
       .then(() => {
         setLoading(false);
-        Swal.fire({
-          icon: "success",
-          title: "Update password successfull !",
-          timer: 1500,
-          showConfirmButton: false,
-        });
+        toastSuccess('successfully');
+        reset();
       })
       .catch((error) => {
         setLoading(false);
@@ -116,7 +62,10 @@ export default function ChangePassword() {
         <title>UTE Meeting - Change password</title>
         <meta charSet="utf-8" name="description" content="changepassword" />
       </Helmet>
-      <Box className={classes.loaderBox}>
+      <div>
+        <p className="text-start text-gray-900 p-3 bg-gray-50">Change Password</p>
+      </div>
+      <Box>
         <ScaleLoader
           color="#f50057"
           loading={loading}
@@ -126,80 +75,64 @@ export default function ChangePassword() {
           margin={4}
         />
       </Box>
-      <Container className={`${classes.root} ${loading ? `opacity-50` : null}`}>
-        <form
-          className={classes.form}
-          noValidate
-          onSubmit={handleSubmit(onPasswordSubmit)}
-        >
+      <form
+        noValidate
+        onSubmit={handleSubmit(onPasswordSubmit)}
+        className="flex flex-col items-start w-full md:w-1/3 p-3"
+      >
+        <label className="block w-full">
+          <p className="text-left mt-4 text-sm">current password:</p>
           <TextField
-            className={classes.input}
             variant="outlined"
-            margin="dense"
             required
             fullWidth
             type="password"
-            id="oldPassword"
-            label="Old Password"
-            name="oldPassword"
-            autoComplete="oldPassword"
             {...register("oldPassword")}
             error={!!errors.oldPassword}
             helperText={errors?.oldPassword?.message}
-            value={password.oldPassword}
-            onChange={handleInfoChange}
           />
+        </label>
+
+        <label className="block w-full">
+          <p className="text-left mt-4 text-sm">new password:</p>
           <TextField
-            className={classes.input}
             variant="outlined"
-            margin="dense"
             type="password"
             required
             fullWidth
-            id="password"
-            label="New Password"
-            name="password"
-            autoComplete="password"
             {...register("password")}
             error={!!errors.password}
             helperText={errors?.password?.message}
-            value={password.password}
-            onChange={handleInfoChange}
           />
+        </label>
+        <label className="block w-full">
+          <p className="text-left mt-4 text-sm">confirmation password:</p>
           <TextField
-            className={classes.input}
             variant="outlined"
-            margin="dense"
             required
             fullWidth
             type="password"
-            id="passwordConfirmation"
-            label="Confirm Password"
-            name="passwordConfirmation"
-            autoComplete="passwordConfirmation"
             {...register("passwordConfirmation")}
             error={!!errors.passwordConfirmation}
             helperText={errors?.passwordConfirmation?.message}
-            value={password.passwordConfirmation}
-            onChange={handleInfoChange}
           />
-          {errorNotify ? (
-            <Alert style={{ marginTop: "15px" }} severity="error">
-              {errorNotify}
-            </Alert>
-          ) : null}
-          <LoadingButton
-            loading={loading}
-            type="submit"
-            variant="contained"
-            autoFocus
-            color="primary"
-            className={classes.button}
-          >
-            Update
-          </LoadingButton>
-        </form>
-      </Container>
+        </label>
+        {errorNotify ? (
+          <Alert style={{ marginTop: "15px" }} severity="error">
+            {errorNotify}
+          </Alert>
+        ) : null}
+        <LoadingButton
+          loading={loading}
+          className="mt-3"
+          type="submit"
+          variant="contained"
+          autoFocus
+          color="primary"
+        >
+          Update
+        </LoadingButton>
+      </form>
     </>
   );
 }

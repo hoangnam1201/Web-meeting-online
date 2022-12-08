@@ -3,7 +3,7 @@ import { getInfoAPI } from "../../api/user.api";
 export const USER_SET_USER_INFO = 'USER_SET_USER_INFO';
 export const USER_LOADING = 'USER_LOADING';
 
-const setUserInfo = (payload) => {
+export const setUserInfo = (payload) => {
   return {
     type: USER_SET_USER_INFO,
     payload
