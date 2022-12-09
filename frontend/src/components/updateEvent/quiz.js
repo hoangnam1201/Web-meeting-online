@@ -29,8 +29,8 @@ const QuizManage = (props) => {
     handleSubmit,
     formState: { errors },
     reset,
-    getValues,
     setValue,
+    watch
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -38,6 +38,7 @@ const QuizManage = (props) => {
       endDate: new Date().getTime()
     },
   });
+  const date = watch(['startDate', 'endDate'])
 
   useEffect(() => {
     dispatch(getQuizAction(roomId));
@@ -58,7 +59,8 @@ const QuizManage = (props) => {
       reset({
         name: "",
         description: "",
-        duration: "",
+        duration: 5,
+        countSubmission: 1,
         startDate: new Date().getTime(),
         endDate: new Date().getTime(),
       });
@@ -72,7 +74,7 @@ const QuizManage = (props) => {
         reset({
           name: "",
           description: "",
-          duration: "",
+          duration: 5,
           countSubmission: 1,
           startDate: new Date().getTime(),
           endDate: new Date().getTime()
@@ -223,7 +225,7 @@ const QuizManage = (props) => {
                   InputLabelProps={{ shrink: true }}
                   id="date-picker-dialog-register"
                   label="Start Date"
-                  value={new Date(getValues("startDate"))}
+                  value={new Date(date[0] || Date.now())}
                   onChange={(e) => handleDateChange(e, 'startDate')}
                   renderInput={(params) => (
                     <TextField className="my-2" fullWidth {...params} />
@@ -237,7 +239,7 @@ const QuizManage = (props) => {
                   InputLabelProps={{ shrink: true }}
                   id="date-picker-dialog-register"
                   label="End Date"
-                  value={new Date(getValues("endDate"))}
+                  value={new Date(date[1] || Date.now())}
                   onChange={(e) => handleDateChange(e, 'endDate')}
                   renderInput={(params) => (
                     <TextField className="my-2" fullWidth {...params} />

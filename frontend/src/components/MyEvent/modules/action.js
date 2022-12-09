@@ -10,6 +10,7 @@ import {
   updateRoomApi,
 } from "../../../api/room.api";
 import { toast } from "react-toastify";
+import { toastError } from "../../../services/toastService";
 
 export const actGetRoom = () => {
   return (dispatch) => {
@@ -68,16 +69,7 @@ export const addRoomAction = (data, callBack) => {
       })
       .catch((error) => {
         dispatch(actGetRoomFailed(error));
-        toast.error(error.response.data.msg, {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toastError(error?.response?.data?.msg)
       });
   };
 };

@@ -102,7 +102,7 @@ const ManageDialog = (props) => {
         endDate: new Date().getTime(),
       });
     }
-  }, [roomEvent]);
+  }, [openDialog]);
 
   const handleDateChange = (date) => {
     setValue("startDate", date.getTime(), { shouldValidate: true });

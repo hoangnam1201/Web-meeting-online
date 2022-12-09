@@ -112,7 +112,7 @@ const ManageUser = () => {
               <div className="text-left pl-3 border-r-2 border-gray-500">
                 Email
               </div>
-              <div className="text-left pl-3">Role</div>
+              <div className="text-left pl-3 border-r-2 border-gray-500">Role</div>
               <div className="text-left pl-3">Max Of Event</div>
             </div>
             <div className="flex-grow h-0 overflow-y-auto scroll-sm">

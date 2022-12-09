@@ -55,11 +55,12 @@ function UpdateEvent() {
     handleSubmit,
     formState: { errors },
     reset,
-    getValues,
     setValue,
+    watch
   } = useForm({
     mode: "onChange",
   });
+  const wfloor = watch('floor')
 
   useEffect(() => {
     getRoom("START", "ALL");
@@ -469,12 +470,11 @@ function UpdateEvent() {
               {!!tables?.selectedTables.length && (
                 <div className="flex flex-wrap gap-2">
                   {room?.floors?.map((f, index) => {
-                    const vFloor = getValues("floor");
                     return (
                       <button
                         type="button"
                         key={index}
-                        className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${vFloor === f && "shadow-lg bg-gray-200"
+                        className={`shadow-md p-1 whitespace-nowrap rounded text-sm font-thin text-gray-500 snap-start scroll-ml-4 ${wfloor === f && "shadow-lg bg-gray-200"
                           }`}
                         onClick={() =>
                           setValue("floor", f, {
