@@ -176,16 +176,16 @@ const MyEvent = () => {
         <section>
           {(userCurrent?.user?.role === "ADMIN" ||
             userCurrent?.user?.role === "HOST") && (
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<EventNoteIcon />}
-              onClick={handleAdd}
-              className="text-sm mb-2 md:text-md"
-            >
-              New Events
-            </Button>
-          )}
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<EventNoteIcon />}
+                onClick={handleAdd}
+                className="text-sm mb-2 md:text-md"
+              >
+                New Events
+              </Button>
+            )}
 
           <Container component="div" maxWidth="xl">
             <Grid container>
@@ -208,7 +208,9 @@ const MyEvent = () => {
                   listRoom?.data?.map((room, index) => (
                     <Grid item lg={3} md={4} sm={6} xs={12} key={room._id}>
                       <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
-                        <Link to={`/room/${room._id}`}>
+                        <Link to={`/room/${room._id}`}
+                          target='_blank'
+                        >
                           <CardMedia
                             component="img"
                             height="140"
@@ -306,7 +308,9 @@ const MyEvent = () => {
                   invitedRoom?.map((room, index) => (
                     <Grid item lg={3} md={4} sm={6} xs={12} key={room._id}>
                       <Card sx={{ maxWidth: 345 }} className={classes.roomBox}>
-                        <Link to={`/room/${room._id}`}>
+                        <Link to={`/room/${room._id}`}
+                          target='_blank'
+                        >
                           <CardMedia
                             component="img"
                             height="140"

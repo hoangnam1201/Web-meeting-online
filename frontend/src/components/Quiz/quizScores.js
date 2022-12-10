@@ -35,14 +35,15 @@ const QuizScores = () => {
     const res = await downloadSubmissionInQuizAPI(id)
     const url = window.URL.createObjectURL(
       new Blob([res], {
-        type: "application/zip"
+        type:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       })
     );
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute(
       'download',
-      `quiz${id}.zip`,
+      `quiz${id}.xlsx`,
     );
     // Append to html link element page
     document.body.appendChild(link);

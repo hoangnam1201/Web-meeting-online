@@ -4,8 +4,6 @@ import { submissionReadDTO } from "../../Dtos/submission-read.dto";
 import { Question } from "../../models/question.model";
 import FileService from "../../services/file.service";
 import SubmissionService from "../../services/submission.service";
-import AdmZip from "adm-zip";
-import { Readable } from "stream";
 import { User } from "../../models/user.model";
 
 export default () => {
@@ -163,10 +161,8 @@ export default () => {
       if (submissions.length <= 0)
         return res.status(400).json({ status: 400, msg: "not found" });
 
-      //zip files
-      const zip = new AdmZip();
       // get buffers
-      submissions.forEach((submission) => {
+      const data = submissions.reduce((submissionDatas, submission) => {
         const answers = submission.answers.reduce((result: any, a) => {
           const question = a.questionId as Question;
           if (question.type === "MULTIPLE" || question.type === "ONE") {
@@ -179,45 +175,53 @@ export default () => {
                 return total + c.content + "\n";
               return total;
             }, []);
-            result = [...result, { question: question.content, answer }];
+            result = {
+              ...result,
+              [question._id + ": " + question.content]: answer,
+            };
             return result;
           }
           if (question.type === "ESSAY") {
-            result = [
+            result = {
               ...result,
-              { question: question.content, answer: a.essay },
-            ];
+              [question._id + ": " + question.content]: a.essay,
+            };
             return result;
           }
           //type === fillin
           const answer = a.answers.reduce((total, answer) => {
             return total + answer.content + "\n";
           }, "");
-          result = [...result, { question: question.content, answer }];
+          result = {
+            ...result,
+            [question._id + ": " + question.content]: answer,
+          };
           return result;
-        }, []);
-        const buffer = fileService.jsonToExcelBuffer(answers, []);
+        }, {});
         const user = submission.userId as User;
-        zip.addFile(
-          `name[${user.name}]-id[${user._id}]-startDate[${new Date(
-            submission.startDate
-          ).toISOString()}].xlsx`,
-          buffer
-        );
-      });
-      const zipBuffer = zip.toBuffer();
-      const stream = new Readable();
+        submissionDatas.push({
+          name: user.name,
+          email: user.email,
+          ...answers,
+        });
+        return submissionDatas;
+      }, []);
+      const stream = fileService.jsonToExcel(data, []);
 
       res.setHeader(
         "Content-disposition",
         `attachment; filename=quiz${quizId}.xlsx`
       );
-      res.setHeader("Content-type", "application/zip");
-
-      stream.push(zipBuffer);
-      stream.push(null);
+      res.setHeader(
+        "Content-type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
       stream.pipe(res);
-    } catch {}
+    } catch {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Internal Server Error" });
+    }
   };
 
   const submitSubmission = async (req: Request, res: Response) => {

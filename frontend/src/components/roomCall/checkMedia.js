@@ -5,7 +5,8 @@ import MicIcon from "@mui/icons-material/Mic";
 import VideoIcon from "@mui/icons-material/PhotoCameraFront";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { getRoomAPI, updateStateRoomApi } from "../../api/room.api";
 import { useSelector } from "react-redux";
 import { toastError } from "../../services/toastService";
@@ -20,6 +21,7 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
   const { id } = useParams();
   const speech = useRef();
   const [volume, setVolume] = useState(0);
+  const history = useHistory();
 
   const turnOffAudio = () => {
     Connection.turnOffAudio();
@@ -37,6 +39,10 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
     Connection.turnOnVideo();
   };
 
+  useEffect(() => {
+    getRoomInfo()
+  }, [id]);
+
   const openRoomHandler = () => {
     setLoading(true);
     updateStateRoomApi(id, 'OPENING').then(() => {
@@ -46,11 +52,6 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
       setLoading(false)
     })
   }
-
-  useEffect(() => {
-    getRoomInfo()
-
-  }, [id]);
 
   const getRoomInfo = () => {
     getRoomAPI(id).then((res) => {
@@ -78,6 +79,13 @@ const CheckMedia = ({ myStream, canAccess, joinError }) => {
 
   return (
     <div className="min-h-screen flex justify-center items-center flex-col lg:flex-row gap-8 w-full">
+      <div className="fixed top-2 left-2">
+        <IconButton onClick={() => {
+          window.location.replace('/user/my-event');
+        }}>
+          <ArrowBackIosIcon />
+        </IconButton>
+      </div>
       <div>
         <div
           className="relative bg-black border-2 overflow-hidden rounded-md"

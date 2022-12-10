@@ -50,6 +50,7 @@ app.io = io;
 app.use((req, res, next) => {
   if (tooBusy()) {
     res.status(503).json({ msg: "Server is busy right now" });
+    return;
   }
   next();
 });
