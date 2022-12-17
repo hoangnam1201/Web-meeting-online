@@ -105,7 +105,7 @@ export const addQuizAction = (data, roomId, callback) => {
     try {
       await createQuizApi(data);
       dispatch(getQuizAction(roomId));
-      toastSuccess('successfully')
+      toastSuccess('successfull')
       if (callback) {
         callback();
       }
@@ -127,7 +127,7 @@ export const updateQuizActon = (id, data, callback) => {
       await updateQuizApi(id, data);
       dispatch(getQuizAction(data.room));
       dispatch(clearSelectQuizAction())
-      toastSuccess('successfully')
+      toastSuccess('successfull')
       if (callback) {
         callback();
       }
@@ -148,7 +148,7 @@ export const deleteQuizAction = (id, roomId) => {
     try {
       await deleteQuizApi(id);
       dispatch(getQuizAction(roomId));
-      toastSuccess('successfully')
+      toastSuccess('successfull')
     } catch (err) {
       console.log(err);
       if (err.response) {

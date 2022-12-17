@@ -131,7 +131,7 @@ function UpdateEvent() {
         await deleteFloorAPI(room._id, tables.currentFloor);
         await getRoom("START", "UPDATE_FLOORS");
       });
-      toastSuccess('deleted successfully');
+      toastSuccess('deleted successfull');
     } catch (err) {
       console.log(err);
     }
@@ -169,7 +169,7 @@ function UpdateEvent() {
       const userIds = usersSelected.map((s) => s.value);
       await addMembersAPI(id, userIds);
       setUsersSelected([]);
-      toastSuccess('added members successfully');
+      toastSuccess('added members successfull');
       await getRoom(null, "UPDATE_MEMBERS");
     } catch (err) {
       setMembersLoading(false);
@@ -187,7 +187,7 @@ function UpdateEvent() {
       fd.append("importFile", files[0]);
       setMembersLoading(true);
       await addMembersByFileAPI(id, fd);
-      toastSuccess('successfully');
+      toastSuccess('successfull');
       await getRoom(null, "UPDATE_MEMBERS");
       e.target.value = null;
     } catch (e) {
@@ -201,7 +201,7 @@ function UpdateEvent() {
       setMembersLoading(true);
       const data = usersSelected.map(u => u.value);
       await removeMembersAPI(id, data);
-      toastSuccess('successfully');
+      toastSuccess('successfull');
       setUsersSelected([]);
       await getRoom(null, "UPDATE_MEMBERS");
     } catch (e) {
@@ -233,7 +233,7 @@ function UpdateEvent() {
       });
       if (!isConfirmed) return;
       setMembersLoading(true);
-      toastSuccess('successfully');
+      toastSuccess('successfull');
       setUsersSelected([]);
       await removeMemberAPI(id, userId);
       await getRoom(null, "UPDATE_MEMBERS");

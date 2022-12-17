@@ -58,7 +58,7 @@ function Register(props) {
 
         Swal.fire({
           icon: "success",
-          title: "Đăng ký thành công",
+          title: "Register Successfull",
         });
         history.replace("/auth/login");
       })

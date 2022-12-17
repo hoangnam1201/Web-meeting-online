@@ -110,13 +110,6 @@ const VideoContainer = ({ myStream, streamDatas }) => {
                 style={{ ...sizeCam }}
                 className="bg-black rounded-md overflow-hidden transition-all"
                 streamData={streamDatas[key]}
-                key={index}
-                isPin={selectedVideo === key}
-                onPin={() => {
-                  if (selectedVideo === key)
-                    return dispatch(setSelectedVideoAction(null));
-                  dispatch(setSelectedVideoAction(key));
-                }}
               />)
           })}
       </div>
@@ -135,7 +128,6 @@ const VideoContainer = ({ myStream, streamDatas }) => {
           <Video
             className="bg-black rounded-md overflow-hidden relativew w-full h-full"
             streamData={streamDatas[selectedVideo]}
-            isPin={true}
             muted={true}
             onPin={() => {
               return dispatch(setSelectedVideoAction(null));

@@ -40,7 +40,7 @@ export default function ChangePassword() {
     changePasswordAPI(data)
       .then(() => {
         setLoading(false);
-        toastSuccess('successfully');
+        toastSuccess('Change password successfull');
         reset();
       })
       .catch((error) => {

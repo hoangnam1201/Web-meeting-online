@@ -73,7 +73,7 @@ class Connection {
   };
   static shareStream = null;
   static isShare = false;
-  static streamDatas = [];
+  static streamDatas = {};
   //joiner
   static joiners = [];
   //tables
@@ -289,7 +289,7 @@ class Connection {
             picture: userCurrent.user.picture,
           },
           media: Connection.getMediaStatus(this.myStream.stream),
-          peerId: peerId,
+          peerId: this.myID,
         },
       };
 
@@ -386,7 +386,7 @@ class Connection {
             picture: userCurrent.user.picture,
           },
           media: Connection.getMediaStatus(this.myStream.stream),
-          peerId: peerId,
+          peerId: this.myID,
         },
       };
 
@@ -455,7 +455,7 @@ class Connection {
             picture: userCurrent.user.picture,
           },
           media: Connection.getMediaStatus(this.myStream.stream),
-          peerId: peerId,
+          peerId: this.myID,
         },
       };
 
@@ -499,7 +499,7 @@ class Connection {
             picture: userCurrent.user.picture,
           },
           media: Connection.getMediaStatus(this.myStream.stream),
-          peerId: peerId,
+          peerId: this.myID,
         },
       };
 
@@ -632,7 +632,7 @@ class Connection {
             picture: userCurrent.user.picture,
           },
           media: Connection.getMediaStatus(this.myStream.stream),
-          peerId: peerId,
+          peerId: this.myID,
         },
       };
 
@@ -946,10 +946,13 @@ class Connection {
   };
 
   static setUserSpeaking(peerId) {
+    console.log(this.streamDatas[peerId])
+    console.log(this.streamDatas)
     if (!this.streamDatas[peerId]) return;
-    const temp = { ...this.streamDatas };
+    const temp = { ...this.streamDatas[peerId] };
     delete this.streamDatas[peerId];
-    this.streamDatas = { temp, ...this.streamDatas };
+    this.streamDatas = { [peerId]: temp, ...this.streamDatas };
+    console.log(this.streamDatas)
     this.setting.updateInstance("streamDatas", this.streamDatas);
   }
 

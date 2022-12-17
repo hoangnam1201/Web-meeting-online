@@ -14,8 +14,6 @@ const VideoTableContainer = ({
   streamDatas,
   ...rest
 }) => {
-  const dispatch = useDispatch();
-  const selectedVideo = useSelector((state) => state.selectedVideo);
   const shareScreen = useSelector(state => state.shareScreenReducer);
   const callAll = useSelector(state => state.callAllReducer);
   const [shareStreamData, setShareStreamData] = useState(null);
@@ -31,11 +29,6 @@ const VideoTableContainer = ({
       setShareStreamData(null)
   }, [shareScreen?.isSharing])
 
-  const onPin = (peerId) => {
-    if (!selectedVideo)
-      return dispatch(setSelectedVideoAction(peerId));
-    return dispatch(setSelectedVideoAction(null));
-  };
 
   return (
     <div {...rest}>
@@ -54,16 +47,12 @@ const VideoTableContainer = ({
           <Video
             className="w-44 h-32 bg-black rounded-md overflow-hidden"
             streamData={callAll?.hostStream}
-            onPin={() => onPin(callAll?.hostStream?.peerId)}
-            isPin={callAll?.hostStream?.peerId === selectedVideo}
           />
         )}
         {callAll?.hostShareStream && (
           <Video
             className="w-44 h-32 bg-black rounded-md overflow-hidden"
             streamData={callAll?.hostShareStream}
-            onPin={() => onPin(callAll?.hostShareStream?.peerId)}
-            isPin={callAll?.hostShareStream?.peerId === selectedVideo}
           />
         )}
         {streamDatas &&
@@ -72,8 +61,6 @@ const VideoTableContainer = ({
               <Video
                 className="w-44 h-32 bg-black rounded-md overflow-hidden"
                 streamData={streamDatas[key]}
-                onPin={() => onPin(key)}
-                isPin={key === selectedVideo}
                 key={index}
               />
             );
@@ -159,14 +146,17 @@ export const MyVideo = React.memo(({ sharing = false, myStream, ...rest }) => {
   );
 });
 
-export const Video = ({ streamData = {}, onPin, isPin = false, muted = false, ...rest }) => {
+export const Video = ({ streamData = {}, muted = false, ...rest }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
+  const dispatch = useDispatch();
   const speech = useRef();
   const [speaking, setSpeaking] = useState(false);
+  const selectedVideo = useSelector((state) => state.selectedVideo);
   const { stream = null,
     user = null,
-    media = { video: false, audio: false } } = streamData;
+    media = { video: false, audio: false },
+    peerId } = streamData;
 
   useEffect(() => {
     if (!stream) return;
@@ -177,6 +167,8 @@ export const Video = ({ streamData = {}, onPin, isPin = false, muted = false, ..
       speech.current = hark(streamData.stream, { interval: 200 });
       speech.current.on('speaking', () => {
         setSpeaking(true)
+        console.log(peerId)
+        peerId && Connection.setUserSpeaking(peerId)
       })
       speech.current.on('stopped_speaking', () => {
         setSpeaking(false)
@@ -187,6 +179,12 @@ export const Video = ({ streamData = {}, onPin, isPin = false, muted = false, ..
       setSpeaking(false);
     }
   }, [stream, media.audio]);
+
+  const onPin = () => {
+    if (!selectedVideo)
+      return dispatch(setSelectedVideoAction(peerId));
+    return dispatch(setSelectedVideoAction(null));
+  }
 
   return (
     <div {...rest}>
@@ -213,7 +211,7 @@ export const Video = ({ streamData = {}, onPin, isPin = false, muted = false, ..
           </div>
           {onPin && <div>
             <IconButton onClick={onPin}>
-              <PushPinIcon className={`${isPin ? 'text-blue-500' : 'text-white'} `} fontSize="small" />
+              <PushPinIcon className={`${peerId === selectedVideo ? 'text-blue-500' : 'text-white'} `} fontSize="small" />
             </IconButton>
           </div>}
         </div>

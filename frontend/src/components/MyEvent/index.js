@@ -23,7 +23,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { actGetRoom, deleteRoomAction } from "./modules/action";
-import meetingIcon from "../../assets/meetingIcon1.png";
 import { getInvitedRoomAPI } from "../../api/room.api";
 import { renewToken } from "../../api/user.api";
 import PersonIcon from "@mui/icons-material/Person";
@@ -275,11 +274,17 @@ const MyEvent = () => {
                     </Grid>
                   ))
                 ) : (
-                  <Grid item md={9}>
-                    {listRoom.data && (
-                      <div className="flex justify-center flex-col items-center">
-                        <img src={meetingIcon} width={100} height={100} />
-                        <h2 className="font-bold">You have no events !!!</h2>
+                  <Grid item md={12}>
+                    {!listRoom?.loading && (
+                      <div className="flex">
+                        <div className="bg-blue-100 shadow-inner p-4 rounded-md w-full">
+                          <p className="text-gray-600">
+                            You don't have any room
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            The rooms you create will be here
+                          </p>
+                        </div>
                       </div>
                     )}
                   </Grid>
@@ -353,13 +358,17 @@ const MyEvent = () => {
                     </Grid>
                   ))
                 ) : (
-                  <Grid item md={9}>
-                    <div className="flex justify-center flex-col items-center">
-                      <img src={meetingIcon} width={100} height={100} />
-                      <h2 className="font-bold">
-                        You have no event invited !!!
-                      </h2>
-                    </div>
+                  <Grid item md={12}>
+                    {!listRoom?.loading && <div className="flex">
+                      <div className="bg-blue-100 shadow-inner p-4 rounded-md w-full">
+                        <p className="text-gray-600">
+                          You don't have any invited room
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          The rooms you are invited or become member will be here
+                        </p>
+                      </div>
+                    </div>}
                   </Grid>
                 )}
               </Grid>

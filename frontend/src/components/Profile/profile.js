@@ -59,8 +59,8 @@ export default function Profiles() {
       .then((res) => {
         setLoading(false);
         setErrorNotify(null);
-        toastSuccess('successfully')
-        dispatch(setUserInfo({ ...loginInfo, name: data.name, email: data.email }))
+        toastSuccess('successfull')
+        dispatch(setUserInfo({ ...loginInfo, name: data.name, phone: data.phone }))
       })
       .catch((error) => {
         resetForm();
