@@ -95,7 +95,8 @@ const MyEvent = () => {
   });
 
   useEffect(() => {
-    renewToken();
+    dispatch(actGetRoom());
+    getInvitedRoom();
   }, []);
 
   const getInvitedRoom = async () => {
@@ -128,11 +129,6 @@ const MyEvent = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
-
-  useEffect(() => {
-    dispatch(actGetRoom());
-    getInvitedRoom();
-  }, []);
 
   const deleteRoom = (roomID) => {
     Swal.fire({

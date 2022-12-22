@@ -597,8 +597,9 @@ class Connection {
 
     this.socket.on("present:close", () => {
       this.clearPeers();
-      this.peers = {};
       store.dispatch(setSelectedVideoAction(null));
+      this.streamDatas = []
+      this.setting.updateInstance("streamDatas", { ...this.streamDatas });
       this.socket.emit("table:join-previous", this.myID, {
         audio: false,
         video: false,
@@ -811,7 +812,7 @@ class Connection {
     Object.values(this.peers).forEach((peer) => {
       peer.close();
     });
-    this.peers = [];
+    this.peers = {};
   };
 
   static clearCallAllPeers() {

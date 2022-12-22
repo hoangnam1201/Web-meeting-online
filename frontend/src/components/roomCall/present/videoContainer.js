@@ -45,6 +45,8 @@ const VideoContainer = ({ myStream, streamDatas }) => {
     const aspectRatio = 1.777; //16:9
     const countVideo = (shareScreen?.isSharing ? 2 : 1) + Object.keys(streamDatas).length;
     let cols = 1
+    console.log(isMobile)
+    console.log(countVideo)
     if (!isMobile) {
       switch (countVideo) {
         case 1:
@@ -61,6 +63,7 @@ const VideoContainer = ({ myStream, streamDatas }) => {
           break;
       }
     }
+    console.log(cols)
     if (!selectedVideo) {
       const camWidth = (widthScreen - 8 * cols) / cols
       const camHeight = camWidth / aspectRatio;
@@ -110,6 +113,7 @@ const VideoContainer = ({ myStream, streamDatas }) => {
                 style={{ ...sizeCam }}
                 className="bg-black rounded-md overflow-hidden transition-all"
                 streamData={streamDatas[key]}
+                key={key}
               />)
           })}
       </div>
@@ -129,9 +133,6 @@ const VideoContainer = ({ myStream, streamDatas }) => {
             className="bg-black rounded-md overflow-hidden relativew w-full h-full"
             streamData={streamDatas[selectedVideo]}
             muted={true}
-            onPin={() => {
-              return dispatch(setSelectedVideoAction(null));
-            }}
           />
         )))}
       </div>
