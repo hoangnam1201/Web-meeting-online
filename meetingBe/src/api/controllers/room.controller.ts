@@ -353,8 +353,10 @@ export default () => {
 
       //send mail
       const emailString = emails.reduce((total, email) => {
-        return total + " " + email;
+        if (total) return total + ", " + email;
+        return email;
       }, "");
+      console.log("a", emailString);
       if (emailString) await mailService.sendInvitation(roomId, emailString);
       //res
       res.status(200).json({ status: 200, data: null });
