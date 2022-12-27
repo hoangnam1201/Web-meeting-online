@@ -11,9 +11,7 @@ import FileService from "../../services/file.service";
 import MessageService from "../../services/message.service";
 import RoomService from "../../services/room.service";
 import TableService from "../../services/table.service";
-import { TableDetailDto } from "../../Dtos/table-detail.dto";
 import RequestService from "../../services/request.service";
-import { UserReadDto } from "../../Dtos/user-read.dto";
 
 export default (ioRoom: any, io: any) => {
   const userService = UserService();
@@ -192,6 +190,7 @@ export default (ioRoom: any, io: any) => {
       );
     await roomService.changeStateRoom(roomId, "CLOSING");
     await roomService.removeAllJoiners(roomId);
+    await tableService.findAndClearJoiner(roomId);
     socket.broadcast
       .to(roomId)
       .emit("room:disconnect-reason", "The room is closed");
@@ -293,7 +292,6 @@ export default (ioRoom: any, io: any) => {
         .to(socketIds)
         .emit("room:messages", MessageReadDto.fromArray(messages));
     } catch (err) {
-      console.log(err);
       socket.emit("room:err", "Internal Server Error");
     }
   };
@@ -604,7 +602,6 @@ export default (ioRoom: any, io: any) => {
         ioRoom.to(roomId).emit("room:info", RoomReadDetailDto.fromRoom(room));
       }, 1000 * time);
     } catch (err) {
-      console.log(err);
       return socket.emit("room:err", "Internal Server Error");
     }
   };
@@ -743,11 +740,33 @@ export default (ioRoom: any, io: any) => {
 
     try {
       const tables = await tableService.findAndClearJoiner(roomId);
-      ioRoom
-        .to(roomId)
-        .emit("room:divide-tables", TableDetailDto.fromArray(tables));
+      // ioRoom
+      //   .to(roomId)
+      //   .emit("room:divide-tables", TableDetailDto.fromArray(tables));
+      const sockets = await ioRoom.in(roomId).fetchSockets();
+      sockets.forEach((socket: Socket) => {
+        const {
+          tableId,
+          floor,
+          userData: { userId },
+        } = socket.data;
+        const table = tables.find((t: Table) => {
+          const members = t.members as User[];
+          return members.find((m: User) => m._id.toString() === userId);
+        });
+        socket.leave(tableId);
+        delete socket.data.tableId
+        if (table) {
+          socket.leave(floor);
+          socket.join(table.floor.toString());
+          socket.data.floor = table.floor.toString();
+          socket.emit("room:divide-tables", {
+            tableId: table._id,
+            floor: table.floor.toString(),
+          });
+        } else socket.emit("room:divide-tables", null);
+      });
     } catch {
-      console.log("error");
       return socket.emit("room:err", "Internal Server Error");
     }
   };

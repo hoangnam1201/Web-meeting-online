@@ -5,8 +5,8 @@ export class Table {
   _id: any;
   room: ObjectId;
   name: string;
-  users: [ObjectId] | User[];
-  members: [ObjectId] | User[];
+  users: ObjectId[] | User[];
+  members: ObjectId[] | User[];
   numberOfSeat: number;
   floor: ObjectId;
 }

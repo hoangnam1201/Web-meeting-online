@@ -13,6 +13,7 @@ import {
   roomCallSetRequestsAction,
   roomSetRoomInfoAction,
   roomSetSocketAction,
+  roomCallSetJoinLoading
 } from "../store/actions/roomCallAction";
 import { toastError, toastJoinLeaveRoom, toastJoinTable, toastRequest, toastText } from "./toastService";
 import { removeSelectedVideoAction, setSelectedVideoAction } from "../store/actions/selectedVideoAction";
@@ -169,42 +170,31 @@ class Connection {
       this.setting.updateInstance("join-err", { ...this.joinErr });
     });
 
-    this.socket.on("room:divide-tables", (tables) => {
+    this.socket.on("room:divide-tables", (table) => {
       this.clearPeers();
       store.dispatch(setSelectedVideoAction(null));
-
       this.myStream.stream?.getTracks().forEach((tr) => {
         tr.stop();
       });
-
       this.setting.updateInstance("myStream", { ...this.myStream });
-
-      const currentUser = store.getState().userReducer?.user;
-
-      const table = tables.find((t) => {
-        return t.members.find((m) => m._id === currentUser._id);
-      });
-      if (!table) {
-        return confirmSwal(
-          "Error to join table",
-          "You are not a member of any tables"
-        );
-      }
 
       countTime(
         "Divide into tables",
         "You will join your table <b></b> seconds",
         5,
         () => {
-          this.socket.emit(
-            "table:join",
-            { tableId: table._id, floor: table.floor },
-            this.myID,
-            {
-              audio: false,
-              video: false,
-            }
-          );
+          if (table)
+            this.socket.emit(
+              "table:join",
+              { tableId: table.tableId, floor: table.floor },
+              this.myID,
+              {
+                audio: false,
+                video: false,
+              }
+            );
+          else
+            toastError('You are not a member of any tables')
         }
       );
     });
@@ -566,6 +556,11 @@ class Connection {
     this.socket.on("table:join-success", (user) => {
       this.tableMessages = [];
       this.setting.updateInstance("table:messages", [...this.tableMessages]);
+    });
+
+    this.socket.on("table:join-err", (text) => {
+      toastError(text)
+      store.dispatch(roomCallSetJoinLoading(false))
     });
 
     this.socket.on("table:media", ({ media, peerId }) => {

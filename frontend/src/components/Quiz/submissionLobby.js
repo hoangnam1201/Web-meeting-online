@@ -148,7 +148,7 @@ const SubmissionLobby = () => {
             <div className='flex tracking-wide gap-4'>
               <p className='font-semibold min-w-max'>Question
                 {' ' + (indexQuestion + 1)}:</p>
-              <textarea className='w-full p-2' disabled value={submissionState.currentQuestion.content}></textarea>
+              <textarea rows={submissionState?.currentQuestion?.content?.split('\n')?.length} className='w-full p-2' disabled value={submissionState.currentQuestion.content}></textarea>
             </div>
             <div className='ml-1'>
               {submissionState.currentQuestion.type === 'ONE' ? (<div>
@@ -165,7 +165,7 @@ const SubmissionLobby = () => {
                 ))}
               </div>) : submissionState.currentQuestion.type === 'ESSAY' ? (<div className='flex flex-col'>
                 <FormLabel>Write your essay below:</FormLabel>
-                <textarea onChange={essayChange} value={answer?.essay || ''} className=' outline-none shadow-md border border-gray-100 p-4 text-gray-500' rows={15}></textarea>
+                <textarea rows={answer?.essay?.split('\n')?.length || 15} onChange={essayChange} value={answer?.essay || ''} className=' outline-none shadow-md border border-gray-100 p-4 text-gray-500'></textarea>
               </div>) : submissionState.currentQuestion.type === 'FILLIN' ? (<div className='flex flex-col'>
                 <FormLabel>Fill in your answer in box:</FormLabel>
                 {submissionState.currentQuestion.choices.map(c => (

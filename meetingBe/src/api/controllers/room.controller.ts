@@ -288,7 +288,8 @@ export default () => {
       await roomService.addMembers(userIds, roomId);
       const users = await userService.getUsersByIds(userIds);
       const ids = users.reduce((total, currentUser) => {
-        return total + " " + currentUser.email;
+        if (total) return total + ", " + currentUser.email;
+        return currentUser.email;
       }, "");
       await mailService.sendInvitation(roomId, ids);
       res.status(200).json({ status: 200, data: null });
