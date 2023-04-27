@@ -6,7 +6,7 @@ services:
     networks:
       - backend
   be:
-    image: lamtvu/utemeetingbe:1.05
+    image: lamtvu/utemeetingbe:1.073
     environment:
       - PORT=3002
       - SOCKET_PORT=3003
@@ -28,7 +28,7 @@ services:
     networks:
       - backend
   fe:
-    image: lamtvu/utemeetingfe:1.05
+    image: lamtvu/utemeetingfe:1.08
     environment:
       - REACT_APP_CLIENT_ID=825659946153-qk4v8ckvnve80n8jonc310onr2jua1qq.apps.googleusercontent.com
       - REACT_APP_HOST_BASE=http://localhost:3002
@@ -36,7 +36,7 @@ services:
       - REACT_APP_HOST_PORT=3002
       - REACT_APP_SOCKET_HOST=http://localhost:3003
     ports:
-      - "5000:3000"
+      - "3000:3000"
     depends_on:
       - be
     networks:

@@ -31,6 +31,13 @@ FB: https://www.facebook.com/hoangnam22
 
 **GVHD**: TS. Huỳnh Xuân Phụng
 
+## GIỚI THIỆU
+- Ứng dụng này là một nền tảng giao tiếp thời gian thực cho phép người dùng thực hiện các cuộc gọi như Zoom và Google Meet. Nhưng nó có giao diện thuận tiện giống như một cuộc họp thực sự với các bảng đại diện cho các nhóm, cho phép người dùng dễ dàng tương tác với các nhóm.
+![room](./Documents/images/room.png)
+- Chủ phòng có thể trình bày cho cả phòng
+![room](./Documents/images/present1.png)
+
+
 ## CÁCH CÀI ĐẶT
 
 - clone project
